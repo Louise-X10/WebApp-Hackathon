@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Compound Interest Calculator</title>
+        <script src="compound-interest.js" defer></script>
+        <style>
+            body {
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                margin-left: 20px;
+            }
+
+            div {
+                text-align: center;
+                width: 75%;
+
+            }
+
+            p {
+                margin-left: 10px;
+
+            }
+
+            label {
+                display: inline-block;
+                margin: 7px 0px 7px 0px;
+            }
+
+            .result {
+                border: 2px solid green;
+                overflow: auto;
+            }
+
+            input+label, input+span+label {
+                position: absolute;
+                padding-left: 7px;
+            }
+
+            .result+label, .result+span+label{
+                color: green;
+            }
+
+            button {
+                display: inline-block;
+                margin-top: 10px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1>Compound Interest Calculator</h1>
+        <p>Insert values into 3 of the following 4 fields to be the input variables, then the remaining empty field will be the output variable. </p>
+        <p>Press the 'Compute' button to compute the output value. You can continue to change any of the 3 input values and press 'Compute' to recompute the output value. </p>
+        <p>Press 'Reset Output' to deselect current output variable.  Then you can choose another field as output by leaving it as the empty field, and press 'Compute'. </p>
+        <p>Press 'Clear All' to clear all fields.</p>
+        
+        <div>
+            <label for="initial">Principal Amount: </label>
+            <input type="number" id="initial" class="userInput">
+             <label for="initial"></label> <br>
+
+            <label for="interest">Interest Rate: </label>
+            <input type="number" id="interest" class="userInput"> 
+            <span>%</span>
+            <label for="interest"> </label> <br>
+    
+            <label for="time">Time Period: </label>
+            <input type="number" id="time" class="userInput"> 
+            <label for="time"></label> <br>
+    
+            <label for="final">Final Amount: </label>
+            <input type="number" id="final" class="userInput"> 
+            <label for="final"></label> <br>
+    
+            <button id="compute">Compute</button>
+            <button id="clear">Clear All</button>
+            <button id="reset">Reset Output</button>
+
+        </div>
+
+  
+    </body>
+
+
+</html>
