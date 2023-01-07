@@ -1,0 +1,43 @@
+.card div img {
+    width: 1.5in;
+}
+
+.table {
+    position: relative; /*changing to absolute will overlay tables*/
+    width: fit-content;
+    height: fit-content;
+}
+
+/* Card Container */
+.card {
+    position: relative;
+    width: 1.5in;
+    height: 2in;
+    transform-style: preserve-3d;
+    transition: all 1s ease;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+}
+
+.flip {
+    transform: rotateY(180deg);
+}
+
+/* Card Sides */
+/* Default with front size down*/
+.front {
+    position: absolute;
+    backface-visibility: hidden; /*doesn't seem to affect appearance*/
+    transform: rotateY(180deg);
+}
+
+.back {
+    position: absolute;
+    backface-visibility: hidden;
+    
+}
+
+/*Button*/
+button {
+    margin-top: 20px;
+}
