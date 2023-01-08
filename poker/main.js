@@ -89,9 +89,14 @@ class Player {
     }
 
     // Set tokens to totalvalue
-    setTokens(totalValue) {
+    setTokens(totalValue=260) { // 4*50 + 4*10 + 4*5 = 260
         this.clearTokens();
-        this.addToken(50);
+        while (this.money < totalValue && this.money < 200){
+            this.addToken(50);
+        }
+        while (this.money < totalValue && this.money < 240){
+            this.addToken(10);
+        }
         while (this.money < totalValue){
             this.addToken(5);
         }
@@ -168,6 +173,12 @@ class Player {
         }
     }
 }
+
+function evaluateHand(card1, card2, card3, card4, card5, card6, card7){
+    
+    return;
+}
+
 const table = document.querySelector('#common .table.cards');
 const playerBoard = document.querySelector('#player .table.cards');
 const nextBtn = document.querySelector('button.next');
@@ -176,6 +187,7 @@ const playerToken = document.querySelector('#player .table.tokens')
 const commonToken = document.querySelector('#common .table.tokens')
 const betBtn = document.querySelector('button.bet');
 const bet = document.querySelector('#bet');
+const player = new Player(playerToken, commonToken);
 
 const deck = new Deck();
 const card1 = deck.deal('card1', table);
@@ -185,8 +197,8 @@ const card4 = deck.deal('card4', table);
 const card5 = deck.deal('card5', table);
 const playercard1 = deck.deal('playercard1', playerBoard);
 const playercard2 = deck.deal('playercard1', playerBoard);
-const player = new Player(playerToken, commonToken);
 player.setCards(playercard1, playercard2);
+player.setTokens();
 
 function nextStep (){
     if (!playercard1.flipped){
@@ -200,6 +212,9 @@ function nextStep (){
         card4.flip();
     } else if (!card5.flipped){
         card5.flip();
+    } else {
+        // evaluateHand(card1, card2, card3, card4, card5, playercard1, playercard2);
+        return;
     }
 }
 
@@ -212,11 +227,9 @@ function makeBet (){
     player.makeBet(betValue);
 
 }
+
 nextBtn.addEventListener('click', nextStep)
 betBtn.addEventListener('click', makeBet)
-
-player.setTokens(140);
-//player.makeBet(20);
 
 /*
 // Click on any card on the table to flip it
