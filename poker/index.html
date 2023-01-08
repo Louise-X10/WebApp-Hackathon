@@ -1,42 +1,64 @@
 <!DOCTYPE html>
-<html lang='en-us'>
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width'>
-    <link rel='stylesheet' href='cardstyle.css'>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="cardstyle.css">
     <title>Card Game</title>
   </head>
 
   <body>
-    <h1>Simple Card Game</h1>
-    <div class='table' id='common'>
-        <!--
-        <div class = 'card'>
-            <div class = 'front'> 
-                <img src='../cardsSVG/clubs_10.svg' alt=''>
+    <h1>Single-player Poker Card Game</h1>
+    <div class="area" id="common">
+        <div class="table cards">
+            <h2>Common Table</h2>
+            <!--
+            <div class = "card">
+                <div class = "front"> 
+                    <img src="../cardsSVG/clubs_10.svg" alt="">
+                </div>
+                <div class = "back">
+                    <img src="../cardsSVG/back.svg" alt="back">
+                </div>
             </div>
-            <div class = 'back'>
-                <img src='../cardsSVG/back.svg' alt='back'>
+    
+            <div class = "card">
+                <div class = "front"> 
+                    <img src="../cardsSVG/joker_black.svg" alt="">
+                </div>
+                <div class = "back">
+                    <img src="../cardsSVG/back.svg" alt="back">
+                </div>
             </div>
+            -->
         </div>
-
-        <div class = 'card'>
-            <div class = 'front'> 
-                <img src='../cardsSVG/joker_black.svg' alt=''>
-            </div>
-            <div class = 'back'>
-                <img src='../cardsSVG/back.svg' alt='back'>
-            </div>
+        <div class="table tokens">
+            <h2>Collected Tokens:</h2>
         </div>
-        -->
     </div>
 
-    <h2>Player's card: </h2>
-    <div class='table' id='player'></div>
 
-    <button class="next">Next Step</button>
+    <div class="area" id="player">
+        <div class="table cards">
+            <h2>Player's cards: </h2>
+        </div>
+
+        <div class="table tokens">
+            <h2>Player's tokens: </h2>
+            <!--<img src="token_5.svg" alt="token" class="token player">-->
+        </div>
+    </div>
+
+    <div class="area">
+        <input type="number" name="bet" id="bet"> 
+        <button class="bet">Make Bet!</button>
+        <button class="next">Next Step</button>
+        <!---->
+    </div>
     
   </body>
 
-  <script src='main.js'></script>
+
+  <script src="main.js"></script>
+  
 </html>

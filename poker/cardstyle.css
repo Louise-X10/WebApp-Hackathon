@@ -2,10 +2,19 @@
     width: 1.5in;
 }
 
-.table {
-    position: relative; /*changing to absolute will overlay tables*/
-    width: fit-content;
+.area#common, .area#player {
+    position: relative; /*changing to absolute will overlay areas*/
+    width: 100%;
     height: fit-content;
+    display: flex; /*so that different sections layout in row*/
+}
+
+.table.cards {
+    flex: 2;
+}
+
+.table.tokens {
+    flex: 1;
 }
 
 /* Card Container */
@@ -40,4 +49,16 @@
 /*Button*/
 button {
     margin-top: 20px;
+}
+
+/*Tokens*/
+.token{
+    width: 0.5in;
+    display: inline-block;
+    margin: 10px 5px 10px 5px;
+    transition: all 1s ease;
+}
+
+.token.hidden {
+    visibility: hidden;
 }
