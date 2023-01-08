@@ -1,4 +1,5 @@
 const cardPath = '../cardsSVG/';
+const tokenPath = '../tokensSVG/';
 
 class Card {
     constructor(suit, value) {
@@ -78,7 +79,7 @@ class Player {
     constructor(table, common) {
         this.cards = [null, null]; // [card1, card2]
         this.money = 0;
-        this.tokens = {}; // dictionary Z{value : [token1, token2, ...]}
+        this.tokens = {}; // dictionary {value : count}
         this.table = table;
         this.common = common;
     }
@@ -90,7 +91,7 @@ class Player {
     // Set tokens to totalvalue
     setTokens(totalValue) {
         this.clearTokens();
-        this.addToken(100);
+        this.addToken(50);
         while (this.money < totalValue){
             this.addToken(5);
         }
@@ -99,37 +100,40 @@ class Player {
     // Place token of given value into table
     addToken(value){
         const token = document.createElement('img');
-        token.src = `token_${value}.svg`
+        token.src = tokenPath + `token_${value}.svg`
         token.alt = "token";
-        token.classList.add("token", `${value}`, "player");
+        token.classList.add("token", `_${value}`, "player");
         this.table.appendChild(token);
         this.money += value;
         if (this.tokens[value] === undefined){
-            this.tokens[value] = [token];
+            this.tokens[value] = 1;
         } else {
-            this.tokens[value].push(token)
+            this.tokens[value] ++ ;
         }
     }
 
     // Remove token of given value from table
     // If move=true, move token to common table
     removeToken(value, move=false){
-        // Error message if trying to remove non-existing token
-        if (this.tokens[value] === undefined){
+        let token = document.querySelector(`#player .table.tokens img._${value}`);
+        // Error message if no such token exist
+        if (token === null){ // or if this.tokens[value] === undefined
             alert("You do not have this token!")
-        }
-        let token = this.tokens[value].pop();
+            return;
+        } 
         this.money -= value;
+        this.tokens[value] --;
         
-        // If have no more tokens of this value
-        if (this.tokens[value].length === 0){
+        // if there are no more tokens of this value, delete from dictionary
+        if (this.tokens[value] === 0) {
             delete this.tokens[value];
         }
+
+        // move token to common table
         if (move){
             // Trying to make this animate
             this.table.removeChild(token);
             this.common.appendChild(token);
-
         } else {
             this.table.removeChild(token);
         }
@@ -137,15 +141,11 @@ class Player {
 
     // clear all tokens on table
     clearTokens(){
-        for (let value of Object.keys(this.tokens)){
-            let numTokens = this.tokens[value].length;
-            for (let i=0; i<numTokens; i++){
-                this.removeToken(value);
-            }
+        let tokens = document.querySelectorAll(`#player .table.tokens img`);
+        for (let token of tokens){
+            this.table.removeChild(token);
         }
-        this.tokens = {};
     }
-
     
     makeBet(bet, fromLargest = true){
         if (bet > this.money){
@@ -204,7 +204,12 @@ function nextStep (){
 }
 
 function makeBet (){
-    let betValue = bet.textContent;
+    let betValue = bet.value;
+    if (betValue % 5 !== 0){
+        alert("Must be multiples of 5!");
+        return;
+    }
+    player.makeBet(betValue);
 
 }
 nextBtn.addEventListener('click', nextStep)

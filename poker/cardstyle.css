@@ -51,6 +51,11 @@ button {
     margin-top: 20px;
 }
 
+button.next{
+    position: relative;
+    left: 20px;
+}
+
 /*Tokens*/
 .token{
     width: 0.5in;
@@ -61,4 +66,21 @@ button {
 
 .token.hidden {
     visibility: hidden;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+}
+
+.legend div{
+    display: flex;
+    align-items: center;
+    border: 1px solid grey;
+    padding: 5px;
+}
+
+.legend div span {
+    font-size: larger;
+    padding-left: 5px;
 }
