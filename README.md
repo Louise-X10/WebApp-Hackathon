@@ -4,13 +4,20 @@
 - `Compound interest`: Compount Interest Calculator
 - `poker`: Texas hold'em poker game (currently single-player only)
 
+## Bouncing balls
+25 balls of random size, color, velocity are created. Use `AWSD` to move the Evilball (transparent with white border) and eat the other balls. A total ball count is kept on the upper right corner of the page. 
+
+P.S. When two balls collide, they bounce off each other and both change to another random color. 
+
+## Compound interest calculator
+Calculator with 4 input fields: primary amount, interest rate, time cycle, final amount. Given any 3 of the 4 fields, the calculator can compute the remaining field. More detailed instructions are given on the webpage. 
+
 ## Poker (In progress)
 - Completed 
-- - Card flips
-- - Table Setup
+  - Card flips
+  - Table Setup
 - Woking on
-- - Token Movement
-`player.makeBet(10)`
+  - Token Movement: `player.makeBet(10)`
 - To be completed
-- - Evaluate poker hand ranking
-- - Multiplayer: big bind, small bind
+  - Evaluate poker hand ranking
+  - Multiplayer: big bind, small bind
