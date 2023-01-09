@@ -130,33 +130,6 @@ class Player {
         this.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1;
     }
 
-    // Remove token of given value from table
-    // If move=true, move token to common table
-    removeToken(value, move=false){
-        let token = document.querySelector(`#player .table.tokens img._${value}`);
-        // Error message if no such token exist
-        if (!token){ // or if token===null, if this.tokens[value] === undefined
-            alert("You do not have this token!")
-            return;
-        } 
-        this.money -= value;
-        this.tokens[value] --;
-        
-        // if there are no more tokens of this value, delete from dictionary
-        if (this.tokens[value] === 0) {
-            delete this.tokens[value];
-        }
-
-        // move token to common table
-        if (move){
-            // Trying to make this animate
-            this.table.removeChild(token);
-            this.common.appendChild(token);
-        } else {
-            this.table.removeChild(token);
-        }
-    }
-
     // clear all tokens on table
     clearTokens(){
         let tokens = document.querySelectorAll(`#player .table.tokens img`);
@@ -165,40 +138,13 @@ class Player {
         }
     }
     
-    makeBet(bet, fromLargest = true){
-        if (bet > this.money){
-            alert("You don't have enough money!")
-        } else {
-            let values = Object.keys(this.tokens);
-            values = values.map(Number).sort((a,b)=> b-a); // descending order
-
-            // Default: Start removing tokens from largest face value
-            if (fromLargest){
-                for (let value of values){
-                    while (value <= bet) {
-                        bet -= value;
-                        this.removeToken(value, true);
-                        console.log('remove', value, "remain to bet", bet)
-                    }
-                }
-            // Start removing tokens from smallest face value
-            }
-        }
+    // move given token to common table
+    makeBet(token){
+        this.table.removeChild(token);
+        this.common.appendChild(token);
     }
 }
 
-/* 
-card1 = new Card("diamonds", 5)
-card2 = new Card("diamonds", 4)
-card3 = new Card("diamonds", 3)
-card4 = new Card("diamonds", 2)
-card5 = new Card("diamonds", 1)
-playercard1 = new Card("clubs", 5)
-playercard2 = new Card("hearts", 5)
-cards = [card1, card2, card3, card4, card5, playercard1, playercard2]
-evaluateHand(player, cards)
-player
-*/
 
 // Only checks for straight, no flush, in given set of cards
 // Returns list of straight cards, or [] if none
@@ -348,7 +294,6 @@ const nextBtn = document.querySelector('button.next');
 const playerToken = document.querySelector('#player .table.tokens')
 const commonToken = document.querySelector('#common .table.tokens')
 const betBtn = document.querySelector('button.bet');
-const bet = document.querySelector('#bet');
 const player = new Player(playerToken, commonToken);
 
 const deck = new Deck();
@@ -374,7 +319,7 @@ function nextStep (){
         card4.flip();
     } else if (!card5.flipped){
         card5.flip();
-        nextBtn.textContent('Reveal Hand');
+        nextBtn.textContent = 'Reveal Hand';
     } else {
         evaluateHand(player, [card1, card2, card3, card4, card5, playercard1, playercard2]);
         alert(player.handName);
@@ -383,17 +328,24 @@ function nextStep (){
 }
 
 function makeBet (){
-    let betValue = bet.value;
-    if (betValue % 5 !== 0){
-        alert("Must be multiples of 5!");
-        return;
-    }
-    player.makeBet(betValue);
-
+    tokens.forEach(token=>{
+        if (token.classList.contains('selected')){
+            player.makeBet(token);
+            token.classList.remove('selected');
+        }
+    })
 }
 
-nextBtn.addEventListener('click', nextStep)
-betBtn.addEventListener('click', makeBet)
+function selectTokens(event){
+    let token = event.target;
+    token.classList.add("selected");
+}
+
+nextBtn.addEventListener('click', nextStep);
+betBtn.addEventListener('click', makeBet);
+
+const tokens = document.querySelectorAll('.table.tokens img');
+tokens.forEach(token => token.addEventListener('click', () => token.classList.add('selected')))
 
 /*
 // Click on any card on the table to flip it

@@ -17,6 +17,10 @@
     flex: 1;
 }
 
+.area#action {
+    text-align: center;
+}
+
 /* Card Container */
 .card {
     position: relative;
@@ -61,13 +65,18 @@ button.next{
     width: 0.5in;
     display: inline-block;
     margin: 10px 5px 10px 5px;
-    transition: all 1s ease;
+    /* transition: all 1s ease; */
 }
 
 .token.hidden {
     visibility: hidden;
 }
 
+.token.selected {
+    border: 3px solid red;
+}
+
+/*Legend*/
 .legend {
     display: flex;
     align-items: center;
