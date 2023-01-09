@@ -16,8 +16,13 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
 - Completed 
   - Card flips
   - Table Setup
-- Woking on
-  - Token Movement: `player.makeBet(10)`
-- To be completed
+  - Token Movement
   - Evaluate poker hand ranking
+- Woking on
+  - Display evaluation on webpage
+- To be completed
+  - Lock player movement after bet and before next round 
   - Multiplayer: big bind, small bind
+
+- Additional Features
+    - Visualize Token Movement
