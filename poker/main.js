@@ -1,5 +1,5 @@
-const cardPath = '../cardsSVG/';
-const tokenPath = '../tokensSVG/';
+const cardPath = 'cardsSVG/';
+const tokenPath = 'tokensSVG/';
 
 class Card {
     constructor(suit, value) {
