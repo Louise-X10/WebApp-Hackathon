@@ -2,15 +2,19 @@
     width: 1.5in;
 }
 
-.area#common, .area#player {
+.area.common, .area.player {
     position: relative; /*changing to absolute will overlay areas*/
     width: 100%;
     height: fit-content;
     display: flex; /*so that different sections layout in row*/
 }
 
+.area.playing{
+    border: 1px solid green;
+}
 .table {
     position: relative;
+    padding: 10px;
 }
 
 .table.cards {
@@ -21,7 +25,7 @@
     flex: 1;
 }
 
-.area#action {
+.area.action {
     text-align: center;
 }
 
@@ -31,9 +35,9 @@
     width: 1.5in;
     height: 2in;
     transform-style: preserve-3d;
-    transition: all 1s ease;
+    transition: transform 1s ease;
     display: inline-block;
-    padding: 0px 5px 0px 5px;
+    margin: 0px 5px 0px 5px;
 }
 
 .flip {

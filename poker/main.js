@@ -91,18 +91,30 @@ class Deck {
 }
 
 class Player {
-    constructor(table, common) {
+    constructor(container, common){
+        this.container = container;
+        let tables = container.querySelectorAll('.table');
+        this.playtable = tables[0];
+        this.tokentable = tables[1];
+        this.commontable = common;
+
         this.cards = [null, null]; // [card1, card2]
+        this.btns = [null, null]; // [nextBtn, betBtn]
+
         this.money = 0;
         this.tokens = {}; // dictionary {value : count}
-        this.table = table;
-        this.common = common;
+
         this.handCards = [];
         this.handName = '';
+        this.setTokens();
     }
 
     setCards(card1, card2){
         this.cards = [card1, card2];
+    }
+
+    setButtons(nextBtn, betBtn){
+        this.btns = [nextBtn, betBtn];
     }
 
     // Set tokens to totalvalue
@@ -125,7 +137,7 @@ class Player {
         token.src = tokenPath + `token_${value}.svg`
         token.alt = "token";
         token.classList.add("token", `_${value}`, "player");
-        this.table.appendChild(token);
+        this.tokentable.appendChild(token);
         this.money += value;
         this.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1;
     }
@@ -134,32 +146,30 @@ class Player {
     clearTokens(){
         let tokens = document.querySelectorAll(`#player .table.tokens img`);
         for (let token of tokens){
-            this.table.removeChild(token);
+            this.tokentable.removeChild(token);
         }
     }
     
     // move given token to common table
-    //! make movement
-    makeBet(token){
-        //let token = document.querySelector(`.token`);
+    moveToken(token){
+        token.classList.remove('selected');
         let cloneToken = token.cloneNode();
         cloneToken.classList.add('hidden');
         let xi = token.getBoundingClientRect()['x'];
         let yi = token.getBoundingClientRect()['y'];
-        this.common.appendChild(cloneToken);
+        this.commontable.appendChild(cloneToken);
         let xf = cloneToken.getBoundingClientRect()['x'];
         let yf = cloneToken.getBoundingClientRect()['y'];
-        this.common.removeChild(cloneToken);
+        this.commontable.removeChild(cloneToken);
         token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
-        console.log('Make Bet');
+        setTimeout(()=>{this.commontable.appendChild(token);
+            token.style.transform = '';}, 1000);
     }
 
-    // If combine into makeBet(), token.style.transform will not take effect becuase it hasn't changed in one click
-    makeBetAfter(token){
-        this.common.appendChild(token);
-        token.style.transform = '';
+    makeBet() {
+        let playerTokens = this.tokentable.querySelectorAll('.token.selected');
+        playerTokens.forEach((token)=>this.moveToken(token));
     }
-    
 }
 
 // Only checks for straight, no flush, in given set of cards
@@ -215,7 +225,6 @@ function returnStraight(cards){
     }
     
 }
-
 
 // Set player.hand and player.handName
 function evaluateHand(player, cardsGiven){
@@ -303,31 +312,52 @@ function evaluateHand(player, cardsGiven){
     player.handName = handName;
 }
 
-const table = document.querySelector('#common .table.cards');
-const playerBoard = document.querySelector('#player .table.cards');
-const nextBtn = document.querySelector('button.next');
+const commonTable = document.querySelector('.common .table.cards');
+const commonTokenTable = document.querySelector('.common .table.tokens');
+const playerContainer1 = document.querySelector('#player1');
+const playerContainer2 = document.querySelector('#player2');
 
-const playerToken = document.querySelector('#player .table.tokens')
-const commonToken = document.querySelector('#common .table.tokens')
-const betBtn = document.querySelector('button.bet');
-const player = new Player(playerToken, commonToken);
+const player1 = new Player(playerContainer1, commonTokenTable);
+const player2 = new Player(playerContainer2, commonTokenTable);
+
+const nextBtn = document.querySelector('button.next');
+const betBtn1 = document.querySelector('#player1 button.bet');
+const betBtn2 = document.querySelector('#player2 button.bet');
+player1.setButtons(nextBtn, betBtn1);
+player2.setButtons(nextBtn, betBtn2);
 
 const deck = new Deck();
-const card1 = deck.deal('card1', table);
-const card2 = deck.deal('card2', table);
-const card3 = deck.deal('card3', table);
-const card4 = deck.deal('card4', table);
-const card5 = deck.deal('card5', table);
-const playercard1 = deck.deal('playercard1', playerBoard);
-const playercard2 = deck.deal('playercard1', playerBoard);
-player.setCards(playercard1, playercard2);
-player.setTokens();
+const card1 = deck.deal('card1', commonTable);
+const card2 = deck.deal('card2', commonTable);
+const card3 = deck.deal('card3', commonTable);
+const card4 = deck.deal('card4', commonTable);
+const card5 = deck.deal('card5', commonTable);
+const commonCards = [card1, card2, card3, card4, card5];
 
-function nextStep (){
-    if (!playercard1.flipped){
-        playercard1.flip();
-        playercard2.flip();
-    } else if (!card1.flipped){
+const player1card1 = deck.deal('player1card1', player1.playtable);
+const player1card2 = deck.deal('player1card2', player1.playtable);
+const player2card1 = deck.deal('player2card1', player2.playtable);
+const player2card2 = deck.deal('player2card2', player2.playtable);
+
+player1.setCards(player1card1, player1card2);
+player2.setCards(player2card1, player2card2);
+
+
+// Click to select and highlight tokens
+function selectTokens(event){
+    let token = event.target;
+    token.classList.add("selected");
+}
+const tokens = document.querySelectorAll('.table.tokens img');
+tokens.forEach(token => token.addEventListener('click', () => token.classList.add('selected')))
+
+// Click on any player card on the table to flip it
+allCards = document.querySelectorAll('.card[id^=player]');
+allCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('flip')));
+
+// After pressing next button, flip common cards and display eval message
+function nextAction (){
+    if (!card1.flipped){
         card1.flip();
         card2.flip();
         card3.flip();
@@ -337,38 +367,46 @@ function nextStep (){
         card5.flip();
         nextBtn.textContent = 'Reveal Hand';
     } else {
-        evaluateHand(player, [card1, card2, card3, card4, card5, playercard1, playercard2]);
-        alert(player.handName);
+        evaluateHand(player1, commonCards.concat(player1.cards));
+        evaluateHand(player2, commonCards.concat(player2.cards));
+        alert("Player1: ", player1.handName, "; Player2: ", player2.handName);
         return;
     }
+    nextBtn.removeEventListener('click', nextAction);
+}
+// Make next button clickable once every round
+function nextRound(){
+    nextBtn.addEventListener('click', nextAction);
 }
 
-function makeBet (){
-    tokens.forEach(token=>{
-        if (token.classList.contains('selected')){
-            token.classList.remove('selected');
-            player.makeBet(token);
-            setTimeout(()=>{player.makeBetAfter(token)}, 1000);
+// During each player's turn, set up bet button listener
+// Once bet button is pressed once, move to next player's turn
+// Once all player's played, set up next button listener
+function playerTurn(player){
+    player.container.classList.add('playing');
+    let playerBetBtn = player.btns[1];
+    // Set up bet button listener for one click only
+    function betAction(){
+        player.makeBet();
+        playerBetBtn.removeEventListener('click', betAction);
+        player.container.classList.remove('playing');
+        switch(player){
+            case player1:
+                console.log("Currently player1");
+                player = player2;
+                break;
+            case player2:
+                console.log("Currently player2");
+                player =  null;
+                break;
         }
-    })
+    }
+    playerBetBtn.addEventListener('click', betAction);
 }
 
-function selectTokens(event){
-    let token = event.target;
-    token.classList.add("selected");
+function oneRound () {
+/*     let state = player1;
+    state = playerTurn(state);
+    playerTurn(player1);
+    playerTurn(player2); */
 }
-
-nextBtn.addEventListener('click', nextStep);
-betBtn.addEventListener('click', makeBet);
-
-const tokens = document.querySelectorAll('.table.tokens img');
-tokens.forEach(token => token.addEventListener('click', () => token.classList.add('selected')))
-
-/*
-// Click on any card on the table to flip it
-// Bubble down from table to any div.card element
-//! Need to fix this so that any card can respond, not just first card
-table.addEventListener('click', event => {
-    event.currentTarget.querySelector('.card').classList.toggle('flip')
-});
-*/

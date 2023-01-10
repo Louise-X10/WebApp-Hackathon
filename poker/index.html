@@ -9,6 +9,9 @@
 
   <header>
         <h1>Single-player Poker Card Game</h1>
+        <p>Player's cards can be flipped by clicking any time during the game. 
+            Players take turns betting tokens by selecting tokens and pressing the 'Make Bet!' button. 
+            After each player has taken a turn, press the 'Next Step' button to flip common cards and continue the next round. </p>
         <!--
         <h2>Token Values: </h2>
         <div class="legend">
@@ -23,26 +26,16 @@
         </div>
         -->
 
-
   </header>
 
   <body>
-    <div class="area" id="common">
+    <div class="area common">
         <div class="table cards">
             <h2>Common Table</h2>
             <!--
             <div class = "card">
                 <div class = "front"> 
                     <img src="../cardsSVG/clubs_10.svg" alt="">
-                </div>
-                <div class = "back">
-                    <img src="../cardsSVG/back.svg" alt="back">
-                </div>
-            </div>
-    
-            <div class = "card">
-                <div class = "front"> 
-                    <img src="../cardsSVG/joker_black.svg" alt="">
                 </div>
                 <div class = "back">
                     <img src="../cardsSVG/back.svg" alt="back">
@@ -55,8 +48,12 @@
         </div>
     </div>
 
+    <div class="area action" id="common">
+        <button class="next">Next Step</button>
+    </div>
 
-    <div class="area" id="player">
+    <!--Player 1 Container-->
+    <div class="area player" id="player1">
         <div class="table cards">
             <h2>Player's cards: </h2>
         </div>
@@ -67,10 +64,24 @@
         </div>
     </div>
 
-    <div class="area" id="action">
+    <div class="area action" id="player1">
         <button class="bet">Make A Bet!</button>
-        <button class="next">Next Step</button>
-        <!---->
+    </div>
+
+    <!--Player 2 Container-->
+    <div class="area player" id="player2">
+        <div class="table cards">
+            <h2>Player's cards: </h2>
+        </div>
+
+        <div class="table tokens">
+            <h2>Player's tokens: </h2>
+            <!--<img src="token_5.svg" alt="token" class="token _5 player">-->
+        </div>
+    </div>
+
+    <div class="area action" id="player2">
+        <button class="bet">Make A Bet!</button>
     </div>
     
   </body>

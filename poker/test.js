@@ -129,3 +129,10 @@ token.classList.remove('moving');
 
 player.common.appendChild(token);
 token.style.transform = '';
+
+// Two player take turns
+
+playerTurn(player1)
+getEventListeners(betBtn1)
+getEventListeners(betBtn2)
+getEventListeners(nextBtn)
