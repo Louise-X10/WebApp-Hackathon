@@ -393,6 +393,9 @@ function nextAction (){
     }
    deck._startRound = true;
    console.log("after press next button", deck._startRound);
+   // fire new round
+   window.dispatchEvent(customEvent);
+   console.log("dispatched event");
 }
 // Make next button clickable once every round
 function nextRound() {
@@ -436,6 +439,8 @@ function playerTurn(player){
     
 }
 
+//var proxyDeck = new Proxy(deck);
+
 // Run each current player's turn
 // If current player is null, run next button and end this round
 
@@ -445,10 +450,14 @@ function oneRound(){
     deck.currPlayer = player1;
 }
 
-function main(){
-    while(deck._startRound){
-        console.log("initialize", deck._startRound)
-        deck.startRound = true;
-    }
-    
-}
+// listen on value of startRound
+var customEvent = new CustomEvent('startRound', {
+    detail: deck._startRound,
+})
+
+// when startRound event is fired, a new round will initiate
+window.addEventListener('startRound', (e)=>{
+    console.log(e.detail);
+    deck.currPlayer=player1;
+});
+
