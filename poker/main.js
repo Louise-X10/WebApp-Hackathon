@@ -62,6 +62,15 @@ class Deck {
         this.deck = [];
         this.reset();
         this.shuffle();
+        this._currPlayer = null;
+    }
+
+    // Whenever this.currPlayer is set, it updates and calls playerTurn on updated currPlayer
+    set currPlayer(newPlayer) {
+        //console.log("Changing", this.currPlayer, newPlayer)
+        this._currPlayer = newPlayer;
+        playerTurn(this._currPlayer);
+        //console.log('After change', this.currPlayer)
     }
 
     reset() {
@@ -372,19 +381,31 @@ function nextAction (){
         alert("Player1: ", player1.handName, "; Player2: ", player2.handName);
         return;
     }
-    nextBtn.removeEventListener('click', nextAction);
+   startRound = true;
+   console.log("after press next button", startRound);
 }
 // Make next button clickable once every round
-function nextRound(){
-    nextBtn.addEventListener('click', nextAction);
+function nextRound() {
+    nextBtn.addEventListener('click', nextAction, {once: true});
 }
 
 // During each player's turn, set up bet button listener
-// Once bet button is pressed once, move to next player's turn
-// Once all player's played, set up next button listener
+// Once bet button is pressed once, update currrent player to next player
+// Once all player's played, update current player to null
+// If current player is null, run next button and end this round
 function playerTurn(player){
+    
+    if (!player){
+        console.log("at next button round ", startRound)
+        nextRound();
+        return;
+    }
+    startRound = false;
+    console.log("player: start = ", startRound)
+    //console.log('Playing one turn', player.container.getAttribute('id'))
     player.container.classList.add('playing');
     let playerBetBtn = player.btns[1];
+
     // Set up bet button listener for one click only
     function betAction(){
         player.makeBet();
@@ -392,21 +413,32 @@ function playerTurn(player){
         player.container.classList.remove('playing');
         switch(player){
             case player1:
-                console.log("Currently player1");
-                player = player2;
+                //console.log("Currently player1, next round player 2");
+                deck.currPlayer = player2;
                 break;
             case player2:
-                console.log("Currently player2");
-                player =  null;
+                //console.log("Currently player2, next round next button");
+                deck.currPlayer =  null;
                 break;
         }
     }
-    playerBetBtn.addEventListener('click', betAction);
+    playerBetBtn.addEventListener('click', betAction, {once: true});
+    
 }
 
-function oneRound () {
-/*     let state = player1;
-    state = playerTurn(state);
-    playerTurn(player1);
-    playerTurn(player2); */
+// Run each current player's turn
+// If current player is null, run next button and end this round
+
+function oneRound(){
+    startRound = false;
+    console.log("start round", startRound)
+    deck.currPlayer = player1;
+}
+
+function main(){
+    var startRound = true;
+    console.log("initialize", startRound)
+    while (startRound){
+        oneRound();
+    }
 }
