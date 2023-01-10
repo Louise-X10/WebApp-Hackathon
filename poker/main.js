@@ -139,12 +139,27 @@ class Player {
     }
     
     // move given token to common table
+    //! make movement
     makeBet(token){
-        this.table.removeChild(token);
-        this.common.appendChild(token);
+        //let token = document.querySelector(`.token`);
+        let cloneToken = token.cloneNode();
+        cloneToken.classList.add('hidden');
+        let xi = token.getBoundingClientRect()['x'];
+        let yi = token.getBoundingClientRect()['y'];
+        this.common.appendChild(cloneToken);
+        let xf = cloneToken.getBoundingClientRect()['x'];
+        let yf = cloneToken.getBoundingClientRect()['y'];
+        this.common.removeChild(cloneToken);
+        token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
     }
-}
 
+    // If combine into makeBet(), token.style.transform will not take effect becuase it hasn't changed in one click
+    makeBetAfter(token){
+        this.common.appendChild(token);
+        token.style.transform = '';
+    }
+    
+}
 
 // Only checks for straight, no flush, in given set of cards
 // Returns list of straight cards, or [] if none
@@ -330,8 +345,9 @@ function nextStep (){
 function makeBet (){
     tokens.forEach(token=>{
         if (token.classList.contains('selected')){
-            player.makeBet(token);
             token.classList.remove('selected');
+            player.makeBet(token);
+            player.makeBetAfter(token);
         }
     })
 }

@@ -107,6 +107,25 @@ cardsGiven = [card1, card2, card3, card4, card5, playercard1, playercard2]
 evaluateHand(player, cardsGiven)
 player
 
-//Debug
+//Debug evaluation
 var cards = cardsGiven.map(x=>x);
-    cards.sort((card1, card2)=> card1.number - card2.number);
+cards.sort((card1, card2)=> card1.number - card2.number);
+
+// Debug animation
+let token = document.querySelector('.token')
+let cloneToken = token.cloneNode();
+cloneToken.classList.add('hidden');
+
+let xi = token.getBoundingClientRect()['x'];
+let yi = token.getBoundingClientRect()['y'];
+player.common.appendChild(cloneToken);
+let xf = cloneToken.getBoundingClientRect()['x'];
+let yf = cloneToken.getBoundingClientRect()['y'];
+player.common.removeChild(cloneToken);
+
+token.classList.add('moving');
+token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
+token.classList.remove('moving');
+
+player.common.appendChild(token);
+token.style.transform = '';

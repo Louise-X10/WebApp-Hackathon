@@ -9,6 +9,10 @@
     display: flex; /*so that different sections layout in row*/
 }
 
+.table {
+    position: relative;
+}
+
 .table.cards {
     flex: 2;
 }
@@ -62,10 +66,13 @@ button.next{
 
 /*Tokens*/
 .token{
+    position: relative;
     width: 0.5in;
     display: inline-block;
-    margin: 10px 5px 10px 5px;
-    /* transition: all 1s ease; */
+    border: 3px solid transparent;
+    padding: 3px;
+    margin: 3px;
+   transition: transform 2s ease;
 }
 
 .token.hidden {
