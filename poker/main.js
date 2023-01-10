@@ -63,6 +63,7 @@ class Deck {
         this.reset();
         this.shuffle();
         this._currPlayer = null;
+        this._startRound = true;
     }
 
     // Whenever this.currPlayer is set, it updates and calls playerTurn on updated currPlayer
@@ -71,6 +72,15 @@ class Deck {
         this._currPlayer = newPlayer;
         playerTurn(this._currPlayer);
         //console.log('After change', this.currPlayer)
+    }
+
+    // Whenever this.startRound is set to true, it calls oneRound;
+    set startRound(bool) {
+        this._startRound = bool;
+        if (bool){
+            console.log('startRound is set to true!')
+            oneRound();
+        }
     }
 
     reset() {
@@ -364,7 +374,7 @@ tokens.forEach(token => token.addEventListener('click', () => token.classList.ad
 allCards = document.querySelectorAll('.card[id^=player]');
 allCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('flip')));
 
-// After pressing next button, flip common cards and display eval message
+// After pressing next button, flip common cards and display eval message, then end this round (startRound=true)
 function nextAction (){
     if (!card1.flipped){
         card1.flip();
@@ -381,27 +391,27 @@ function nextAction (){
         alert("Player1: ", player1.handName, "; Player2: ", player2.handName);
         return;
     }
-   startRound = true;
-   console.log("after press next button", startRound);
+   deck._startRound = true;
+   console.log("after press next button", deck._startRound);
 }
 // Make next button clickable once every round
 function nextRound() {
     nextBtn.addEventListener('click', nextAction, {once: true});
 }
 
-// During each player's turn, set up bet button listener
+// During each player's turn, set up bet button listener, process this round (startRound=false)
 // Once bet button is pressed once, update currrent player to next player
 // Once all player's played, update current player to null
-// If current player is null, run next button and end this round
+// If current player is null, run next button and end this round 
 function playerTurn(player){
     
     if (!player){
-        console.log("at next button round ", startRound)
+        console.log("at next button round ", deck._startRound)
         nextRound();
         return;
     }
-    startRound = false;
-    console.log("player: start = ", startRound)
+    deck._startRound = false;
+    console.log("player: start = ", deck._startRound)
     //console.log('Playing one turn', player.container.getAttribute('id'))
     player.container.classList.add('playing');
     let playerBetBtn = player.btns[1];
@@ -430,15 +440,15 @@ function playerTurn(player){
 // If current player is null, run next button and end this round
 
 function oneRound(){
-    startRound = false;
-    console.log("start round", startRound)
+    deck._startRound = false;
+    console.log("start round", deck._startRound)
     deck.currPlayer = player1;
 }
 
 function main(){
-    var startRound = true;
-    console.log("initialize", startRound)
-    while (startRound){
-        oneRound();
+    while(deck._startRound){
+        console.log("initialize", deck._startRound)
+        deck.startRound = true;
     }
+    
 }
