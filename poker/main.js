@@ -151,6 +151,7 @@ class Player {
         let yf = cloneToken.getBoundingClientRect()['y'];
         this.common.removeChild(cloneToken);
         token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
+        console.log('Make Bet');
     }
 
     // If combine into makeBet(), token.style.transform will not take effect becuase it hasn't changed in one click
@@ -347,7 +348,7 @@ function makeBet (){
         if (token.classList.contains('selected')){
             token.classList.remove('selected');
             player.makeBet(token);
-            player.makeBetAfter(token);
+            setTimeout(()=>{player.makeBetAfter(token)}, 1000);
         }
     })
 }
