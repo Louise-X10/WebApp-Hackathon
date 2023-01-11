@@ -23,14 +23,13 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
   - Two-player: Setup server
   - Two-player: Compare evaluations and declare winner
   - Two-player: Move tokens to winner
-  - Two-player: fold mechanism, win early
+  - Two-player: fold mechanism
+  - Two-player: end game early whenever all other players folded
 - Woking on
-  - Two-player: fold mechanism, win early
   - automatic flip cards after make bet
-  - check for early end condition after each player action
-  - initiate new game
 - To be completed
   - Two-player: alternate turns
+  - initiate new game
   - Two-player: Split tokens evenly for ties
   - Refine multiple token movement (animate different target positions), adjust delay
   - Reorganize token method

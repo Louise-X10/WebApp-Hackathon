@@ -505,7 +505,8 @@ function endGame(earlyEnd=false){
             tokenSet1.forEach((token)=>player1.collectToken(token));
             tokenSet2.forEach((token)=>player2.collectToken(token)); */
         }
-        nextBtn.textContent === 'Next Step';
+        nextBtn.textContent = 'Next Step';
+        //TODO initiate new game
     } else if (earlyEnd){
         var winner = players.filter(player => !player.folded)[0]
         var winnerName = winner.container.getAttribute('id');
@@ -566,17 +567,14 @@ function splitTokens(tokenSet){
     return [tokenSet1, tokenSet2]
 }
 
-//* Set up player action listeners and proceed to next player
+//* Set up player fold and bet listeners and proceed to next player
 // During each player's turn, set up bet button listener
 // Once bet button is pressed once, update currrent player to next player and call playerTurn
 // Once all player's played, update current player to null, then run next button and end this round 
 function playerTurn(player){
-    if (!player){
-        nextStep();
-        return;
-    }
     // Update current player and set up to let next player act
     function nextPlayerTurn(player){
+        console.log('running nextPlayerTurn')
         switch(player){
             case player1:
                 console.log("Currently player1, next round player 2");
@@ -586,17 +584,23 @@ function playerTurn(player){
                 console.log("Currently player2, next round next button");
                 CurrentPlayer =  null;
         }
-        console.log('dispatch play event');
+        console.log('dispatch play event and run playerTurn on next player');
         let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
         window.dispatchEvent(playEvent);
     }
 
-    // End game early if everyone else has folded
+    
     if (game.foldedCount === game.playerCount-1){
+        // End game early if everyone else has folded
         console.log('end game early')
         endGame(earlyEnd=true);
-    } else if (!player.folded){ // Let player act if player hasn't folded
-        //console.log('Playing one turn', player.container.getAttribute('id'))
+    } else if (!player){
+        // Proceed to end game if at end of round
+        document.querySelector('.area.common').classList.add('playing');
+        nextStep();
+        return;
+    } else if (!player.folded){ 
+        // Let player act if player hasn't folded
         player.container.classList.add('playing');
         let playerBetBtn = player.btns[1];
         let playerFoldBtn = player.btns[2];
@@ -642,10 +646,11 @@ function oneRound(){
     window.dispatchEvent(playEvent)
 }
 
+// global startRoundEvent to start a new round
+var startRoundEvent = new CustomEvent('startRound') 
+
 //* Main(): start game
 function main(){
-    // global startRoundEvent to start a new round
-    var startRoundEvent = new CustomEvent('startRound') 
     window.dispatchEvent(startRoundEvent)
 }
 
