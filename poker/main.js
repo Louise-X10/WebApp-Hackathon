@@ -440,3 +440,5 @@ var startEvent = new CustomEvent('startRound')
 function main(){
     window.dispatchEvent(startEvent)
 }
+
+main();

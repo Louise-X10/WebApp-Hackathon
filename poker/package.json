@@ -1,0 +1,16 @@
+{
+  "name": "poker-server",
+  "version": "1.0.0",
+  "description": "This is a server for the poker game.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Louise",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
