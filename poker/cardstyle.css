@@ -2,6 +2,9 @@
     width: 1.5in;
 }
 
+.area {
+    margin: 10px;
+}
 .area.common, .area.player {
     position: relative; /*changing to absolute will overlay areas*/
     width: 100%;
@@ -37,7 +40,7 @@
     transform-style: preserve-3d;
     transition: transform 1s ease;
     display: inline-block;
-    margin: 0px 5px 0px 5px;
+    margin: 5px;
 }
 
 .flip {

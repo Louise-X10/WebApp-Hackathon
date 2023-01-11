@@ -349,7 +349,7 @@ function selectTokens(event){
     token.classList.add("selected");
 }
 const tokens = document.querySelectorAll('.table.tokens img');
-tokens.forEach(token => token.addEventListener('click', () => token.classList.add('selected')))
+tokens.forEach(token => token.addEventListener('click', () => token.classList.toggle('selected')))
 
 // Click on any player card on the table to flip it
 allCards = document.querySelectorAll('.card[id^=player]');
