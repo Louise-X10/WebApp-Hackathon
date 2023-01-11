@@ -14,24 +14,27 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
 
 ## Poker (In progress)
 - Completed 
-  - Card flips
-  - Table Setup
-  - Token Movement
-  - Evaluate poker hand ranking
-  - Animate Token Movement
-  - Two-player: take turns 
-  - Two-player: Setup server
-  - Two-player: Compare evaluations and declare winner
-  - Two-player: Move tokens to winner
-  - Two-player: fold mechanism
-  - Two-player: end game early whenever all other players folded
+  - Single-player:
+    - Card flips
+    - Table Setup
+    - Token Movement
+    - Evaluate poker hand ranking
+    - Animate Token Movement
+  - Two-player:
+    - Take turns acting in one round
+    - Setup server
+    - Compare evaluations and declare winner
+    - Move tokens to winner
+    - Fold mechanism
+    - End game early whenever all other players folded
+    - Automatic flip cards back after player action (make bet or fold)
 - Woking on
-  - automatic flip cards after make bet
+  - Two-player:
+    - Take alternate turns starting (or play two turns in each round)
 - To be completed
-  - Two-player: alternate turns
-  - initiate new game
   - Two-player: Split tokens evenly for ties
   - Refine multiple token movement (animate different target positions), adjust delay
   - Reorganize token method
   - Multiplayer: big bind, small bind
   - Online multi-user version with Socket.io
+  - Initiate new game after game ends
