@@ -62,6 +62,7 @@ class Deck {
         this.deck = [];
         this.reset();
         this.shuffle();
+        this.winner = null;
     }
 
     reset() {
@@ -104,8 +105,11 @@ class Player {
         this.money = 0;
         this.tokens = {}; // dictionary {value : count}
 
-        this.handCards = [];
+        this.handCards = []; // in ascending order after evaluate
         this.handName = '';
+        this.handRank = null;
+        this.rankCards = [];
+        this.highCards = [];
         this.setTokens();
     }
 
@@ -150,6 +154,21 @@ class Player {
         }
     }
     
+    // move given token to player table
+    collectToken(token){
+        let cloneToken = token.cloneNode();
+        cloneToken.classList.add('hidden');
+        let xi = token.getBoundingClientRect()['x'];
+        let yi = token.getBoundingClientRect()['y'];
+        this.tokentable.appendChild(cloneToken);
+        let xf = cloneToken.getBoundingClientRect()['x'];
+        let yf = cloneToken.getBoundingClientRect()['y'];
+        this.tokentable.removeChild(cloneToken);
+        token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
+        setTimeout(()=>{this.tokentable.appendChild(token);
+            token.style.transform = '';}, 1000);
+    }
+
     // move given token to common table
     moveToken(token){
         token.classList.remove('selected');
@@ -172,8 +191,52 @@ class Player {
     }
 }
 
+const commonTable = document.querySelector('.common .table.cards');
+const commonTokenTable = document.querySelector('.common .table.tokens');
+const playerContainer1 = document.querySelector('#player1');
+const playerContainer2 = document.querySelector('#player2');
+
+const player1 = new Player(playerContainer1, commonTokenTable);
+const player2 = new Player(playerContainer2, commonTokenTable);
+
+const nextBtn = document.querySelector('button.next');
+const betBtn1 = document.querySelector('#player1 button.bet');
+const betBtn2 = document.querySelector('#player2 button.bet');
+player1.setButtons(nextBtn, betBtn1);
+player2.setButtons(nextBtn, betBtn2);
+
+const deck = new Deck();
+const card1 = deck.deal('card1', commonTable);
+const card2 = deck.deal('card2', commonTable);
+const card3 = deck.deal('card3', commonTable);
+const card4 = deck.deal('card4', commonTable);
+const card5 = deck.deal('card5', commonTable);
+const commonCards = [card1, card2, card3, card4, card5];
+
+const player1card1 = deck.deal('player1card1', player1.playtable);
+const player1card2 = deck.deal('player1card2', player1.playtable);
+const player2card1 = deck.deal('player2card1', player2.playtable);
+const player2card2 = deck.deal('player2card2', player2.playtable);
+
+player1.setCards(player1card1, player1card2);
+player2.setCards(player2card1, player2card2);
+
+
+// Click to select and highlight tokens
+function selectTokens(event){
+    let token = event.target;
+    token.classList.add("selected");
+}
+const tokens = document.querySelectorAll('.table.tokens img');
+tokens.forEach(token => token.addEventListener('click', () => token.classList.toggle('selected')))
+
+// Click on any player card on the table to flip it
+allCards = document.querySelectorAll('.card[id^=player]');
+allCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('flip')));
+
+
 // Only checks for straight, no flush, in given set of cards
-// Returns list of straight cards, or [] if none
+// Returns list of straight cards (ascending order), or [] if none
 function returnStraight(cards){
     // Don't need to check for straight if not enough 5 cards
     if (cards.length < 5){
@@ -228,7 +291,7 @@ function returnStraight(cards){
 
 // Set player.hand and player.handName
 function evaluateHand(player, cardsGiven){
-    // sort cards in asending number order
+    // sort cards in ascending number order
     var cards = cardsGiven.map(x=>x);
     cards.sort((card1, card2)=> card1.number - card2.number);
 
@@ -261,28 +324,36 @@ function evaluateHand(player, cardsGiven){
         var handCards = straightFlushCards;
         var handBool = false;
         var handName = "Straight Flush";
+        player.handRank = 1;
     } else if (numberFreqValues.includes(4)){
         var handBool = numbers.map((num) => numberFreq[num]===4);
         var handName = "Four of a kind";
+        player.handRank = 2;
     } else if (numberFreqValues.includes(3) && numberFreqValues.includes(2)){
         var handBool = numbers.map((num) => numberFreq[num]===3 || numberFreq[num]===2);
         var handName = "Full House";
+        player.handRank = 3;
     } else if (isFlush){
         var handBool = suits.map((num) => suitFreq[num]>=5);
         var handName = "Flush";
+        player.handRank = 4;
     } else if (isStraight){
         var handCards = straightCards;
         var handBool = false;
         var handName = "Straight";
+        player.handRank = 5;
     } else if (numberFreqValues.includes(3)){
         var handBool = numbers.map((num) => numberFreq[num]===3);
         var handName = "Three of a kind";
+        player.handRank = 6;
     } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
         var handBool = numbers.map((num) => numberFreq[num]===2);
         var handName = "Two pairs";
+        player.handRank = 7;
     } else if (numberFreqValues.includes(2)){
         var handBool = numbers.map((num) => numberFreq[num]===2);
         var handName = "One pair";
+        player.handRank = 8;
     } else {
         // if no hand at all, select highest valued cards, i.e. remove two lowest
         cards.shift();
@@ -297,64 +368,87 @@ function evaluateHand(player, cardsGiven){
         var handCards = cards.filter((value, index)=>handBool[index]);
     }
     
-    // Select remaining highest cards
+    // Select highest cards from remaining cards (ascending order)
     if (handCards.length < 5){
         let remainingCards = cards.filter(card => !handCards.includes(card));
         let remainingLength = 5 - handCards.length;
+        player.rankCards = handCards.map(x=>x);
+        player.highCards = [];
         while(remainingLength>0){
             let maxCard = remainingCards.pop(); // card with max number is at the end
             handCards.push(maxCard);
+            player.highCards.push(maxCard);
             remainingLength--;
         }
     }
-
+    
+    // handCards.sort((card1, card2)=> card1.number - card2.number); // Sort in ascending order
     player.handCards = handCards;
     player.handName = handName;
 }
 
-const commonTable = document.querySelector('.common .table.cards');
-const commonTokenTable = document.querySelector('.common .table.tokens');
-const playerContainer1 = document.querySelector('#player1');
-const playerContainer2 = document.querySelector('#player2');
-
-const player1 = new Player(playerContainer1, commonTokenTable);
-const player2 = new Player(playerContainer2, commonTokenTable);
-
-const nextBtn = document.querySelector('button.next');
-const betBtn1 = document.querySelector('#player1 button.bet');
-const betBtn2 = document.querySelector('#player2 button.bet');
-player1.setButtons(nextBtn, betBtn1);
-player2.setButtons(nextBtn, betBtn2);
-
-const deck = new Deck();
-const card1 = deck.deal('card1', commonTable);
-const card2 = deck.deal('card2', commonTable);
-const card3 = deck.deal('card3', commonTable);
-const card4 = deck.deal('card4', commonTable);
-const card5 = deck.deal('card5', commonTable);
-const commonCards = [card1, card2, card3, card4, card5];
-
-const player1card1 = deck.deal('player1card1', player1.playtable);
-const player1card2 = deck.deal('player1card2', player1.playtable);
-const player2card1 = deck.deal('player2card1', player2.playtable);
-const player2card2 = deck.deal('player2card2', player2.playtable);
-
-player1.setCards(player1card1, player1card2);
-player2.setCards(player2card1, player2card2);
-
-
-// Click to select and highlight tokens
-function selectTokens(event){
-    let token = event.target;
-    token.classList.add("selected");
+function evaluateHighCards(player1Cards, player2Cards){
+    while(player1Cards.length>0){
+        player1card = player1Cards.pop();
+        player2card = player2Cards.pop();
+        if (player1card.number === player2card.number){
+            continue
+        } else if (player1card.number > player2card.number){
+            return player1;
+        } else if (player1card.number < player2card.number){
+            return player2;
+        }
+    }
+    return null; // completely same cards
 }
-const tokens = document.querySelectorAll('.table.tokens img');
-tokens.forEach(token => token.addEventListener('click', () => token.classList.toggle('selected')))
 
-// Click on any player card on the table to flip it
-allCards = document.querySelectorAll('.card[id^=player]');
-allCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('flip')));
+// Return [winner, highCard]
+// highCard=true if rank name are the same and need to compare high cards
+// winner=null if both players have same cards
+function evaluateWinner(player1, player2){
+    let highCard = false;
+    if (player1.handRank < player2.handRank){
+        return [player1, highCard];
+    } else if (player1.handRank > player2.handRank){
+        return [player2, highCard];
+    } else {
+        highCard = true;
+        // sorted in ascending order
+        let player1Cards = player1.rankCards.map(x=>x);
+        let player2Cards = player2.rankCards.map(x=>x);
+        var winner = evaluateHighCards(player1Cards, player2Cards);
+        if (winner!==null){
+            return [winner, highCard];
+        }
+        player1Cards = player1.highCards.map(x=>x);
+        player2Cards = player2.highCards.map(x=>x);
+        winner = evaluateHighCards(player1Cards, player2Cards);
+        return [winner, highCard];
+    }
+}
 
+//! In progress
+function splitTokens(tokenSet){
+    tokenSet1 = [];
+    tokenSet2 = [];
+
+    function getTokenValue(token){
+        let val = token.className.split(' ')[1];
+        val = val.slice(1,val.length);
+        return Number(val);
+    }
+
+    tokenSet = Array.from(tokenSet); // convert Nodelist to array
+    //tokenValues = tokenSet.map(getTokenValue);
+    let sum = tokenSet.reduce((sumValue, token)=> sumValue+getTokenValue(token),0)
+    let subSum = Math.ceil(sum / 2); // for 2 players, doesn't matter
+    while(Math.sum(tokenSet1) < subSum){
+        tokenSet1.push()
+    }
+
+
+    return [tokenSet1, tokenSet2]
+}
 // After pressing next button, flip common cards and display eval message, then end this round (startRound=true)
 function nextAction (){
     if (!card1.flipped){
@@ -368,15 +462,37 @@ function nextAction (){
     } else if (!card5.flipped){
         card5.flip();
         nextBtn.textContent = 'Reveal Hand';
-        nextRound(); // don't start new round because don't need to bet anymore
-    } else {
+        nextRound(); // setup listener but don't start new round because don't need to bet anymore
+    } else if (nextBtn.textContent === 'Reveal Hand') {
         evaluateHand(player1, commonCards.concat(player1.cards));
         evaluateHand(player2, commonCards.concat(player2.cards));
-        alert("Player1: " + player1.handName + "; Player2: " + player2.handName);
-        return;
+        var [winner, highCard] = evaluateWinner(player1, player2);
+        if (winner===null){
+            var winnerName = "tie";
+        } else {
+            var winnerName = winner.container.getAttribute('id');
+        }
+        let evalMsg = "Player1: " + player1.handName + "; Player2: " + player2.handName + "\n Winner is " + winnerName;
+        if (highCard){
+            evalMsg += " after comparing highest cards"
+        }
+        deck.winner = winner;
+        alert(evalMsg);
+        nextBtn.textContent = 'Collect tokens';
+        nextRound(); // setup listener but don't start new round
+    } else if (nextBtn.textContent === 'Collect tokens') {
+        let commonTokens = commonTokenTable.querySelectorAll('.token');
+        if (deck.winner!==null){
+            commonTokens.forEach((token)=>deck.winner.collectToken(token));
+        } else {
+            /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
+            tokenSet1.forEach((token)=>player1.collectToken(token));
+            tokenSet2.forEach((token)=>player2.collectToken(token)); */
+        }
+        
     }
-   
 }
+
 // Make next button clickable once every round
 function nextRound() {
     nextBtn.addEventListener('click', nextAction, {once: true});
