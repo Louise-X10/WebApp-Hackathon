@@ -23,10 +23,16 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
   - Two-player: Setup server
   - Two-player: Compare evaluations and declare winner
   - Two-player: Move tokens to winner
+  - Two-player: fold mechanism, win early
 - Woking on
-  - Two-player: Split tokens evenly for ties
+  - Two-player: fold mechanism, win early
+  - automatic flip cards after make bet
+  - check for early end condition after each player action
+  - initiate new game
 - To be completed
-  - Multiplayer: big bind, small bind
-  - Multiplayer: match betting
+  - Two-player: alternate turns
+  - Two-player: Split tokens evenly for ties
   - Refine multiple token movement (animate different target positions), adjust delay
   - Reorganize token method
+  - Multiplayer: big bind, small bind
+  - Online multi-user version with Socket.io

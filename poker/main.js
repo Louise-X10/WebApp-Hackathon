@@ -7,7 +7,6 @@ class Card {
         this.value = value;
         this.number = value;
         this.location = cardPath + suit + '_' + value + '.svg';
-        this.flipped = false;
         this.container = null;
 
         switch(this.number){
@@ -53,7 +52,10 @@ class Card {
 
     flip () {
         this.container.classList.toggle('flip');
-        this.flipped = !this.flipped;
+    }
+
+    isFlipped(){
+        return this.container.classList.contains('flip');
     }
 }
 
@@ -62,7 +64,6 @@ class Deck {
         this.deck = [];
         this.reset();
         this.shuffle();
-        this.winner = null;
     }
 
     reset() {
@@ -98,9 +99,10 @@ class Player {
         this.playtable = tables[0];
         this.tokentable = tables[1];
         this.commontable = common;
+        this.folded = false;
 
         this.cards = [null, null]; // [card1, card2]
-        this.btns = [null, null]; // [nextBtn, betBtn]
+        this.btns = [null, null, null]; // [nextBtn, betBtn, foldBtn]
 
         this.money = 0;
         this.tokens = {}; // dictionary {value : count}
@@ -117,8 +119,8 @@ class Player {
         this.cards = [card1, card2];
     }
 
-    setButtons(nextBtn, betBtn){
-        this.btns = [nextBtn, betBtn];
+    setButtons(nextBtn, betBtn, foldBtn){
+        this.btns = [nextBtn, betBtn, foldBtn];
     }
 
     // Set tokens to totalvalue
@@ -189,8 +191,35 @@ class Player {
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens.forEach((token)=>this.moveToken(token));
     }
+
+    makeFold(){
+        this.folded = true;
+        // Flip back any flipped cards
+        this.cards.forEach((card)=>{
+            if (card.isFlipped()){card.flip()};
+        })
+        // Unselect any selected tokens
+        let selectedTokens = this.tokentable.querySelectorAll('.token.selected');
+        selectedTokens.forEach((token)=> token.classList.remove('selected'));
+        // Set folded status to true
+        this.folded = true;
+        // Increment number of players folded in the game
+        game.foldedCount ++;
+        // Remove token and card listeners
+        let tokens = this.tokentable.querySelectorAll('.token');
+        tokens.forEach(token=>token.removeEventListener('click', selectListener))
+        let cards = this.container.querySelectorAll('.card');
+        cards.forEach(container => container.removeEventListener('click', flipListener));
+    }
 }
 
+class Game {
+    constructor(){
+        this.winner = null;
+        this.foldedCount = 0;
+        this.playerCount = 2;
+    }
+}
 const commonTable = document.querySelector('.common .table.cards');
 const commonTokenTable = document.querySelector('.common .table.tokens');
 const playerContainer1 = document.querySelector('#player1');
@@ -198,12 +227,15 @@ const playerContainer2 = document.querySelector('#player2');
 
 const player1 = new Player(playerContainer1, commonTokenTable);
 const player2 = new Player(playerContainer2, commonTokenTable);
+const players = [player1, player2];
 
 const nextBtn = document.querySelector('button.next');
 const betBtn1 = document.querySelector('#player1 button.bet');
 const betBtn2 = document.querySelector('#player2 button.bet');
-player1.setButtons(nextBtn, betBtn1);
-player2.setButtons(nextBtn, betBtn2);
+const foldBtn1 = document.querySelector('#player1 button.fold');
+const foldBtn2 = document.querySelector('#player2 button.fold');
+player1.setButtons(nextBtn, betBtn1, foldBtn1);
+player2.setButtons(nextBtn, betBtn2, foldBtn2);
 
 const deck = new Deck();
 const card1 = deck.deal('card1', commonTable);
@@ -217,76 +249,54 @@ const player1card1 = deck.deal('player1card1', player1.playtable);
 const player1card2 = deck.deal('player1card2', player1.playtable);
 const player2card1 = deck.deal('player2card1', player2.playtable);
 const player2card2 = deck.deal('player2card2', player2.playtable);
+//const allCards = commonCards + [player1card1, player1card2, player2card1, player2card2]
 
 player1.setCards(player1card1, player1card2);
 player2.setCards(player2card1, player2card2);
 
+const game = new Game();
 
+//* Set up motion for tokens
 // Click to select and highlight tokens
-function selectTokens(event){
+const tokens = document.querySelectorAll('.table.tokens img');
+tokens.forEach(token => token.addEventListener('click', selectListener))
+function selectListener(event){
     let token = event.target;
     token.classList.add("selected");
 }
-const tokens = document.querySelectorAll('.table.tokens img');
-tokens.forEach(token => token.addEventListener('click', () => token.classList.toggle('selected')))
 
+//* Set up motion for cards
 // Click on any player card on the table to flip it
 allCards = document.querySelectorAll('.card[id^=player]');
-allCards.forEach(card => card.addEventListener('click', () => card.classList.toggle('flip')));
+allCards.forEach(container => container.addEventListener('click', flipListener));
+function flipListener(event) {
+    event.currentTarget.classList.toggle('flip');
+}
 
-
-// Only checks for straight, no flush, in given set of cards
-// Returns list of straight cards (ascending order), or [] if none
-function returnStraight(cards){
-    // Don't need to check for straight if not enough 5 cards
-    if (cards.length < 5){
-        return [];
-    }
-
-    let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
-    let numbersNoDuplicate = new Set(numbersCloneDuplicates);
-    numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
-
-    // ace also counts as a 1
-    if (numbersClone.includes(14)){
-        numbersClone.unshift(1);
-    }
-
-    // Search for range of straight, i.e. continuous numbers
-    let startIndex = 0;
-    let endIndex = 1;
-    while (endIndex < numbersClone.length){
-        // if continuous, increment endIndex
-        if (numbersClone[endIndex]-numbersClone[endIndex-1] === 1){
-            endIndex++;
-        // if not continuous but already have at least 5 in straight, break
-        } else if (endIndex-startIndex>=5){
-            break;
-        // if not continuous, reset startIndex and endIndex and keep looking
-        } else {
-            startIndex = endIndex;
-            endIndex = startIndex+1;
-        }
-    }
-
-    let straightNumbers = numbersClone.slice(startIndex,endIndex);
-    // If longer than 5 straight, remove the smaller numbers
-    while (straightNumbers.length > 5){
-        straightNumbers.shift();
-    }
-    // If have straight, return straight cards
-    if(straightNumbers.length === 5){
-        // pick first card with each num
-        // if num == 1, convert it to 14 
-        if (straightNumbers.includes(1)){
-            straightNumbers[0] = 14; // replace first number as 14 in straightNumbers
-        }
-        let straightCards = straightNumbers.map((num)=> cards[numbersCloneDuplicates.indexOf(num)]);
-        return straightCards;
+//* Return winner of current round
+// Return [winner, highCard]
+// highCard=true if rank name are the same and need to compare high cards
+// winner=null if both players have same cards
+function evaluateWinner(player1, player2){
+    let highCard = false;
+    if (player1.handRank < player2.handRank){
+        return [player1, highCard];
+    } else if (player1.handRank > player2.handRank){
+        return [player2, highCard];
     } else {
-        return [];
+        highCard = true;
+        // sorted in ascending order
+        let player1Cards = player1.rankCards.map(x=>x);
+        let player2Cards = player2.rankCards.map(x=>x);
+        var winner = evaluateHighCards(player1Cards, player2Cards);
+        if (winner!==null){
+            return [winner, highCard];
+        }
+        player1Cards = player1.highCards.map(x=>x);
+        player2Cards = player2.highCards.map(x=>x);
+        winner = evaluateHighCards(player1Cards, player2Cards);
+        return [winner, highCard];
     }
-    
 }
 
 // Set player.hand and player.handName
@@ -387,6 +397,61 @@ function evaluateHand(player, cardsGiven){
     player.handName = handName;
 }
 
+// Only checks for straight, no flush, in given set of cards
+// Returns list of straight cards (ascending order), or [] if none
+function returnStraight(cards){
+    // Don't need to check for straight if not enough 5 cards
+    if (cards.length < 5){
+        return [];
+    }
+
+    let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
+    let numbersNoDuplicate = new Set(numbersCloneDuplicates);
+    numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
+
+    // ace also counts as a 1
+    if (numbersClone.includes(14)){
+        numbersClone.unshift(1);
+    }
+
+    // Search for range of straight, i.e. continuous numbers
+    let startIndex = 0;
+    let endIndex = 1;
+    while (endIndex < numbersClone.length){
+        // if continuous, increment endIndex
+        if (numbersClone[endIndex]-numbersClone[endIndex-1] === 1){
+            endIndex++;
+        // if not continuous but already have at least 5 in straight, break
+        } else if (endIndex-startIndex>=5){
+            break;
+        // if not continuous, reset startIndex and endIndex and keep looking
+        } else {
+            startIndex = endIndex;
+            endIndex = startIndex+1;
+        }
+    }
+
+    let straightNumbers = numbersClone.slice(startIndex,endIndex);
+    // If longer than 5 straight, remove the smaller numbers
+    while (straightNumbers.length > 5){
+        straightNumbers.shift();
+    }
+    // If have straight, return straight cards
+    if(straightNumbers.length === 5){
+        // pick first card with each num
+        // if num == 1, convert it to 14 
+        if (straightNumbers.includes(1)){
+            straightNumbers[0] = 14; // replace first number as 14 in straightNumbers
+        }
+        let straightCards = straightNumbers.map((num)=> cards[numbersCloneDuplicates.indexOf(num)]);
+        return straightCards;
+    } else {
+        return [];
+    }
+    
+}
+
+// Compare list of cards by number until list exhausts
 function evaluateHighCards(player1Cards, player2Cards){
     while(player1Cards.length>0){
         player1card = player1Cards.pop();
@@ -402,32 +467,84 @@ function evaluateHighCards(player1Cards, player2Cards){
     return null; // completely same cards
 }
 
-// Return [winner, highCard]
-// highCard=true if rank name are the same and need to compare high cards
-// winner=null if both players have same cards
-function evaluateWinner(player1, player2){
-    let highCard = false;
-    if (player1.handRank < player2.handRank){
-        return [player1, highCard];
-    } else if (player1.handRank > player2.handRank){
-        return [player2, highCard];
-    } else {
-        highCard = true;
-        // sorted in ascending order
-        let player1Cards = player1.rankCards.map(x=>x);
-        let player2Cards = player2.rankCards.map(x=>x);
-        var winner = evaluateHighCards(player1Cards, player2Cards);
-        if (winner!==null){
-            return [winner, highCard];
+//* Set up nextBtn listener and proceed to next step
+function nextStep() {
+    // Make next button clickable once every round
+    nextBtn.addEventListener('click', nextAction, {once: true});
+}
+
+// After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
+function nextAction (){
+    if(nextBtn.textContent === 'Next Step'){
+        if (!card1.flipped){
+            card1.flip();
+            card2.flip();
+            card3.flip();
+            window.dispatchEvent(startRoundEvent);
+        } else if (!card4.flipped){
+            card4.flip();
+            window.dispatchEvent(startRoundEvent);
+        } else if (!card5.flipped){
+            card5.flip();
+            nextBtn.textContent = 'Reveal Hand';
+            nextStep(); // setup listener but don't start new round because don't need to bet anymore
         }
-        player1Cards = player1.highCards.map(x=>x);
-        player2Cards = player2.highCards.map(x=>x);
-        winner = evaluateHighCards(player1Cards, player2Cards);
-        return [winner, highCard];
+    } else {
+        endGame();
     }
 }
 
-//! In progress
+function endGame(earlyEnd=false){
+    if (nextBtn.textContent === 'Collect tokens') {
+        // Last step: collect tokens
+        let commonTokens = commonTokenTable.querySelectorAll('.token');
+        if (game.winner!==null){
+            commonTokens.forEach((token)=>game.winner.collectToken(token));
+        } else {
+            /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
+            tokenSet1.forEach((token)=>player1.collectToken(token));
+            tokenSet2.forEach((token)=>player2.collectToken(token)); */
+        }
+        nextBtn.textContent === 'Next Step';
+    } else if (earlyEnd){
+        var winner = players.filter(player => !player.folded)[0]
+        var winnerName = winner.container.getAttribute('id');
+        game.winner = winner;
+        let evalMsg = "Winner is " + winnerName;
+        nextBtn.textContent = 'Collect tokens';
+        let msg = document.querySelector('#evalMsg');
+        msg.textContent = evalMsg;
+        nextStep(); // setup listener but don't start new round
+        /* // If use alert, need setTimeOut to make async so that cards can start flipping back even while message is not crossed out
+        alert(evalMsg);
+        setTimeout(()=>{
+            alert(evalMsg);
+            nextStep(); // setup listener but don't start new round
+        }, 500) */
+        
+    } else if (nextBtn.textContent === 'Reveal Hand') {
+        // If normal end, reveal winner and hands, setup collect tokens
+        evaluateHand(player1, commonCards.concat(player1.cards));
+        evaluateHand(player2, commonCards.concat(player2.cards));
+        var [winner, highCard] = evaluateWinner(player1, player2);
+        if (winner===null){
+            var winnerName = "tie";
+        } else {
+            var winnerName = winner.container.getAttribute('id');
+        }
+        let evalMsg = "Player1: " + player1.handName + "; Player2: " + player2.handName + "\n Winner is " + winnerName;
+        if (highCard){
+            evalMsg += " after comparing highest cards"
+        }
+        game.winner = winner;
+        let msg = document.querySelector('#evalMsg');
+        msg.textContent = evalMsg;
+        nextBtn.textContent = 'Collect tokens';
+        nextStep(); // setup listener but don't start new round
+    } 
+}
+
+//TODO: In progress
 function splitTokens(tokenSet){
     tokenSet1 = [];
     tokenSet2 = [];
@@ -446,78 +563,20 @@ function splitTokens(tokenSet){
         tokenSet1.push()
     }
 
-
     return [tokenSet1, tokenSet2]
 }
-// After pressing next button, flip common cards and display eval message, then end this round (startRound=true)
-function nextAction (){
-    if (!card1.flipped){
-        card1.flip();
-        card2.flip();
-        card3.flip();
-        window.dispatchEvent(startEvent);
-    } else if (!card4.flipped){
-        card4.flip();
-        window.dispatchEvent(startEvent);
-    } else if (!card5.flipped){
-        card5.flip();
-        nextBtn.textContent = 'Reveal Hand';
-        nextRound(); // setup listener but don't start new round because don't need to bet anymore
-    } else if (nextBtn.textContent === 'Reveal Hand') {
-        evaluateHand(player1, commonCards.concat(player1.cards));
-        evaluateHand(player2, commonCards.concat(player2.cards));
-        var [winner, highCard] = evaluateWinner(player1, player2);
-        if (winner===null){
-            var winnerName = "tie";
-        } else {
-            var winnerName = winner.container.getAttribute('id');
-        }
-        let evalMsg = "Player1: " + player1.handName + "; Player2: " + player2.handName + "\n Winner is " + winnerName;
-        if (highCard){
-            evalMsg += " after comparing highest cards"
-        }
-        deck.winner = winner;
-        alert(evalMsg);
-        nextBtn.textContent = 'Collect tokens';
-        nextRound(); // setup listener but don't start new round
-    } else if (nextBtn.textContent === 'Collect tokens') {
-        let commonTokens = commonTokenTable.querySelectorAll('.token');
-        if (deck.winner!==null){
-            commonTokens.forEach((token)=>deck.winner.collectToken(token));
-        } else {
-            /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
-            tokenSet1.forEach((token)=>player1.collectToken(token));
-            tokenSet2.forEach((token)=>player2.collectToken(token)); */
-        }
-        
-    }
-}
 
-// Make next button clickable once every round
-function nextRound() {
-    nextBtn.addEventListener('click', nextAction, {once: true});
-}
-
+//* Set up player action listeners and proceed to next player
 // During each player's turn, set up bet button listener
 // Once bet button is pressed once, update currrent player to next player and call playerTurn
 // Once all player's played, update current player to null, then run next button and end this round 
 function playerTurn(player){
-    
     if (!player){
-        nextRound();
+        nextStep();
         return;
     }
-
-    //console.log('Playing one turn', player.container.getAttribute('id'))
-    player.container.classList.add('playing');
-    let playerBetBtn = player.btns[1];
-
-    // Set up bet button listener for one click only
-    function betAction(){
-        
-        player.makeBet();
-        playerBetBtn.removeEventListener('click', betAction);
-        player.container.classList.remove('playing');
+    // Update current player and set up to let next player act
+    function nextPlayerTurn(player){
         switch(player){
             case player1:
                 console.log("Currently player1, next round player 2");
@@ -527,15 +586,54 @@ function playerTurn(player){
                 console.log("Currently player2, next round next button");
                 CurrentPlayer =  null;
         }
-        // Define a new play event since currentplayer is updated
-        console.log('dispatch play event')
-        let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer})
+        console.log('dispatch play event');
+        let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
         window.dispatchEvent(playEvent);
     }
-    playerBetBtn.addEventListener('click', betAction, {once: true});
-    
+
+    // End game early if everyone else has folded
+    if (game.foldedCount === game.playerCount-1){
+        console.log('end game early')
+        endGame(earlyEnd=true);
+    } else if (!player.folded){ // Let player act if player hasn't folded
+        //console.log('Playing one turn', player.container.getAttribute('id'))
+        player.container.classList.add('playing');
+        let playerBetBtn = player.btns[1];
+        let playerFoldBtn = player.btns[2];
+
+        // Set up bet button listener for one click only
+        function betAction(){
+            player.makeBet();
+            playerBetBtn.removeEventListener('click', betAction);
+            playerFoldBtn.removeEventListener('click', foldAction);
+            player.container.classList.remove('playing');
+            nextPlayerTurn(player)
+        }
+
+        function foldAction(){
+            player.makeFold();
+            console.log('player has folded')
+            playerBetBtn.removeEventListener('click', betAction);
+            playerFoldBtn.removeEventListener('click', foldAction);
+            player.container.classList.remove('playing');
+            console.log('let next player take action')
+            nextPlayerTurn(player)
+        }
+        // Only one listener works
+        playerBetBtn.addEventListener('click', betAction, {once: true});
+        playerFoldBtn.addEventListener('click', foldAction, {once: true});
+    } else {
+        // If player folded, just proceed to next player
+        nextPlayerTurn(player);
+    }
 }
 
+//* Set up global listeners to alternate rounds
+// when playOnce event is fired, play a new turn with current player then update
+window.addEventListener('playOnce', (e) => {playerTurn(e.detail);})
+
+// when startRound event is fired, a new round will initiate
+window.addEventListener('startRound', (e)=>{oneRound();});
 // Run each current player's turn
 // If current player is null, run next button and end this round
 function oneRound(){
@@ -544,17 +642,11 @@ function oneRound(){
     window.dispatchEvent(playEvent)
 }
 
-// when playOnce event is fired, play a new turn with current player then update
-window.addEventListener('playOnce', (e) => {playerTurn(e.detail);})
-// when startRound event is fired, a new round will initiate
-window.addEventListener('startRound', (e)=>{oneRound();});
-
-// global startEvent to start a new round
-var startEvent = new CustomEvent('startRound')
-
-// Main(): start game
+//* Main(): start game
 function main(){
-    window.dispatchEvent(startEvent)
+    // global startRoundEvent to start a new round
+    var startRoundEvent = new CustomEvent('startRound') 
+    window.dispatchEvent(startRoundEvent)
 }
 
 main();
