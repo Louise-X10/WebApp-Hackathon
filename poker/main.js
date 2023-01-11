@@ -190,6 +190,10 @@ class Player {
     makeBet() {
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens.forEach((token)=>this.moveToken(token));
+        // Flip back any flipped cards
+        this.cards.forEach((card)=>{
+            if (card.isFlipped()){card.flip()};
+        })
     }
 
     makeFold(){
@@ -220,6 +224,7 @@ class Game {
         this.playerCount = 2;
     }
 }
+
 const commonTable = document.querySelector('.common .table.cards');
 const commonTokenTable = document.querySelector('.common .table.tokens');
 const playerContainer1 = document.querySelector('#player1');
@@ -249,7 +254,6 @@ const player1card1 = deck.deal('player1card1', player1.playtable);
 const player1card2 = deck.deal('player1card2', player1.playtable);
 const player2card1 = deck.deal('player2card1', player2.playtable);
 const player2card2 = deck.deal('player2card2', player2.playtable);
-//const allCards = commonCards + [player1card1, player1card2, player2card1, player2card2]
 
 player1.setCards(player1card1, player1card2);
 player2.setCards(player2card1, player2card2);
