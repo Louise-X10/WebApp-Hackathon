@@ -361,21 +361,20 @@ function nextAction (){
         card1.flip();
         card2.flip();
         card3.flip();
+        window.dispatchEvent(startEvent);
     } else if (!card4.flipped){
         card4.flip();
+        window.dispatchEvent(startEvent);
     } else if (!card5.flipped){
         card5.flip();
         nextBtn.textContent = 'Reveal Hand';
+        nextRound(); // don't start new round because don't need to bet anymore
     } else {
         evaluateHand(player1, commonCards.concat(player1.cards));
         evaluateHand(player2, commonCards.concat(player2.cards));
-        alert("Player1: ", player1.handName, "; Player2: ", player2.handName);
+        alert("Player1: " + player1.handName + "; Player2: " + player2.handName);
         return;
     }
-
-   // fire new round
-   console.log("dispatch start event");
-   window.dispatchEvent(startEvent);
    
 }
 // Make next button clickable once every round

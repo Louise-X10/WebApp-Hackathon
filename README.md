@@ -19,8 +19,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
   - Token Movement
   - Evaluate poker hand ranking
   - Animate Token Movement
+  - Two-player: take turns 
 - Woking on
-  - Two-player: Lock player movement after bet and before next round 
+  - Two-player: Setup server
 - To be completed
   - Two-player: Compare evaluations
   - Multiplayer: big bind, small bind
