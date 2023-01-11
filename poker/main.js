@@ -62,25 +62,6 @@ class Deck {
         this.deck = [];
         this.reset();
         this.shuffle();
-        this._currPlayer = null;
-        this._startRound = true;
-    }
-
-    // Whenever this.currPlayer is set, it updates and calls playerTurn on updated currPlayer
-    set currPlayer(newPlayer) {
-        //console.log("Changing", this.currPlayer, newPlayer)
-        this._currPlayer = newPlayer;
-        playerTurn(this._currPlayer);
-        //console.log('After change', this.currPlayer)
-    }
-
-    // Whenever this.startRound is set to true, it calls oneRound;
-    set startRound(bool) {
-        this._startRound = bool;
-        if (bool){
-            console.log('startRound is set to true!')
-            oneRound();
-        }
     }
 
     reset() {
@@ -391,73 +372,72 @@ function nextAction (){
         alert("Player1: ", player1.handName, "; Player2: ", player2.handName);
         return;
     }
-   deck._startRound = true;
-   console.log("after press next button", deck._startRound);
+
    // fire new round
-   window.dispatchEvent(customEvent);
-   console.log("dispatched event");
+   console.log("dispatch start event");
+   window.dispatchEvent(startEvent);
+   
 }
 // Make next button clickable once every round
 function nextRound() {
     nextBtn.addEventListener('click', nextAction, {once: true});
 }
 
-// During each player's turn, set up bet button listener, process this round (startRound=false)
-// Once bet button is pressed once, update currrent player to next player
-// Once all player's played, update current player to null
-// If current player is null, run next button and end this round 
+// During each player's turn, set up bet button listener
+// Once bet button is pressed once, update currrent player to next player and call playerTurn
+// Once all player's played, update current player to null, then run next button and end this round 
 function playerTurn(player){
     
     if (!player){
-        console.log("at next button round ", deck._startRound)
         nextRound();
         return;
     }
-    deck._startRound = false;
-    console.log("player: start = ", deck._startRound)
+
     //console.log('Playing one turn', player.container.getAttribute('id'))
     player.container.classList.add('playing');
     let playerBetBtn = player.btns[1];
 
     // Set up bet button listener for one click only
     function betAction(){
+        
         player.makeBet();
         playerBetBtn.removeEventListener('click', betAction);
         player.container.classList.remove('playing');
         switch(player){
             case player1:
-                //console.log("Currently player1, next round player 2");
-                deck.currPlayer = player2;
+                console.log("Currently player1, next round player 2");
+                CurrentPlayer = player2;
                 break;
             case player2:
-                //console.log("Currently player2, next round next button");
-                deck.currPlayer =  null;
-                break;
+                console.log("Currently player2, next round next button");
+                CurrentPlayer =  null;
         }
+        // Define a new play event since currentplayer is updated
+        console.log('dispatch play event')
+        let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer})
+        window.dispatchEvent(playEvent);
     }
     playerBetBtn.addEventListener('click', betAction, {once: true});
     
 }
 
-//var proxyDeck = new Proxy(deck);
-
 // Run each current player's turn
 // If current player is null, run next button and end this round
-
 function oneRound(){
-    deck._startRound = false;
-    console.log("start round", deck._startRound)
-    deck.currPlayer = player1;
+    CurrentPlayer = player1;
+    let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer})
+    window.dispatchEvent(playEvent)
 }
 
-// listen on value of startRound
-var customEvent = new CustomEvent('startRound', {
-    detail: deck._startRound,
-})
-
+// when playOnce event is fired, play a new turn with current player then update
+window.addEventListener('playOnce', (e) => {playerTurn(e.detail);})
 // when startRound event is fired, a new round will initiate
-window.addEventListener('startRound', (e)=>{
-    console.log(e.detail);
-    deck.currPlayer=player1;
-});
+window.addEventListener('startRound', (e)=>{oneRound();});
 
+// global startEvent to start a new round
+var startEvent = new CustomEvent('startRound')
+
+// Main(): start game
+function main(){
+    window.dispatchEvent(startEvent)
+}
