@@ -98,6 +98,29 @@ class Deck {
 
 }
 
+//* Token functions
+function createToken(value){
+    const token = document.createElement('img');
+    token.src = tokenPath + `token_${value}.svg`
+    token.alt = "token";
+    token.classList.add("token", `_${value}`, "player");
+    return token;
+}
+
+function getTokenValue(token){
+    let val = token.className.split(' ')[1];
+    val = val.slice(1,val.length);
+    return Number(val);
+}
+
+// clear all tokens on common table
+function clearCommonTokens(){
+    let tokens = document.querySelectorAll(`.common .table.tokens img`);
+    for (let token of tokens){
+        commonTable.removeChild(token);
+    }
+}
+
 class Player {
     constructor(container, common){
         this.container = container;
@@ -154,25 +177,22 @@ class Player {
         }
     }
 
-    // Place token of given value into table
+    // (Create and) Place token of given value into table
     addToken(value){
-        const token = document.createElement('img');
-        token.src = tokenPath + `token_${value}.svg`
-        token.alt = "token";
-        token.classList.add("token", `_${value}`, "player");
+        let token = createToken(value);
         this.tokentable.appendChild(token);
         this.money += value;
         this.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1;
     }
 
-    // clear all tokens on table
+    // clear all tokens on player table
     clearTokens(){
         let tokens = document.querySelectorAll(`#player .table.tokens img`);
         for (let token of tokens){
             this.tokentable.removeChild(token);
         }
     }
-    
+
     // move given token to player table
     collectToken(token){
         let cloneToken = token.cloneNode();
@@ -211,7 +231,7 @@ class Player {
         console.log(this)
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
-        let sum = playerTokens.reduce((sumValue, token)=> sumValue+game.getTokenValue(token),0);
+        let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
         console.log('sum', sum)
         if (game.cycle === 1){
             let betSuceed = sum >= game.highestBet || this.firstPlayer === true;
@@ -345,11 +365,7 @@ class Game {
         allCards.forEach(container => container.addEventListener('click', this.flipListener));
     }
 
-    getTokenValue(token){
-        let val = token.className.split(' ')[1];
-        val = val.slice(1,val.length);
-        return Number(val);
-    }
+    
     
     selectListener(event){
         let token = event.target;
@@ -609,9 +625,9 @@ class Game {
             if (this.winner!==null){
                 commonTokens.forEach((token)=>this.winner.collectToken(token));
             } else {
-                /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
-                tokenSet1.forEach((token)=>player1.collectToken(token));
-                tokenSet2.forEach((token)=>player2.collectToken(token)); */
+                subTokenSet = splitTokens(commonTokens);
+                clearCommonTokens();
+                subTokenSet.forEach((value)=> this.player1.addToken(value));
             }
             nextBtn.textContent = 'Next Step';
             // initiate new Game;
@@ -750,19 +766,26 @@ class Game {
     }
 
     //TODO: Split token in progress
-    /* splitTokens(tokenSet){
-        tokenSet1 = [];
-        tokenSet2 = [];
-    
+    // Return array of token values for each pile
+    splitTokens(tokenSet, pile){
         tokenSet = Array.from(tokenSet); // convert Nodelist to array
         let sum = tokenSet.reduce((sumValue, token)=> sumValue+getTokenValue(token),0)
-        let subSum = Math.ceil(sum / 2); // for 2 players, doesn't matter
-        while(Math.sum(tokenSet1) < subSum){
-            tokenSet1.push()
+        // round to nearest multiple of pile
+        let subSum = Math.floor(sum / pile) - Math.floor(sum / pile)% pile; // for pile = 2 players, ceiling doesn't matter
+
+        let subTokenSet = [];
+        while (subSum - Math.sum(tokenSet1) >= 50){
+            subTokenSet.push(50);
         }
-    
-        return [tokenSet1, tokenSet2]
-    } */
+        while (subSum - Math.sum(tokenSet1) >= 10){
+            subTokenSet.push(10);
+        }
+        while (subSum - Math.sum(tokenSet1) >= 5){
+            subTokenSet.push(5);
+        }
+
+        return subTokenSet;
+    }
 }
 
 const commonTable = document.querySelector('.common .table.cards');
