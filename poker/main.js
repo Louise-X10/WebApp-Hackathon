@@ -193,6 +193,7 @@ class Player {
     makeBet() {
         let success = true;
         console.log('!running make bet')
+        console.log(this)
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
         let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
@@ -210,8 +211,7 @@ class Player {
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must match ${mustMatch} to stay in the game!` );
-                success = false;
-                //playerTurn(this); //! how to make player bet again
+                success = false; //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
@@ -226,7 +226,7 @@ class Player {
         this.folded = true;
         // Flip back any flipped cards
         this.cards.forEach((card)=>{
-            if (card.isFlipped()){card.flip()};
+            if (card.container.classList.contains('flip')){card.flip()};
         })
         // Unselect any selected tokens
         let selectedTokens = this.tokentable.querySelectorAll('.token.selected');
@@ -244,13 +244,500 @@ class Player {
 }
 
 class Game {
-    constructor(){
+    constructor(player1, player2){
         this.winner = null;
         this.foldedCount = 0;
         this.playerCount = 2;
         this.cycle = 1;
         this.highestBet = 0;
+        this.player1 = player1;
+        this.player2 = player2;
+        this.players = [this.player1, this.player2]
+        this.CurrentPlayer = this.player1;
     }
+
+    setGame(){
+        this.setupCards();
+        this.setupCardInteraction();
+        this.setupTokenInteraction();
+        this.setupListeners();
+        let startRoundEvent = new CustomEvent('startRound');
+        this.startRoundEvent = startRoundEvent;
+    }
+
+    resetGame(){
+        this.setupCards();
+        this.setupCardInteraction();
+    }
+
+    playGame(){
+        window.dispatchEvent(this.startRoundEvent);
+    }
+
+    // generate and save cards for this game
+    setupCards(){
+        const deck = new Deck();
+        this.card1 = deck.deal('card1', commonTable);
+        this.card2 = deck.deal('card2', commonTable);
+        this.card3 = deck.deal('card3', commonTable);
+        this.card4 = deck.deal('card4', commonTable);
+        this.card5 = deck.deal('card5', commonTable);
+        this.commonCards = [this.card1, this.card2, this.card3, this.card4, this.card5];
+
+        this.player1card1 = deck.deal('player1card1', this.player1.playtable);
+        this.player1card2 = deck.deal('player1card2', this.player1.playtable);
+        this.player2card1 = deck.deal('player2card1', this.player2.playtable);
+        this.player2card2 = deck.deal('player2card2', this.player2.playtable);
+
+        this.player1.setCards(this.player1card1, this.player1card2);
+        this.player2.setCards(this.player2card1, this.player2card2);
+    }
+
+    // setup user interaction with tokens and cards
+    setupTokenInteraction(){
+        //* Set up motion for tokens
+        // Click to select and highlight tokens
+        const tokens = document.querySelectorAll('.table.tokens img');
+        tokens.forEach(token => token.addEventListener('click', selectListener))
+        
+    }
+
+    // setup user interaction with cards
+    setupCardInteraction(){
+        //* Set up motion for cards
+        // Click on any player card on the table to flip it
+        let allCards = document.querySelectorAll('.card[id^=player]');
+        allCards.forEach(container => container.addEventListener('click', flipListener));
+    }
+
+    // setup global listeners to play rounds
+    setupListeners(){
+        // when playOnce event is fired, play a new turn with current player then update
+        window.addEventListener('playOnce', (e) => {this.#playerTurn(e.detail);})
+
+        // when startRound event is fired, a new round will initiate
+        window.addEventListener('startRound', (e)=>{this.#oneRound();});
+    }
+
+    // Run each current player's turn
+    // If current player is null, run next button and end this round
+    #oneRound(){
+        this.CurrentPlayer = this.player1;
+        let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer})
+        window.dispatchEvent(playEvent)
+        console.log('dispatch first play event')
+    }
+
+    // Set player.hand and player.handName
+    #evaluateHand(player, cardsGiven){
+        var cards = cardsGiven.map(x=>x); // sort cards in ascending number order
+        cards.sort((card1, card2)=> card1.number - card2.number);
+
+        let numbers = cards.map(c => c.number);
+        let suits = cards.map(c => c.suit);
+        
+        let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
+        let numberFreqValues = Object.values(numberFreq);
+
+        let suitFreq = suits.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
+        let suitFreqValues = Object.values(suitFreq);
+
+        let isFlush = suitFreqValues.includes(5||6||7); 
+        // Check for straight flush
+        if (!isFlush){
+            var straightFlushCards = [];
+        } else {
+            let handBool = suits.map((num) => suitFreq[num]>=5);
+            let flushCards = cards.filter((value, index)=>handBool[index]);
+            var straightFlushCards = this.#returnStraight(flushCards);
+        }
+        let straightCards = this.#returnStraight(cards);
+        let isStraightFlush = straightFlushCards.length > 0;
+        let isStraight = straightCards.length > 0;
+
+        // handCards: list of cards to form a hand
+        // handName: name of hand
+        // handBool: list of booleans [true, false, ...] used to generate handCards from cards
+        if (isStraightFlush){
+            var handCards = straightFlushCards;
+            var handBool = false;
+            var handName = "Straight Flush";
+            player.handRank = 1;
+        } else if (numberFreqValues.includes(4)){
+            var handBool = numbers.map((num) => numberFreq[num]===4);
+            var handName = "Four of a kind";
+            player.handRank = 2;
+        } else if (numberFreqValues.includes(3) && numberFreqValues.includes(2)){
+            var handBool = numbers.map((num) => numberFreq[num]===3 || numberFreq[num]===2);
+            var handName = "Full House";
+            player.handRank = 3;
+        } else if (isFlush){
+            var handBool = suits.map((num) => suitFreq[num]>=5);
+            var handName = "Flush";
+            player.handRank = 4;
+        } else if (isStraight){
+            var handCards = straightCards;
+            var handBool = false;
+            var handName = "Straight";
+            player.handRank = 5;
+        } else if (numberFreqValues.includes(3)){
+            var handBool = numbers.map((num) => numberFreq[num]===3);
+            var handName = "Three of a kind";
+            player.handRank = 6;
+        } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
+            var handBool = numbers.map((num) => numberFreq[num]===2);
+            var handName = "Two pairs";
+            player.handRank = 7;
+        } else if (numberFreqValues.includes(2)){
+            var handBool = numbers.map((num) => numberFreq[num]===2);
+            var handName = "One pair";
+            player.handRank = 8;
+        } else {
+            // if no hand at all, select highest valued cards, i.e. remove two lowest
+            cards.shift();
+            cards.shift();
+            player.handCards = cards;
+            player.handName = "None";
+            return; 
+        }
+
+        // Select hand cards from handBool if needed
+        if (handBool !== false){
+            var handCards = cards.filter((value, index)=>handBool[index]);
+        }
+        
+        // Select highest cards from remaining cards (ascending order)
+        if (handCards.length < 5){
+            let remainingCards = cards.filter(card => !handCards.includes(card));
+            let remainingLength = 5 - handCards.length;
+            player.rankCards = handCards.map(x=>x);
+            player.highCards = [];
+            while(remainingLength>0){
+                let maxCard = remainingCards.pop(); // card with max number is at the end
+                handCards.push(maxCard);
+                player.highCards.push(maxCard);
+                remainingLength--;
+            }
+        }
+        
+        // handCards.sort((card1, card2)=> card1.number - card2.number); // Sort in ascending order
+        player.handCards = handCards;
+        player.handName = handName;
+    }
+
+    // Only checks for straight, no flush, in given set of cards
+    // Returns list of straight cards (ascending order), or [] if none
+    // Helper for evaluateHand
+    #returnStraight(cards){
+        // Don't need to check for straight if not enough 5 cards
+        if (cards.length < 5){
+            return [];
+        }
+
+        let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
+        let numbersNoDuplicate = new Set(numbersCloneDuplicates);
+        numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
+
+        // ace also counts as a 1
+        if (numbersClone.includes(14)){
+            numbersClone.unshift(1);
+        }
+
+        // Search for range of straight, i.e. continuous numbers
+        let startIndex = 0;
+        let endIndex = 1;
+        while (endIndex < numbersClone.length){
+            // if continuous, increment endIndex
+            if (numbersClone[endIndex]-numbersClone[endIndex-1] === 1){
+                endIndex++;
+            // if not continuous but already have at least 5 in straight, break
+            } else if (endIndex-startIndex>=5){
+                break;
+            // if not continuous, reset startIndex and endIndex and keep looking
+            } else {
+                startIndex = endIndex;
+                endIndex = startIndex+1;
+            }
+        }
+
+        let straightNumbers = numbersClone.slice(startIndex,endIndex);
+        // If longer than 5 straight, remove the smaller numbers
+        while (straightNumbers.length > 5){
+            straightNumbers.shift();
+        }
+        // If have straight, return straight cards
+        if(straightNumbers.length === 5){
+            // pick first card with each num
+            // if num == 1, convert it to 14 
+            if (straightNumbers.includes(1)){
+                straightNumbers[0] = 14; // replace first number as 14 in straightNumbers
+            }
+            let straightCards = straightNumbers.map((num)=> cards[numbersCloneDuplicates.indexOf(num)]);
+            return straightCards;
+        } else {
+            return [];
+        }
+        
+    }
+
+    // Return winner of current round
+    // Bind: evaluateHighCards
+    #evaluateWinner(player1, player2){
+        // Return [winner, highCard]
+        // highCard=true if rank name are the same and need to compare high cards
+        // winner=null if both players have same cards
+        let highCard = false;
+        if (player1.handRank < player2.handRank){
+            return [player1, highCard];
+        } else if (player1.handRank > player2.handRank){
+            return [player2, highCard];
+        } else {
+            highCard = true;
+            // sorted in ascending order
+            let player1Cards = player1.rankCards.map(x=>x);
+            let player2Cards = player2.rankCards.map(x=>x);
+            let evaluateHighCards = this.#evaluateHighCards.bind(this);
+            var winner = evaluateHighCards(player1Cards, player2Cards);
+            if (winner!==null){
+                return [winner, highCard];
+            }
+            player1Cards = player1.highCards.map(x=>x);
+            player2Cards = player2.highCards.map(x=>x);
+            winner = evaluateHighCards(player1Cards, player2Cards);
+            return [winner, highCard];
+        }
+    }
+
+    // Helper for evaluateWinner
+    #evaluateHighCards(player1Cards, player2Cards){
+        // Compare list of cards by number until list exhausts
+        while(player1Cards.length>0){
+            player1card = player1Cards.pop();
+            player2card = player2Cards.pop();
+            if (player1card.number === player2card.number){
+                continue
+            } else if (player1card.number > player2card.number){
+                return this.player1;
+            } else if (player1card.number < player2card.number){
+                return this.player2;
+            }
+        }
+        return null; // completely same cards
+    }
+
+    //* Set up nextBtn listener and proceed to next step
+    // Bind: nextAction
+    #nextStep() {
+        // Make next button clickable once every round
+        let nextAction = this.#nextAction.bind(this);
+        nextBtn.addEventListener('click', nextAction, {once: true});
+    }
+
+    // After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
+    // Bind: nextStep, endGame
+    #nextAction (){
+        document.querySelector('.area.common').classList.remove('playing');
+        if(nextBtn.textContent === 'Next Step'){
+            if (!this.card1.isFlipped()){
+                this.card1.flip();
+                this.card2.flip();
+                this.card3.flip();
+                window.dispatchEvent(this.startRoundEvent);
+            } else if (!this.card4.isFlipped()){
+                this.card4.flip();
+                window.dispatchEvent(this.startRoundEvent);
+            } else if (!this.card5.isFlipped()){
+                this.card5.flip();
+                nextBtn.textContent = 'Reveal Hand';
+                let nextStep = this.#nextStep.bind(this);
+                nextStep(); // setup listener but don't start new round because don't need to bet anymore
+            }
+        } else {
+            let endGame = this.#endGame.bind(this);
+            endGame();
+        }
+    }
+
+    // Bind: nextstep, evaluateHand, evaluateWinner
+    #endGame(earlyEnd=false){ 
+        if (nextBtn.textContent === 'Collect tokens') {
+            // Last step: collect tokens
+            let commonTokens = commonTokenTable.querySelectorAll('.token');
+            if (this.winner!==null){
+                commonTokens.forEach((token)=>this.winner.collectToken(token));
+            } else {
+                /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
+                tokenSet1.forEach((token)=>player1.collectToken(token));
+                tokenSet2.forEach((token)=>player2.collectToken(token)); */
+            }
+            nextBtn.textContent = 'Next Step';
+            //TODO initiate new game
+        } else if (earlyEnd){
+            var winner = players.filter(player => !player.folded)[0]
+            var winnerName = winner.container.getAttribute('id');
+            this.winner = winner;
+            let evalMsg = "Winner is " + winnerName;
+            nextBtn.textContent = 'Collect tokens';
+            let msg = document.querySelector('#evalMsg');
+            msg.textContent = evalMsg;
+            var nextStep = this.#nextStep.bind(this);
+            nextStep(); // setup listener but don't start new round
+            /* // If use alert, need setTimeOut to make async so that cards can start flipping back even while message is not crossed out
+            alert(evalMsg);
+            setTimeout(()=>{
+                alert(evalMsg);
+                nextStep(); // setup listener but don't start new round
+            }, 500) */
+        } else if (nextBtn.textContent === 'Reveal Hand') {
+            // If normal end, reveal winner and hands, setup collect tokens
+            let evaluateHand = this.#evaluateHand.bind(this);
+            let evaluateWinner = this.#evaluateWinner.bind(this);
+            evaluateHand(this.player1, commonCards.concat(this.player1.cards));
+            evaluateHand(this.player2, commonCards.concat(this.player2.cards));
+            var [winner, highCard] = evaluateWinner(this.player1, this.player2);
+            if (winner===null){
+                var winnerName = "tie";
+            } else {
+                var winnerName = winner.container.getAttribute('id');
+            }
+            let evalMsg = "Player1: " + this.player1.handName + "; Player2: " + this.player2.handName + "\n Winner is " + winnerName;
+            if (highCard){
+                evalMsg += " after comparing highest cards"
+            }
+            this.winner = winner;
+            let msg = document.querySelector('#evalMsg');
+            msg.textContent = evalMsg;
+            nextBtn.textContent = 'Collect tokens';
+            nextStep(); // setup listener but don't start new round
+        } 
+    }
+
+    //* Set up player fold and bet listeners and proceed to next player
+    // During each player's turn, set up bet button listener
+    // Once bet button is pressed once, update currrent player to next player and call playerTurn
+    // Once all player's played, update current player to null, then run next button and end this round 
+    // Bind: endGame, nextStep
+    #playerTurn(player){
+        // Update current player and set up to let next player act
+        function nextPlayerTurn(player){ // this = game
+            switch(player){
+                case (this.player1):
+                    console.log("Currently player1, next round player 2");
+                    this.CurrentPlayer = this.player2;
+                    break;
+                case (this.player2):
+                    let allMatch = this.players.map(player=>player.betValue).filter(value => value === this.highestBet).length === this.players.length;
+                    if (!allMatch && this.cycle===1){
+                        // If not all players match during first cycle, play second cycle
+                        console.log("Currently player2, next round player 1 (next cycle)");
+                        this.cycle = 2;
+                        this.CurrentPlayer = this.player1;
+                        break;
+                    } else {
+                        // If all players match, end this round
+                        console.log("Currently player2, next round next button)");
+                        this.CurrentPlayer =  null;
+                        this.cycle=1;
+                    }
+                    break;
+            }
+            console.log('dispatch play event and run playerTurn on next player');
+            let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer});
+            window.dispatchEvent(playEvent);
+        }
+        nextPlayerTurn = nextPlayerTurn.bind(this);
+
+        if (this.foldedCount === this.playerCount-1){
+            // End game early if everyone else has folded
+            console.log('end game early')
+            let endGam = this.#endGame.bind(this);
+            this.#endGame(true);
+        } else if (!player){
+            // Proceed to end game if at end of all rounds
+            document.querySelector('.area.common').classList.add('playing');
+            let nextStep = this.#nextStep.bind(this);
+            nextStep();
+            return;
+        } else if (!player.folded){ 
+            // Let player act if player hasn't folded
+            console.log('normal')
+            player.container.classList.add('playing');
+            let playerBetBtn = player.btns[1];
+            let playerFoldBtn = player.btns[2];
+
+            // Set up bet button listener for only one click only, only one button each turn
+            function betAction(){
+                let makeBet = player.makeBet.bind(player);
+                let success = makeBet();
+                if (success){
+                    playerBetBtn.removeEventListener('click', betAction);
+                    playerFoldBtn.removeEventListener('click', foldAction);
+                    player.container.classList.remove('playing');
+                    nextPlayerTurn(player);
+                } else {
+                    console.log('dispatch play event and run playerTurn on current player AGAIN');
+                    let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer});
+                    window.dispatchEvent(playEvent);
+                }
+            }
+            betAction = betAction.bind(this);
+
+            function foldAction(){
+                let makeFold = player.makeFold.bind(player);
+                makeFold();
+                console.log('player has folded')
+                playerBetBtn.removeEventListener('click', betAction);
+                playerFoldBtn.removeEventListener('click', foldAction);
+                player.container.classList.remove('playing');
+                console.log('let next player take action')
+                nextPlayerTurn(player)
+            }
+            foldAction = foldAction.bind(this);
+
+            if (this.cycle === 2 && this.highestBet === player.betValue){
+                // If during match round but don't need to match, just proceed to next player
+                player.container.classList.remove('playing');
+                nextPlayerTurn(player)
+            } else {
+                // Otherwise listen to player movement
+                playerBetBtn.addEventListener('click', betAction, {once: true}); 
+                playerFoldBtn.addEventListener('click', foldAction, {once: true});
+            }
+        } else {
+            // If player folded, just proceed to next player
+            nextPlayerTurn(player);
+        }
+    }
+
+    //TODO: Split token in progress
+    /* splitTokens(tokenSet){
+        tokenSet1 = [];
+        tokenSet2 = [];
+    
+        tokenSet = Array.from(tokenSet); // convert Nodelist to array
+        let sum = tokenSet.reduce((sumValue, token)=> sumValue+getTokenValue(token),0)
+        let subSum = Math.ceil(sum / 2); // for 2 players, doesn't matter
+        while(Math.sum(tokenSet1) < subSum){
+            tokenSet1.push()
+        }
+    
+        return [tokenSet1, tokenSet2]
+    } */
+}
+
+function getTokenValue(token){
+    let val = token.className.split(' ')[1];
+    val = val.slice(1,val.length);
+    return Number(val);
+}
+
+function selectListener(event){
+    let token = event.target;
+    token.classList.toggle("selected");
+}
+
+function flipListener(event) {
+    event.currentTarget.classList.toggle('flip');
 }
 
 const commonTable = document.querySelector('.common .table.cards');
@@ -270,446 +757,17 @@ const foldBtn2 = document.querySelector('#player2 button.fold');
 player1.setButtons(nextBtn, betBtn1, foldBtn1);
 player2.setButtons(nextBtn, betBtn2, foldBtn2);
 
-const deck = new Deck();
-const card1 = deck.deal('card1', commonTable);
-const card2 = deck.deal('card2', commonTable);
-const card3 = deck.deal('card3', commonTable);
-const card4 = deck.deal('card4', commonTable);
-const card5 = deck.deal('card5', commonTable);
-const commonCards = [card1, card2, card3, card4, card5];
-
-const player1card1 = deck.deal('player1card1', player1.playtable);
-const player1card2 = deck.deal('player1card2', player1.playtable);
-const player2card1 = deck.deal('player2card1', player2.playtable);
-const player2card2 = deck.deal('player2card2', player2.playtable);
-
-player1.setCards(player1card1, player1card2);
-player2.setCards(player2card1, player2card2);
-
-const game = new Game();
-
-//* Set up motion for tokens
-// Click to select and highlight tokens
-const tokens = document.querySelectorAll('.table.tokens img');
-tokens.forEach(token => token.addEventListener('click', selectListener))
-function selectListener(event){
-    let token = event.target;
-    token.classList.toggle("selected");
-}
-
-//* Set up motion for cards
-// Click on any player card on the table to flip it
-allCards = document.querySelectorAll('.card[id^=player]');
-allCards.forEach(container => container.addEventListener('click', flipListener));
-function flipListener(event) {
-    event.currentTarget.classList.toggle('flip');
-}
-
-//* Return winner of current round
-// Return [winner, highCard]
-// highCard=true if rank name are the same and need to compare high cards
-// winner=null if both players have same cards
-function evaluateWinner(player1, player2){
-    let highCard = false;
-    if (player1.handRank < player2.handRank){
-        return [player1, highCard];
-    } else if (player1.handRank > player2.handRank){
-        return [player2, highCard];
-    } else {
-        highCard = true;
-        // sorted in ascending order
-        let player1Cards = player1.rankCards.map(x=>x);
-        let player2Cards = player2.rankCards.map(x=>x);
-        var winner = evaluateHighCards(player1Cards, player2Cards);
-        if (winner!==null){
-            return [winner, highCard];
-        }
-        player1Cards = player1.highCards.map(x=>x);
-        player2Cards = player2.highCards.map(x=>x);
-        winner = evaluateHighCards(player1Cards, player2Cards);
-        return [winner, highCard];
-    }
-}
-
-// Set player.hand and player.handName
-function evaluateHand(player, cardsGiven){
-    // sort cards in ascending number order
-    var cards = cardsGiven.map(x=>x);
-    cards.sort((card1, card2)=> card1.number - card2.number);
-
-    let numbers = cards.map(c => c.number);
-    let suits = cards.map(c => c.suit);
-    
-    let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
-    let numberFreqValues = Object.values(numberFreq);
-
-    let suitFreq = suits.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
-    let suitFreqValues = Object.values(suitFreq);
-
-    let isFlush = suitFreqValues.includes(5||6||7); 
-    // Check for straight flush
-    if (!isFlush){
-        var straightFlushCards = [];
-    } else {
-        let handBool = suits.map((num) => suitFreq[num]>=5);
-        let flushCards = cards.filter((value, index)=>handBool[index]);
-        var straightFlushCards = returnStraight(flushCards);
-    }
-    let straightCards = returnStraight(cards);
-    let isStraightFlush = straightFlushCards.length > 0;
-    let isStraight = straightCards.length > 0;
-
-    // handCards: list of cards to form a hand
-    // handName: name of hand
-    // handBool: list of booleans [true, false, ...] used to generate handCards from cards
-    if (isStraightFlush){
-        var handCards = straightFlushCards;
-        var handBool = false;
-        var handName = "Straight Flush";
-        player.handRank = 1;
-    } else if (numberFreqValues.includes(4)){
-        var handBool = numbers.map((num) => numberFreq[num]===4);
-        var handName = "Four of a kind";
-        player.handRank = 2;
-    } else if (numberFreqValues.includes(3) && numberFreqValues.includes(2)){
-        var handBool = numbers.map((num) => numberFreq[num]===3 || numberFreq[num]===2);
-        var handName = "Full House";
-        player.handRank = 3;
-    } else if (isFlush){
-        var handBool = suits.map((num) => suitFreq[num]>=5);
-        var handName = "Flush";
-        player.handRank = 4;
-    } else if (isStraight){
-        var handCards = straightCards;
-        var handBool = false;
-        var handName = "Straight";
-        player.handRank = 5;
-    } else if (numberFreqValues.includes(3)){
-        var handBool = numbers.map((num) => numberFreq[num]===3);
-        var handName = "Three of a kind";
-        player.handRank = 6;
-    } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
-        var handBool = numbers.map((num) => numberFreq[num]===2);
-        var handName = "Two pairs";
-        player.handRank = 7;
-    } else if (numberFreqValues.includes(2)){
-        var handBool = numbers.map((num) => numberFreq[num]===2);
-        var handName = "One pair";
-        player.handRank = 8;
-    } else {
-        // if no hand at all, select highest valued cards, i.e. remove two lowest
-        cards.shift();
-        cards.shift();
-        player.handCards = cards;
-        player.handName = "None";
-        return; 
-    }
-
-    // Select hand cards from handBool if needed
-    if (handBool !== false){
-        var handCards = cards.filter((value, index)=>handBool[index]);
-    }
-    
-    // Select highest cards from remaining cards (ascending order)
-    if (handCards.length < 5){
-        let remainingCards = cards.filter(card => !handCards.includes(card));
-        let remainingLength = 5 - handCards.length;
-        player.rankCards = handCards.map(x=>x);
-        player.highCards = [];
-        while(remainingLength>0){
-            let maxCard = remainingCards.pop(); // card with max number is at the end
-            handCards.push(maxCard);
-            player.highCards.push(maxCard);
-            remainingLength--;
-        }
-    }
-    
-    // handCards.sort((card1, card2)=> card1.number - card2.number); // Sort in ascending order
-    player.handCards = handCards;
-    player.handName = handName;
-}
-
-// Only checks for straight, no flush, in given set of cards
-// Returns list of straight cards (ascending order), or [] if none
-function returnStraight(cards){
-    // Don't need to check for straight if not enough 5 cards
-    if (cards.length < 5){
-        return [];
-    }
-
-    let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
-    let numbersNoDuplicate = new Set(numbersCloneDuplicates);
-    numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
-
-    // ace also counts as a 1
-    if (numbersClone.includes(14)){
-        numbersClone.unshift(1);
-    }
-
-    // Search for range of straight, i.e. continuous numbers
-    let startIndex = 0;
-    let endIndex = 1;
-    while (endIndex < numbersClone.length){
-        // if continuous, increment endIndex
-        if (numbersClone[endIndex]-numbersClone[endIndex-1] === 1){
-            endIndex++;
-        // if not continuous but already have at least 5 in straight, break
-        } else if (endIndex-startIndex>=5){
-            break;
-        // if not continuous, reset startIndex and endIndex and keep looking
-        } else {
-            startIndex = endIndex;
-            endIndex = startIndex+1;
-        }
-    }
-
-    let straightNumbers = numbersClone.slice(startIndex,endIndex);
-    // If longer than 5 straight, remove the smaller numbers
-    while (straightNumbers.length > 5){
-        straightNumbers.shift();
-    }
-    // If have straight, return straight cards
-    if(straightNumbers.length === 5){
-        // pick first card with each num
-        // if num == 1, convert it to 14 
-        if (straightNumbers.includes(1)){
-            straightNumbers[0] = 14; // replace first number as 14 in straightNumbers
-        }
-        let straightCards = straightNumbers.map((num)=> cards[numbersCloneDuplicates.indexOf(num)]);
-        return straightCards;
-    } else {
-        return [];
-    }
-    
-}
-
-// Compare list of cards by number until list exhausts
-function evaluateHighCards(player1Cards, player2Cards){
-    while(player1Cards.length>0){
-        player1card = player1Cards.pop();
-        player2card = player2Cards.pop();
-        if (player1card.number === player2card.number){
-            continue
-        } else if (player1card.number > player2card.number){
-            return player1;
-        } else if (player1card.number < player2card.number){
-            return player2;
-        }
-    }
-    return null; // completely same cards
-}
-
-//* Set up nextBtn listener and proceed to next step
-function nextStep() {
-    // Make next button clickable once every round
-    nextBtn.addEventListener('click', nextAction, {once: true});
-}
-
-// After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
-function nextAction (){
-    document.querySelector('.area.common').classList.remove('playing');
-    if(nextBtn.textContent === 'Next Step'){
-        if (!card1.flipped){
-            card1.flip();
-            card2.flip();
-            card3.flip();
-            window.dispatchEvent(startRoundEvent);
-        } else if (!card4.flipped){
-            card4.flip();
-            window.dispatchEvent(startRoundEvent);
-        } else if (!card5.flipped){
-            card5.flip();
-            nextBtn.textContent = 'Reveal Hand';
-            nextStep(); // setup listener but don't start new round because don't need to bet anymore
-        }
-    } else {
-        endGame();
-    }
-}
-
-function endGame(earlyEnd=false){
-    if (nextBtn.textContent === 'Collect tokens') {
-        // Last step: collect tokens
-        let commonTokens = commonTokenTable.querySelectorAll('.token');
-        if (game.winner!==null){
-            commonTokens.forEach((token)=>game.winner.collectToken(token));
-        } else {
-            /* [tokenSet1, tokenSet2] = splitTokens(commonTokens);
-            tokenSet1.forEach((token)=>player1.collectToken(token));
-            tokenSet2.forEach((token)=>player2.collectToken(token)); */
-        }
-        nextBtn.textContent = 'Next Step';
-        //TODO initiate new game
-    } else if (earlyEnd){
-        var winner = players.filter(player => !player.folded)[0]
-        var winnerName = winner.container.getAttribute('id');
-        game.winner = winner;
-        let evalMsg = "Winner is " + winnerName;
-        nextBtn.textContent = 'Collect tokens';
-        let msg = document.querySelector('#evalMsg');
-        msg.textContent = evalMsg;
-        nextStep(); // setup listener but don't start new round
-        /* // If use alert, need setTimeOut to make async so that cards can start flipping back even while message is not crossed out
-        alert(evalMsg);
-        setTimeout(()=>{
-            alert(evalMsg);
-            nextStep(); // setup listener but don't start new round
-        }, 500) */
-    } else if (nextBtn.textContent === 'Reveal Hand') {
-        // If normal end, reveal winner and hands, setup collect tokens
-        evaluateHand(player1, commonCards.concat(player1.cards));
-        evaluateHand(player2, commonCards.concat(player2.cards));
-        var [winner, highCard] = evaluateWinner(player1, player2);
-        if (winner===null){
-            var winnerName = "tie";
-        } else {
-            var winnerName = winner.container.getAttribute('id');
-        }
-        let evalMsg = "Player1: " + player1.handName + "; Player2: " + player2.handName + "\n Winner is " + winnerName;
-        if (highCard){
-            evalMsg += " after comparing highest cards"
-        }
-        game.winner = winner;
-        let msg = document.querySelector('#evalMsg');
-        msg.textContent = evalMsg;
-        nextBtn.textContent = 'Collect tokens';
-        nextStep(); // setup listener but don't start new round
-    } 
-}
-
-//TODO: In progress
-function getTokenValue(token){
-    let val = token.className.split(' ')[1];
-    val = val.slice(1,val.length);
-    return Number(val);
-}
-
-function splitTokens(tokenSet){
-    tokenSet1 = [];
-    tokenSet2 = [];
-
-    tokenSet = Array.from(tokenSet); // convert Nodelist to array
-    //tokenValues = tokenSet.map(getTokenValue);
-    let sum = tokenSet.reduce((sumValue, token)=> sumValue+getTokenValue(token),0)
-    let subSum = Math.ceil(sum / 2); // for 2 players, doesn't matter
-    while(Math.sum(tokenSet1) < subSum){
-        tokenSet1.push()
-    }
-
-    return [tokenSet1, tokenSet2]
-}
-
-//* Set up player fold and bet listeners and proceed to next player
-// During each player's turn, set up bet button listener
-// Once bet button is pressed once, update currrent player to next player and call playerTurn
-// Once all player's played, update current player to null, then run next button and end this round 
-function playerTurn(player){
-    // Update current player and set up to let next player act
-    function nextPlayerTurn(player){
-        console.log('running nextPlayerTurn')
-        switch(player){
-            case player1:
-                console.log("Currently player1, next round player 2");
-                CurrentPlayer = player2;
-                break;
-            case player2:
-                let allMatch = players.map(player=>player.betValue).filter(value => value === game.highestBet).length === players.length;
-                if (!allMatch && game.cycle===1){
-                    // If not all players match during first cycle, play second cycle
-                    console.log("Currently player2, next round player 1 (next cycle)");
-                    game.cycle = 2;
-                    CurrentPlayer = player1;
-                    break;
-                } else {
-                    // If all players match, end this round
-                    console.log("Currently player2, next round next button)");
-                    CurrentPlayer =  null;
-                }
-                break;
-        }
-        console.log('dispatch play event and run playerTurn on next player');
-        let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
-        window.dispatchEvent(playEvent);
-    }
-
-    if (game.foldedCount === game.playerCount-1){
-        // End game early if everyone else has folded
-        console.log('end game early')
-        endGame(earlyEnd=true);
-    } else if (!player){
-        // Proceed to end game if at end of all rounds
-        document.querySelector('.area.common').classList.add('playing');
-        nextStep();
-        return;
-    } else if (!player.folded){ 
-        // Let player act if player hasn't folded
-        console.log('normal')
-        player.container.classList.add('playing');
-        let playerBetBtn = player.btns[1];
-        let playerFoldBtn = player.btns[2];
-
-        // Set up bet button listener for only one click only, only one button each turn
-        function betAction(){
-            let success = player.makeBet();
-            if (success){
-                playerBetBtn.removeEventListener('click', betAction);
-                playerFoldBtn.removeEventListener('click', foldAction);
-                player.container.classList.remove('playing');
-                nextPlayerTurn(player)
-            } else {
-                console.log('dispatch play event and run playerTurn on current player AGAIN');
-                let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
-                window.dispatchEvent(playEvent);
-            }
-        }
-
-        function foldAction(){
-            player.makeFold();
-            console.log('player has folded')
-            playerBetBtn.removeEventListener('click', betAction);
-            playerFoldBtn.removeEventListener('click', foldAction);
-            player.container.classList.remove('playing');
-            console.log('let next player take action')
-            nextPlayerTurn(player)
-        }
-
-        
-        if (game.cycle === 2 && game.highestBet === player.betValue){
-            // If during match round but don't need to match, just proceed to next player
-            player.container.classList.remove('playing');
-            nextPlayerTurn(player)
-        } else {
-            // Otherwise listen to player movement
-            playerBetBtn.addEventListener('click', betAction, {once: true}); 
-            playerFoldBtn.addEventListener('click', foldAction, {once: true});
-        }
-    } else {
-        // If player folded, just proceed to next player
-        nextPlayerTurn(player);
-    }
-}
-
-//* Set up global listeners to play rounds
-// when playOnce event is fired, play a new turn with current player then update
-window.addEventListener('playOnce', (e) => {playerTurn(e.detail);})
-
-// when startRound event is fired, a new round will initiate
-window.addEventListener('startRound', (e)=>{oneRound();});
-// Run each current player's turn
-// If current player is null, run next button and end this round
-function oneRound(){
-    CurrentPlayer = player1;
-    let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer})
-    window.dispatchEvent(playEvent)
-    console.log('dispatch first play event')
-}
+const game = new Game(player1, player2);
+game.setGame();
+console.log('setup complete')
+game.playGame();
 
 // global startRoundEvent to start a new round
-var startRoundEvent = new CustomEvent('startRound') 
+//var startRoundEvent = new CustomEvent('startRound') 
 
 //* Main(): start game
-function main(){
+/* function main(){
     window.dispatchEvent(startRoundEvent)
-}
+} */
 
-main();
+//main();
