@@ -100,6 +100,7 @@ class Player {
         this.tokentable = tables[1];
         this.commontable = common;
         this.folded = false;
+        this.firstPlayer = false;
 
         this.cards = [null, null]; // [card1, card2]
         this.btns = [null, null, null]; // [nextBtn, betBtn, foldBtn]
@@ -205,11 +206,18 @@ class Player {
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
         let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
+        console.log('sum', sum)
         if (game.cycle === 1){
-            // If on cycle 1, bet suceeds and update highest bet value
-            this.betValue = sum;
-            game.highestBet = Math.max(game.highestBet, this.betValue);
-            playerTokens.forEach((token)=>this.moveToken(token));
+            let betSuceed = sum >= game.highestBet || this.firstPlayer === true;
+            if (betSuceed){
+                // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
+                this.betValue = sum;
+                game.highestBet = Math.max(game.highestBet, this.betValue);
+                playerTokens.forEach((token)=>this.moveToken(token));
+            } else {
+                alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
+                success = false;
+            }
         } else if (game.cycle === 2){
             let mustMatch = game.highestBet - this.betValue;
             if (mustMatch !== 0 && sum === mustMatch){
@@ -659,8 +667,8 @@ class Game {
             console.log('end game early')
             this.endGame(true);
         } else if (!player){
-            console.log('end game routine')
-            // Proceed to end game if at end of all rounds
+            console.log('end round routine')
+            // Proceed to end round if at end of all turns
             document.querySelector('.area.common').classList.add('playing');
             this.nextStep();
             return;
@@ -751,6 +759,7 @@ const playerContainer1 = document.querySelector('#player1');
 const playerContainer2 = document.querySelector('#player2');
 
 const player1 = new Player(playerContainer1, commonTokenTable);
+player1.firstPlayer = true;
 const player2 = new Player(playerContainer2, commonTokenTable);
 const players = [player1, player2];
 
