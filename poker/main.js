@@ -205,7 +205,7 @@ class Player {
         console.log(this)
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
-        let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
+        let sum = playerTokens.reduce((sumValue, token)=> sumValue+game.getTokenValue(token),0);
         console.log('sum', sum)
         if (game.cycle === 1){
             let betSuceed = sum >= game.highestBet || this.firstPlayer === true;
@@ -253,9 +253,9 @@ class Player {
         game.foldedCount ++;
         // Remove token and card listeners
         let tokens = this.tokentable.querySelectorAll('.token');
-        tokens.forEach(token=>token.removeEventListener('click', selectListener))
+        tokens.forEach(token=>token.removeEventListener('click', this.selectListener))
         let cards = this.container.querySelectorAll('.card');
-        cards.forEach(container => container.removeEventListener('click', flipListener));
+        cards.forEach(container => container.removeEventListener('click', this.flipListener));
     }
 }
 
@@ -322,7 +322,7 @@ class Game {
         //* Set up motion for tokens
         // Click to select and highlight tokens
         const tokens = document.querySelectorAll('.table.tokens img');
-        tokens.forEach(token => token.addEventListener('click', selectListener))
+        tokens.forEach(token => token.addEventListener('click', this.selectListener))
         
     }
 
@@ -331,7 +331,22 @@ class Game {
         //* Set up motion for cards
         // Click on any player card on the table to flip it
         let allCards = document.querySelectorAll('.card[id^=player]');
-        allCards.forEach(container => container.addEventListener('click', flipListener));
+        allCards.forEach(container => container.addEventListener('click', this.flipListener));
+    }
+
+    getTokenValue(token){
+        let val = token.className.split(' ')[1];
+        val = val.slice(1,val.length);
+        return Number(val);
+    }
+    
+    selectListener(event){
+        let token = event.target;
+        token.classList.toggle("selected");
+    }
+    
+    flipListener(event) {
+        event.currentTarget.classList.toggle('flip');
     }
 
     // setup global listeners to play rounds
@@ -736,21 +751,6 @@ class Game {
     
         return [tokenSet1, tokenSet2]
     } */
-}
-
-function getTokenValue(token){
-    let val = token.className.split(' ')[1];
-    val = val.slice(1,val.length);
-    return Number(val);
-}
-
-function selectListener(event){
-    let token = event.target;
-    token.classList.toggle("selected");
-}
-
-function flipListener(event) {
-    event.currentTarget.classList.toggle('flip');
 }
 
 const commonTable = document.querySelector('.common .table.cards');
