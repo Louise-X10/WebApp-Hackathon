@@ -553,18 +553,20 @@ class Game {
         // winner=null if both players have same cards
         let highCard = false;
         if (player1.handRank < player2.handRank){
-            return [player1, highCard];
+            return [[player1], highCard];
         } else if (player1.handRank > player2.handRank){
-            return [player2, highCard];
+            return [[player2], highCard];
         } else {
             highCard = true;
             // sorted in ascending order
             let player1Cards = player1.rankCards.map(x=>x);
             let player2Cards = player2.rankCards.map(x=>x);
             var winner = this.evaluateHighCards(player1Cards, player2Cards);
-            if (winner!==null){
+            // If not tie, return winner
+            if (winner.length===1){
                 return [winner, highCard];
             }
+            // If tie, continue to evaluate remaining cards
             player1Cards = player1.highCards.map(x=>x);
             player2Cards = player2.highCards.map(x=>x);
             winner = this.evaluateHighCards(player1Cards, player2Cards);
@@ -572,21 +574,21 @@ class Game {
         }
     }
 
-    // Helper for evaluateWinner
+    // Helper for evaluateWinner, return array of winners
     evaluateHighCards(player1Cards, player2Cards){
         // Compare list of cards by number until list exhausts
         while(player1Cards.length>0){
-            player1card = player1Cards.pop();
-            player2card = player2Cards.pop();
+            let player1card = player1Cards.pop();
+            let player2card = player2Cards.pop();
             if (player1card.number === player2card.number){
                 continue
             } else if (player1card.number > player2card.number){
-                return this.player1;
+                return [this.player1];
             } else if (player1card.number < player2card.number){
-                return this.player2;
+                return [this.player2];
             }
         }
-        return null; // completely same cards
+        return [this.player1, this.player2]; // tie with completely same cards
     }
 
     //* Set up nextBtn listener and proceed to next step
@@ -622,19 +624,22 @@ class Game {
         if (nextBtn.textContent === 'Collect tokens') {
             // Last step: collect tokens
             let commonTokens = commonTokenTable.querySelectorAll('.token');
-            if (this.winner!==null){
-                commonTokens.forEach((token)=>this.winner.collectToken(token));
+            if (this.winner.length === 1){
+                commonTokens.forEach((token)=>this.winner[0].collectToken(token));
             } else {
                 subTokenSet = splitTokens(commonTokens);
                 clearCommonTokens();
-                subTokenSet.forEach((value)=> this.player1.addToken(value));
+                // Add pile of token to each winner player
+                this.winner.forEach(winner =>{
+                    subTokenSet.forEach((value)=> winner.addToken(value));
+                })
             }
             nextBtn.textContent = 'Next Step';
             // initiate new Game;
             resetBtn.addEventListener('click', this.resetGame, {once: true});
         } else if (earlyEnd){
-            var winner = players.filter(player => !player.folded)[0]
-            var winnerName = winner.container.getAttribute('id');
+            var winner = players.filter(player => !player.folded)
+            var winnerName = winner[0].container.getAttribute('id');
             this.winner = winner;
             let evalMsg = "Winner is " + winnerName;
             nextBtn.textContent = 'Collect tokens';
@@ -652,10 +657,11 @@ class Game {
             this.evaluateHand(this.player1, this.commonCards.concat(this.player1.cards));
             this.evaluateHand(this.player2, this.commonCards.concat(this.player2.cards));
             var [winner, highCard] = this.evaluateWinner(this.player1, this.player2);
-            if (winner===null){
-                var winnerName = "tie";
+            if (winner.length > 1){
+                var winnerName = "tie between";
+                winner.forEach(winner=> winnerName = winnerName+ ' ' + winner.container.getAttribute('id') + ' ');
             } else {
-                var winnerName = winner.container.getAttribute('id');
+                var winnerName = winner[0].container.getAttribute('id');
             }
             let evalMsg = "Player1: " + this.player1.handName + "; Player2: " + this.player2.handName + "\n Winner is " + winnerName;
             if (highCard){
