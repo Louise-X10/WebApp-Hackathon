@@ -107,6 +107,8 @@ class Player {
         this.money = 0;
         this.tokens = {}; // dictionary {value : count}
 
+        this.betValue = 0;
+
         this.handCards = []; // in ascending order after evaluate
         this.handName = '';
         this.handRank = null;
@@ -187,13 +189,37 @@ class Player {
             token.style.transform = '';}, 1000);
     }
 
+    // Make bet and update highest bet, return whether bet was successful
     makeBet() {
+        let success = true;
+        console.log('!running make bet')
         let playerTokens = this.tokentable.querySelectorAll('.token.selected');
-        playerTokens.forEach((token)=>this.moveToken(token));
+        playerTokens = Array.from(playerTokens);
+        let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
+        if (game.cycle === 1){
+            // If on cycle 1, bet suceeds and update highest bet value
+            this.betValue = sum;
+            game.highestBet = Math.max(game.highestBet, this.betValue);
+            playerTokens.forEach((token)=>this.moveToken(token));
+        } else if (game.cycle === 2){
+            let mustMatch = game.highestBet - this.betValue;
+            if (mustMatch !== 0 && sum === mustMatch){
+                // If on cycle 2 and match highest bet, bet suceeds
+                this.betValue += sum;
+                playerTokens.forEach((token)=>this.moveToken(token));
+            } else if (mustMatch !== 0 && sum !== mustMatch){
+                // If on cycle 2 and doesn't match highest bet, bet again
+                alert(`You must match ${mustMatch} to stay in the game!` );
+                success = false;
+                //playerTurn(this); //! how to make player bet again
+            } // If on cycle 2 and already match highest bet, do nothing
+        }
+
         // Flip back any flipped cards
         this.cards.forEach((card)=>{
             if (card.isFlipped()){card.flip()};
         })
+        return success;
     }
 
     makeFold(){
@@ -222,6 +248,8 @@ class Game {
         this.winner = null;
         this.foldedCount = 0;
         this.playerCount = 2;
+        this.cycle = 1;
+        this.highestBet = 0;
     }
 }
 
@@ -266,7 +294,7 @@ const tokens = document.querySelectorAll('.table.tokens img');
 tokens.forEach(token => token.addEventListener('click', selectListener))
 function selectListener(event){
     let token = event.target;
-    token.classList.add("selected");
+    token.classList.toggle("selected");
 }
 
 //* Set up motion for cards
@@ -479,6 +507,7 @@ function nextStep() {
 
 // After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
 function nextAction (){
+    document.querySelector('.area.common').classList.remove('playing');
     if(nextBtn.textContent === 'Next Step'){
         if (!card1.flipped){
             card1.flip();
@@ -526,7 +555,6 @@ function endGame(earlyEnd=false){
             alert(evalMsg);
             nextStep(); // setup listener but don't start new round
         }, 500) */
-        
     } else if (nextBtn.textContent === 'Reveal Hand') {
         // If normal end, reveal winner and hands, setup collect tokens
         evaluateHand(player1, commonCards.concat(player1.cards));
@@ -550,15 +578,15 @@ function endGame(earlyEnd=false){
 }
 
 //TODO: In progress
+function getTokenValue(token){
+    let val = token.className.split(' ')[1];
+    val = val.slice(1,val.length);
+    return Number(val);
+}
+
 function splitTokens(tokenSet){
     tokenSet1 = [];
     tokenSet2 = [];
-
-    function getTokenValue(token){
-        let val = token.className.split(' ')[1];
-        val = val.slice(1,val.length);
-        return Number(val);
-    }
 
     tokenSet = Array.from(tokenSet); // convert Nodelist to array
     //tokenValues = tokenSet.map(getTokenValue);
@@ -585,37 +613,54 @@ function playerTurn(player){
                 CurrentPlayer = player2;
                 break;
             case player2:
-                console.log("Currently player2, next round next button");
-                CurrentPlayer =  null;
+                let allMatch = players.map(player=>player.betValue).filter(value => value === game.highestBet).length === players.length;
+                if (!allMatch && game.cycle===1){
+                    // If not all players match during first cycle, play second cycle
+                    console.log("Currently player2, next round player 1 (next cycle)");
+                    game.cycle = 2;
+                    CurrentPlayer = player1;
+                    break;
+                } else {
+                    // If all players match, end this round
+                    console.log("Currently player2, next round next button)");
+                    CurrentPlayer =  null;
+                }
+                break;
         }
         console.log('dispatch play event and run playerTurn on next player');
         let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
         window.dispatchEvent(playEvent);
     }
 
-    
     if (game.foldedCount === game.playerCount-1){
         // End game early if everyone else has folded
         console.log('end game early')
         endGame(earlyEnd=true);
     } else if (!player){
-        // Proceed to end game if at end of round
+        // Proceed to end game if at end of all rounds
         document.querySelector('.area.common').classList.add('playing');
         nextStep();
         return;
     } else if (!player.folded){ 
         // Let player act if player hasn't folded
+        console.log('normal')
         player.container.classList.add('playing');
         let playerBetBtn = player.btns[1];
         let playerFoldBtn = player.btns[2];
 
-        // Set up bet button listener for one click only
+        // Set up bet button listener for only one click only, only one button each turn
         function betAction(){
-            player.makeBet();
-            playerBetBtn.removeEventListener('click', betAction);
-            playerFoldBtn.removeEventListener('click', foldAction);
-            player.container.classList.remove('playing');
-            nextPlayerTurn(player)
+            let success = player.makeBet();
+            if (success){
+                playerBetBtn.removeEventListener('click', betAction);
+                playerFoldBtn.removeEventListener('click', foldAction);
+                player.container.classList.remove('playing');
+                nextPlayerTurn(player)
+            } else {
+                console.log('dispatch play event and run playerTurn on current player AGAIN');
+                let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer});
+                window.dispatchEvent(playEvent);
+            }
         }
 
         function foldAction(){
@@ -627,16 +672,24 @@ function playerTurn(player){
             console.log('let next player take action')
             nextPlayerTurn(player)
         }
-        // Only one listener works
-        playerBetBtn.addEventListener('click', betAction, {once: true});
-        playerFoldBtn.addEventListener('click', foldAction, {once: true});
+
+        
+        if (game.cycle === 2 && game.highestBet === player.betValue){
+            // If during match round but don't need to match, just proceed to next player
+            player.container.classList.remove('playing');
+            nextPlayerTurn(player)
+        } else {
+            // Otherwise listen to player movement
+            playerBetBtn.addEventListener('click', betAction, {once: true}); 
+            playerFoldBtn.addEventListener('click', foldAction, {once: true});
+        }
     } else {
         // If player folded, just proceed to next player
         nextPlayerTurn(player);
     }
 }
 
-//* Set up global listeners to alternate rounds
+//* Set up global listeners to play rounds
 // when playOnce event is fired, play a new turn with current player then update
 window.addEventListener('playOnce', (e) => {playerTurn(e.detail);})
 
@@ -648,6 +701,7 @@ function oneRound(){
     CurrentPlayer = player1;
     let playEvent = new CustomEvent('playOnce',{ detail: CurrentPlayer})
     window.dispatchEvent(playEvent)
+    console.log('dispatch first play event')
 }
 
 // global startRoundEvent to start a new round

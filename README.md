@@ -28,10 +28,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Fold mechanism
     - End game early whenever all other players folded
     - Automatic flip cards back after player action (make bet or fold)
+    - Match mechanism (simplified rules)
 - Woking on
   - Two-player:
     - Initiate new game after game ends
-    - Take alternate turns starting in each game (or play two turns in each round)
 - To be completed
   - Two-player: Split tokens evenly for ties
   - Refine multiple token movement (animate different target positions), adjust delay
