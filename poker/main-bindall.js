@@ -1,7 +1,6 @@
 const cardPath = 'cardsSVG/';
 const tokenPath = 'tokensSVG/';
 
-//! Need to fix bind all method;
 class Card {
     constructor(suit, value) {
         this.suit = suit;
@@ -219,7 +218,7 @@ class Player {
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
-                alert(`You must match ${mustMatch} to stay in the game!` );
+                alert(`You must bet ${mustMatch} to match and stay in the game!` );
                 success = false; //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
@@ -336,10 +335,10 @@ class Game {
         window.addEventListener('startRound', (e)=>{this.oneRound();});
     }
 
-    // Run each current player's turn
-    // If current player is null, run next button and end this round
+    // Initiate new round, reset highest bet
     oneRound(){
         this.CurrentPlayer = this.player1;
+        this.highestBet = 0;
         let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer})
         window.dispatchEvent(playEvent)
         console.log('dispatch first play event')
@@ -629,6 +628,7 @@ class Game {
     // Once all player's played, update current player to null, then run next button and end this round 
     // Bind: endGame, nextStep
     playerTurn(player){
+        console.log('running playerTurn')
         // Update current player and set up to let next player act
         function nextPlayerTurn(player){ // this = game
             switch(player){
@@ -659,17 +659,19 @@ class Game {
         nextPlayerTurn = nextPlayerTurn.bind(this);
 
         if (this.foldedCount === this.playerCount-1){
+            console.log('end game early routine')
             // End game early if everyone else has folded
             console.log('end game early')
             this.endGame(true);
         } else if (!player){
+            console.log('end game routine')
             // Proceed to end game if at end of all rounds
             document.querySelector('.area.common').classList.add('playing');
             this.nextStep();
             return;
         } else if (!player.folded){ 
+            console.log('normal player routine')
             // Let player act if player hasn't folded
-            console.log('normal')
             player.container.classList.add('playing');
             let playerBetBtn = player.btns[1];
             let playerFoldBtn = player.btns[2];
@@ -677,6 +679,7 @@ class Game {
             // Set up bet button listener for only one click only, only one button each turn
             function betAction(){
                 let success = player.makeBet();
+                console.log("success", success);
                 if (success){
                     playerBetBtn.removeEventListener('click', betAction);
                     playerFoldBtn.removeEventListener('click', foldAction);
@@ -684,7 +687,7 @@ class Game {
                     nextPlayerTurn(player);
                 } else {
                     console.log('dispatch play event and run playerTurn on current player AGAIN');
-                    let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer});
+                    let playEvent = new CustomEvent('playOnce',{ detail: player});
                     window.dispatchEvent(playEvent);
                 }
             }
@@ -705,10 +708,12 @@ class Game {
                 nextPlayerTurn(player)
             } else {
                 // Otherwise listen to player movement
+                console.log("set up player listeners")
                 playerBetBtn.addEventListener('click', betAction, {once: true}); 
                 playerFoldBtn.addEventListener('click', foldAction, {once: true});
             }
         } else {
+            console.log('folded routine')
             // If player folded, just proceed to next player
             nextPlayerTurn(player);
         }

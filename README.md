@@ -29,9 +29,11 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - End game early whenever all other players folded
     - Automatic flip cards back after player action (make bet or fold)
     - Match mechanism (simplified rules)
-    - Initiate new game after game ends
+    - Implement game class
+    - Automate attach bind(this)
 - Woking on
-  - Automate attach bind(this)
+  - Initiate new game after game ends
+  - Later players must bet at least as much as previous players
 - To be completed
   - Two-player: Split tokens evenly for ties
   - Refine multiple token movement (animate different target positions), adjust delay
