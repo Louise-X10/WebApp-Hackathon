@@ -48,6 +48,11 @@ class Card {
         front.appendChild(frontImg);
         back.appendChild(backImg);
         table.appendChild(this.container);
+        this.table = table;
+    }
+
+    removeCard(){
+        this.table.removeChild(this.container);
     }
 
     flip () {
@@ -90,6 +95,7 @@ class Deck {
         card.displayCard(cardID, table);
         return card;
     }
+
 }
 
 class Player {
@@ -289,7 +295,12 @@ class Game {
         this.startRoundEvent = startRoundEvent;
     }
 
+    // Don't need to reset listeners, need to remove prior cards and generate new cards
     resetGame(){
+        this.commonCards.forEach(card=>card.removeCard());
+        this.players.forEach(player=>{
+            player.cards.forEach(card => card.removeCard());
+        })
         this.setupCards();
         this.setupCardInteraction();
     }
@@ -603,7 +614,8 @@ class Game {
                 tokenSet2.forEach((token)=>player2.collectToken(token)); */
             }
             nextBtn.textContent = 'Next Step';
-            //TODO initiate new game
+            // initiate new Game;
+            resetBtn.addEventListener('click', this.resetGame, {once: true});
         } else if (earlyEnd){
             var winner = players.filter(player => !player.folded)[0]
             var winnerName = winner.container.getAttribute('id');
@@ -764,6 +776,7 @@ const player2 = new Player(playerContainer2, commonTokenTable);
 const players = [player1, player2];
 
 const nextBtn = document.querySelector('button.next');
+const resetBtn = document.querySelector('button.reset');
 const betBtn1 = document.querySelector('#player1 button.bet');
 const betBtn2 = document.querySelector('#player2 button.bet');
 const foldBtn1 = document.querySelector('#player1 button.fold');

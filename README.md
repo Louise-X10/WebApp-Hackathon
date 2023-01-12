@@ -29,12 +29,11 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - End game early whenever all other players folded
     - Automatic flip cards back after player action (make bet or fold)
     - Match mechanism (simplified rules)
-    - Implement game class
+    - Initiate new game after game ends
 - Woking on
-  - Initiate new game after game ends
-- To be completed
   - Two-player: Split tokens evenly for ties
+- To be completed
   - Refine multiple token movement (animate different target positions), adjust delay
-  - Reorganize token method
+  - Reorganize token after collection
   - Multiplayer: big bind, small bind
   - Online multi-user version with Socket.io
