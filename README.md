@@ -33,6 +33,8 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Split tokens evenly for ties
 - Woking on
   - Online multi-user version with Socket.io
+    - save chat history
+    - ask for username everytime open webpage
 - To be completed
   - Players can only flip their own cards
   - Refine multiple token movement (animate different target positions), adjust delay

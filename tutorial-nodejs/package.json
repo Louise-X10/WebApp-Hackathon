@@ -2,9 +2,9 @@
   "name": "socket-chat-example",
   "version": "0.0.1",
   "description": "my first socket.io app",
-  "main": "index.js",
+  "main": "chat.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node chat.js"
   },
   "devDependencies": {
     "typescript": "^4.9.4"

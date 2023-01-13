@@ -2,6 +2,12 @@
 html {
     background-color: darkgreen;
 }
+
+header pre {
+    font-size: larger;
+    color: aqua;
+}
+
 .area {
     padding-bottom: 10px;
 }

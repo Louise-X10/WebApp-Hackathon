@@ -315,7 +315,7 @@ class Game {
         this.startRoundEvent = startRoundEvent;
     }
 
-    // Don't need to reset listeners, need to remove prior cards and generate new cards
+    // Don't need to reset listeners, need to remove prior cards and generate new cards, remove eval message
     resetGame(){
         this.commonCards.forEach(card=>card.removeCard());
         this.players.forEach(player=>{
@@ -323,6 +323,8 @@ class Game {
         })
         this.setupCards();
         this.setupCardInteraction();
+        let msg = document.querySelector('#evalMsg');
+        msg.textContent = ''
     }
 
     playGame(){

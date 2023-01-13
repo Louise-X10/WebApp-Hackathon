@@ -7,7 +7,7 @@ const io = new Server(server);
 
 app.get('/', (req, res) => {
   //res.send('<h1>Hello world</h1>');
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/chat.html');
 });
 
 /* io.on('connection', (socket) => {
