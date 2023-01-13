@@ -9,18 +9,13 @@ function createToken(value){
     return token;
 }
 
-
-
 class Player {
     constructor(container, common, commonToken){
-        this.container = container;
-        let tables = container.querySelectorAll('.table');
-        this.playtable = tables[0];
-        this.tokentable = tables[1];
-        this.commontable = common;
-        this.commontokentable = commonToken;
+        this.playTable = document.querySelector('.player .table.cards');
+        this.tokenTable = document.querySelector('.player .table.tokens');
+        this.commonTable = document.querySelector('.common .table.cards');
+        this.commonTokenTable = document.querySelector('.common .table.tokens');
         this.folded = false;
-        this.firstPlayer = false;
 
         this.cards = [null, null]; // [card1, card2]
         this.btns = [null, null, null]; // [nextBtn, betBtn, foldBtn]
@@ -52,7 +47,7 @@ class Player {
             // create new card object and display
             let card = new Card(cardval[0], cardval[1]);
             console.log(card);
-            card.displayCard(this.commontable);
+            card.displayCard(this.commonTable);
         });
     }
     
@@ -82,7 +77,7 @@ class Player {
     // (Create and) Place token of given value into table
     addToken(value){
         let token = createToken(value);
-        this.tokentable.appendChild(token);
+        this.tokenTable.appendChild(token);
         this.money += value;
         this.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1;
     }
@@ -91,7 +86,7 @@ class Player {
     clearTokens(){
         let tokens = document.querySelectorAll(`#player .table.tokens img`);
         for (let token of tokens){
-            this.tokentable.removeChild(token);
+            this.tokenTable.removeChild(token);
         }
     }
 
@@ -101,12 +96,12 @@ class Player {
         cloneToken.classList.add('hidden');
         let xi = token.getBoundingClientRect()['x'];
         let yi = token.getBoundingClientRect()['y'];
-        this.tokentable.appendChild(cloneToken);
+        this.tokenTable.appendChild(cloneToken);
         let xf = cloneToken.getBoundingClientRect()['x'];
         let yf = cloneToken.getBoundingClientRect()['y'];
-        this.tokentable.removeChild(cloneToken);
+        this.tokenTable.removeChild(cloneToken);
         token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
-        setTimeout(()=>{this.tokentable.appendChild(token);
+        setTimeout(()=>{this.tokenTable.appendChild(token);
             token.style.transform = '';}, 1000);
     }
 
@@ -117,12 +112,12 @@ class Player {
         cloneToken.classList.add('hidden');
         let xi = token.getBoundingClientRect()['x'];
         let yi = token.getBoundingClientRect()['y'];
-        this.commontable.appendChild(cloneToken);
+        this.commonTable.appendChild(cloneToken);
         let xf = cloneToken.getBoundingClientRect()['x'];
         let yf = cloneToken.getBoundingClientRect()['y'];
-        this.commontable.removeChild(cloneToken);
+        this.commonTable.removeChild(cloneToken);
         token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
-        setTimeout(()=>{this.commontable.appendChild(token);
+        setTimeout(()=>{this.commonTable.appendChild(token);
             token.style.transform = '';}, 1000);
     }
 
@@ -131,7 +126,7 @@ class Player {
         let success = true;
         console.log('!running make bet')
         console.log(this)
-        let playerTokens = this.tokentable.querySelectorAll('.token.selected');
+        let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
         let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
         console.log('sum', sum)
@@ -173,16 +168,16 @@ class Player {
             if (card.container.classList.contains('flip')){card.flip()};
         })
         // Unselect any selected tokens
-        let selectedTokens = this.tokentable.querySelectorAll('.token.selected');
+        let selectedTokens = this.tokenTable.querySelectorAll('.token.selected');
         selectedTokens.forEach((token)=> token.classList.remove('selected'));
         // Set folded status to true
         this.folded = true;
         // Increment number of players folded in the game
         game.foldedCount ++;
         // Remove token and card listeners
-        let tokens = this.tokentable.querySelectorAll('.token');
+        let tokens = this.tokenTable.querySelectorAll('.token');
         tokens.forEach(token=>token.removeEventListener('click', this.selectListener))
-        let cards = this.container.querySelectorAll('.card');
+        let cards = this.playTable.querySelectorAll('.card');
         cards.forEach(container => container.removeEventListener('click', this.flipListener));
     }
 }
@@ -249,11 +244,8 @@ class Card {
     }
 }
 
-const commonTable = document.querySelector('.common .table.cards');
-const commonTokenTable = document.querySelector('.common .table.tokens');
-const playerContainer = document.querySelector('.player');
-
-const player = new Player(playerContainer, commonTable, commonTokenTable);
+const player = new Player();
+console.log('player is', player)
 //player.firstPlayer = true;
 
 const nextBtn = document.querySelector('button.next');
