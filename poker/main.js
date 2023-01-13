@@ -121,10 +121,6 @@ class Player {
         return Number(val);
     }
 
-    removeToken(token){
-        this.tokenTable.removeChild(token);
-    }
-
     // move given token to player table
     //! Change collect mechanism to add tokens
     /* collectToken(token){
@@ -142,20 +138,20 @@ class Player {
     } */
 
     // move given token to common table
-    /* moveToken(token){
+    moveToken(token){
         token.classList.remove('selected');
         let cloneToken = token.cloneNode();
         cloneToken.classList.add('hidden');
         let xi = token.getBoundingClientRect()['x'];
         let yi = token.getBoundingClientRect()['y'];
-        this.commonTable.appendChild(cloneToken);
+        this.commonTokenTable.appendChild(cloneToken);
         let xf = cloneToken.getBoundingClientRect()['x'];
         let yf = cloneToken.getBoundingClientRect()['y'];
-        this.commonTable.removeChild(cloneToken);
+        this.commonTokenTable.removeChild(cloneToken);
         token.style.transform = `translate(${xf-xi}px, ${yf-yi}px)`;
-        setTimeout(()=>{this.commonTable.appendChild(token);
+        setTimeout(()=>{this.commonTokenTable.appendChild(token);
             token.style.transform = '';}, 1000);
-    } */
+    }
 
     //makeAction() // bet or fold
 
@@ -177,7 +173,7 @@ class Player {
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue = sum;
-                playerTokens.forEach((token)=>this.removeToken(token));
+                playerTokens.forEach((token)=>this.moveToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
                 sucess = false; //  make player bet again
@@ -187,7 +183,7 @@ class Player {
             if (mustMatch !== 0 && sum === mustMatch){
                 // If on cycle 2 and match highest bet, bet suceeds
                 this.betValue += sum;
-                playerTokens.forEach((token)=>this.removeToken(token));
+                playerTokens.forEach((token)=>this.moveToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );
@@ -195,7 +191,7 @@ class Player {
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
-        playerTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
+        //playerTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
         return [selectedTokenValues, sum, success]
     }
 
