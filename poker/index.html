@@ -100,9 +100,10 @@
             var username = window.prompt('Please enter a username');
             console.log('my username', username);
         } while (username===null);
-      socket.username = username;
+      player.name = username;
       console.log('username entered');
-      socket.emit('player ready', player, socket.username);
+      console.log(player);
+      socket.emit('player ready', player);
     })
     
     socket.on('waiting', ()=>{

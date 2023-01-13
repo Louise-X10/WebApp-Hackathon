@@ -21,6 +21,7 @@ server.listen(port, () => {
 var players = []
 var EventEmitter = require("events").EventEmitter;
 var ee = new EventEmitter();
+var game = null;
 
 io.on('connection', socket =>{
     console.log('new user connected');
@@ -32,11 +33,10 @@ io.on('connection', socket =>{
     
     /* socket.emit('ask username');
     console.log('ask for user name'); */
-        
 
-    socket.on('player ready', (player, username) => {
+    socket.on('player ready', (player) => {
         console.log('receive player ready');
-        players.push([player, username]);
+        players.push(player);
 
         // wait until 2 players to start game
         //! Tempororay start condition
@@ -49,8 +49,10 @@ io.on('connection', socket =>{
 })
 
 ee.on('game ready', () => {
-    console.log('implement code here');
+    game = new Game(players);
+    console.log('implement code here', game);
 })
+
 
 //console.log('game ready', game);
 /* io.on('start game', socket =>{
@@ -178,7 +180,7 @@ class Game {
     constructor(players){
         this.winner = null;
         this.foldedCount = 0;
-        this.playerCount = 2;
+        this.playerCount = players.length;
         this.cycle = 1;
         this.highestBet = 0;
         this.players = players;
