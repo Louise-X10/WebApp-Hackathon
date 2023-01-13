@@ -88,9 +88,14 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io();
-    console.log(player);
-    let playerID = 1;
-    socket.emit('player ready', player, playerID);
+
+    socket.on('ask username', ()=>{
+      let username = window.prompt('Please enter a username');
+      socket.username = username;
+      console.log('username entered');
+      socket.emit('player ready', player, socket.username);
+    })
+    
 
   </script>
   

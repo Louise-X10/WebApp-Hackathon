@@ -16,11 +16,21 @@ server.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
 
+// actual server code
 var players = []
+var playerID = 1;
 io.on('connection', socket =>{
     console.log('new user connected');
-    socket.on('player ready', (player, playerID) => {
-        players.push([player, playerID]);
+
+    socket.emit('ask username');
+    console.log('ask for user name');
+
+    // first player that is ready has playerID=1
+    socket.on('player ready', (player, username) => {
+        console.log('receive player ready');
+        players.push([player, username, playerID]);
+        playerID ++;
+        console.log(players)
     })
 })
 
@@ -139,18 +149,17 @@ function clearCommonTokens(){
     }
 }
 
-
+// sort players so that first player at front
+//let game = Game(players);
 class Game {
-    constructor(player1, player2){
+    constructor(players){
         this.winner = null;
         this.foldedCount = 0;
         this.playerCount = 2;
         this.cycle = 1;
         this.highestBet = 0;
-        this.player1 = player1;
-        this.player2 = player2;
-        this.players = [this.player1, this.player2]
-        this.CurrentPlayer = this.player1;
+        this.players = players;
+        this.CurrentPlayer = this.players[0];
 
         // Get all defined class methods: only gets public methods
         const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
