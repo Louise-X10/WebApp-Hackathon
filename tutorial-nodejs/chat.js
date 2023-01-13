@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const port = 3000;
+const port = 3002;
 
 app.get('/', (req, res) => {
   //res.send('<h1>Hello world</h1>');
@@ -28,13 +28,9 @@ io.on('connection', (socket) => {
   // load all previous messages
   chatHistory.forEach(history=>io.emit('chat message', history[0], history[1])); 
 
-  io.emit('ask username');
+  // Ask username from newly connected user only
+  socket.emit('ask username');
   console.log('ask for user name');
-
-  // all connected sockets listen to 'send username' event
-  socket.on('send username', (username)=>{
-    socket.username = username;
-  })
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
@@ -42,10 +38,11 @@ io.on('connection', (socket) => {
   })
 
   // all connected sockets listen to 'chat message' event
-  socket.on('chat message', (msg) => { 
-    console.log('message ' + msg + ' by user ' + socket.username);
-    chatHistory.push([msg, socket.username]);
-    io.emit('chat message', msg, socket.username); // once 'chat message' event fired, emit to all connected sockets
+  socket.on('chat message', (msg, username) => { 
+    console.log('message ' + msg + ' by user ' + username);
+    chatHistory.push([msg, username]);
+    console.log('chat history', chatHistory);
+    io.emit('chat message', msg, username); // once 'chat message' event fired, emit to all connected sockets
   });
 
 });

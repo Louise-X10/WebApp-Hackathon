@@ -28,11 +28,16 @@
     var form = document.getElementById('form');
     var input = document.getElementById('input');
 
+    socket.on('ask username', ()=>{
+      let username = window.prompt('Please enter a username');
+      socket.username = username;
+    })
+
     // listen to submit message to server
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       if (input.value) {
-        socket.emit('chat message', input.value);
+        socket.emit('chat message', input.value, socket.username);
         input.value = '';
       }
     });
@@ -45,10 +50,6 @@
       window.scrollTo(0, document.body.scrollHeight);
     });
 
-    socket.on('ask username', ()=>{
-      let username = window.prompt('Please enter a username');
-      socket.emit('send username', username);
-    })
     
   </script>
 </html>
