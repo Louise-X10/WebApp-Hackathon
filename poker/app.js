@@ -6,9 +6,10 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const port = 3000;
 
-
+// Serve all files
 app.use(express.static(__dirname));
 
+// Define default behavior if enter empty path
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
@@ -37,12 +38,14 @@ io.on('connection', socket =>{
     socket.on('player ready', (player) => {
         console.log('receive player ready');
         players.push(player);
+        socket.player = player;
 
         // wait until 2 players to start game
         //! Tempororay start condition
         if (players.length < 2){
             socket.emit('waiting');
         } else {
+            console.log('all players ready', players);
             ee.emit('game ready');
         }
     })
@@ -50,7 +53,16 @@ io.on('connection', socket =>{
 
 ee.on('game ready', () => {
     game = new Game(players);
-    console.log('implement code here', game);
+    let deck = new Deck();
+    let card1 = deck.deal();
+    let card2 = deck.deal();
+    let card3 = deck.deal();
+    let card4 = deck.deal();
+    let card5 = deck.deal();
+    let commonCards = [card1, card2, card3, card4, card5];
+    console.log('common cards generated');
+    io.emit('deal common cards', commonCards);
+    //game.setGame();
 })
 
 
@@ -59,70 +71,8 @@ ee.on('game ready', () => {
 
 }) */
 
-const cardPath = 'cardsSVG/';
-
-class Card {
-    constructor(suit, value) {
-        this.suit = suit;
-        this.value = value;
-        this.number = value;
-        this.location = cardPath + suit + '_' + value + '.svg';
-        this.container = null;
-
-        switch(this.number){
-            case "king":
-                this.number = 13;
-                break;
-            case "queen": 
-                this.number = 12;
-                break;
-            case "jack":
-                this.number = 11;
-                break;
-            case "ace":
-                this.number = 14; // or 1
-        }
-    }
-
-    displayCard (cardID, table) {
-        // Create card syntax
-        this.container = document.createElement('div');
-        this.container.classList.add('card');
-        this.container.setAttribute('id', cardID);
-        const front = document.createElement('div');
-        front.classList.add('front');
-        const back = document.createElement('div');
-        back.classList.add('back');
-        this.container.appendChild(front);
-        this.container.appendChild(back);
-
-        // Create card side image elements
-        const frontImg = document.createElement('img');
-        frontImg.src = this.location;
-        frontImg.alt = this.suit + ' ' + String(this.value);
-        const backImg = document.createElement('img');
-        backImg.src = cardPath + 'back.svg';
-        backImg.alt = 'back';
-
-        // Add card side images to card syntax
-        front.appendChild(frontImg);
-        back.appendChild(backImg);
-        table.appendChild(this.container);
-        this.table = table;
-    }
-
-    removeCard(){
-        this.table.removeChild(this.container);
-    }
-
-    flip () {
-        this.container.classList.toggle('flip');
-    }
-
-    isFlipped(){
-        return this.container.classList.contains('flip');
-    }
-}
+/* const commonTable = document.querySelector('.common .table.cards');
+const commonTokenTable = document.querySelector('.common .table.tokens'); */
 
 class Deck {
     constructor(){
@@ -137,7 +87,7 @@ class Deck {
         const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
         for (let suit of suits) {
             for (let value of values) {
-                this.deck.push(new Card(suit, value));
+                this.deck.push([suit, value]);
             }
         }
     }
@@ -150,9 +100,8 @@ class Deck {
         }
     }
 
-    deal(cardID, table) {
+    deal() {
         const card = this.deck.pop();
-        card.displayCard(cardID, table);
         return card;
     }
 

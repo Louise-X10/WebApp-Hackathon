@@ -1,10 +1,24 @@
+//* Token functions
+const cardPath = 'cardsSVG/';
+const tokenPath = 'tokensSVG/';
+function createToken(value){
+    const token = document.createElement('img');
+    token.src = tokenPath + `token_${value}.svg`
+    token.alt = "token";
+    token.classList.add("token", `_${value}`, "player");
+    return token;
+}
+
+
+
 class Player {
-    constructor(container, common){
+    constructor(container, common, commonToken){
         this.container = container;
         let tables = container.querySelectorAll('.table');
         this.playtable = tables[0];
         this.tokentable = tables[1];
         this.commontable = common;
+        this.commontokentable = commonToken;
         this.folded = false;
         this.firstPlayer = false;
 
@@ -31,6 +45,17 @@ class Player {
             .filter(method => (method !== 'constructor'))
             .forEach((method) => { this[method] = this[method].bind(this); });
     }
+
+    setCommonCards (commonCards){
+        console.log('start setting');
+        commonCards.forEach(cardval=>{
+            // create new card object and display
+            let card = new Card(cardval[0], cardval[1]);
+            console.log(card);
+            card.displayCard(this.commontable);
+        });
+    }
+    
 
     setCards(card1, card2){
         this.cards = [card1, card2];
@@ -162,21 +187,73 @@ class Player {
     }
 }
 
-//* Token functions
-const tokenPath = 'tokensSVG/';
-function createToken(value){
-    const token = document.createElement('img');
-    token.src = tokenPath + `token_${value}.svg`
-    token.alt = "token";
-    token.classList.add("token", `_${value}`, "player");
-    return token;
+class Card {
+    constructor(suit, value) {
+        this.suit = suit;
+        this.value = value;
+        this.number = value;
+        this.location = cardPath + suit + '_' + value + '.svg';
+        this.container = null;
+
+        switch(this.number){
+            case "king":
+                this.number = 13;
+                break;
+            case "queen": 
+                this.number = 12;
+                break;
+            case "jack":
+                this.number = 11;
+                break;
+            case "ace":
+                this.number = 14; // or 1
+        }
+    }
+
+    displayCard (table) {
+        // Create card syntax
+        this.container = document.createElement('div');
+        this.container.classList.add('card');
+        const front = document.createElement('div');
+        front.classList.add('front');
+        const back = document.createElement('div');
+        back.classList.add('back');
+        this.container.appendChild(front);
+        this.container.appendChild(back);
+
+        // Create card side image elements
+        const frontImg = document.createElement('img');
+        frontImg.src = this.location;
+        frontImg.alt = this.suit + ' ' + String(this.value);
+        const backImg = document.createElement('img');
+        backImg.src = cardPath + 'back.svg';
+        backImg.alt = 'back';
+
+        // Add card side images to card syntax
+        front.appendChild(frontImg);
+        back.appendChild(backImg);
+        table.appendChild(this.container);
+        this.table = table;
+    }
+
+    removeCard(){
+        this.table.removeChild(this.container);
+    }
+
+    flip () {
+        this.container.classList.toggle('flip');
+    }
+
+    isFlipped(){
+        return this.container.classList.contains('flip');
+    }
 }
 
 const commonTable = document.querySelector('.common .table.cards');
 const commonTokenTable = document.querySelector('.common .table.tokens');
 const playerContainer = document.querySelector('.player');
 
-const player = new Player(playerContainer, commonTokenTable);
+const player = new Player(playerContainer, commonTable, commonTokenTable);
 //player.firstPlayer = true;
 
 const nextBtn = document.querySelector('button.next');

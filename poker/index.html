@@ -91,25 +91,37 @@
   <script>
     var socket = io();
 
+    // Execute code after page is loaded
+    window.addEventListener("load", (event) => {
+        socket.on('ask username', ()=>{
+        //Must enter username
+            do {
+                var username = window.prompt('Please enter a username');
+                console.log('my username', username);
+            } while (username===null);
+            player.name = username;
+            console.log('username entered');
+            console.log(player);
+            socket.emit('player ready', player); // only push properties e.g. username
+        })
+        
+        socket.on('waiting', ()=>{
+            let msg = document.querySelector('#evalMsg');
+            msg.textContent = 'Waiting for more players';
+        })
+
+        socket.on('deal common cards', (commonCards)=>{
+            let msg = document.querySelector('#evalMsg');
+            msg.textContent = 'Dealing cards';
+            console.log('user receive common cards');
+            console.log(commonCards);
+            player.setCommonCards(commonCards);
+            console.log('user set common cards')
+        })
+
+    });
     //? Add this so that page finish loading before asking username
     // socket.on('connect', ()=>console.log('user connected'))
-
-    socket.on('ask username', ()=>{
-        //Must enter username
-        do {
-            var username = window.prompt('Please enter a username');
-            console.log('my username', username);
-        } while (username===null);
-      player.name = username;
-      console.log('username entered');
-      console.log(player);
-      socket.emit('player ready', player);
-    })
-    
-    socket.on('waiting', ()=>{
-        let msg = document.querySelector('#evalMsg');
-        msg.textContent = 'Waiting for more players';
-    })
 
   </script>
   
