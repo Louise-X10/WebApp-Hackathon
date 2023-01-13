@@ -51,7 +51,7 @@ io.on('connection', socket =>{
  ee.on('game ready', () => {
     game = new Game(players);
     game.setupCards();
-    ee.emit('start round', game);
+    //ee.emit('start round', game);
 })
 
 ee.on('start round', (game)=>{

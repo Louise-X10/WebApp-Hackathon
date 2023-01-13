@@ -1,5 +1,3 @@
-const { Socket } = require("socket.io");
-
 //* Token functions
 const cardPath = 'cardsSVG/';
 const tokenPath = 'tokensSVG/';
@@ -165,7 +163,8 @@ class Player {
         console.log(this)
         let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
-        let sum = playerTokens.reduce((sumValue, token)=> sumValue+this.getTokenValue(token),0);
+        let selectedTokenValues = playerTokens.map(token => this.getTokenValue(token));
+        let sum = Math.sum(selectedTokenValues);
         console.log('sum', sum)
 
         if (game.cycle === 1){
@@ -279,10 +278,10 @@ class Card {
         return this.container.classList.contains('flip');
     }
 }
+console.log('main js complete')
 
 const player = new Player();
-console.log('player is', player)
-console.log('main js complete')
+console.log('player is', player);
 
 //! controlled by server
 // const nextBtn = document.querySelector('button.next');
