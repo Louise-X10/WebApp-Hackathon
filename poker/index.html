@@ -20,19 +20,6 @@
         <h3>Simplified rules:</h3>
         <p>For each turn, there are maximum two cycles. During the first cycle through all the players, raises are allowed. In the second cycle (if needed), only matches are allowed. </p>
         <pre id="evalMsg">      </pre>
-        <!--
-        <h2>Token Values: </h2>
-        <div class="legend">
-            <div>
-                <img src="token_5.svg" alt="token" class="token">
-                <span>5</span>
-            </div>
-            <div>
-                <img src="token_100.svg" alt="token" class="token">
-                <span>100</span>
-            </div>
-        </div>
-        -->
 
   </header>
 
@@ -85,18 +72,26 @@
 
         <div class="table tokens">
             <h2>Player's tokens: </h2>
-            <!--<img src="token_5.svg" alt="token" class="token _5 player">-->
+            
         </div>
     </div>
 
     <div class="area action" id="player2">
         <button class="fold">Fold</button>
         <button class="bet">Make A Bet!</button>
-    </div>
+    </div> 
     
   </body>
 
 
-  <script src="main.js"></script>
+  <script src="./main.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    console.log(player);
+    let playerID = 1;
+    socket.emit('player ready', player, playerID);
+
+  </script>
   
 </html>
