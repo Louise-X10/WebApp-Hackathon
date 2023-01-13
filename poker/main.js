@@ -155,16 +155,17 @@ class Player {
 
     //makeAction() // bet or fold
 
-    // Make bet, remove selected tokens, update player bet value, update server highest bet
-    // Return 
+    // Make bet with selected tokens
+    // If successful, remove selected tokens, update player bet value
+    // If unsuccessul, unselected all tokens, make bet again
     //! Change make bet to remove selected tokens and update bet values
     makeBet(game, isFirstPlayer) {
+        success = true;
         console.log('!running make bet')
-        console.log(this)
         let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
         let selectedTokenValues = playerTokens.map(token => this.getTokenValue(token));
-        let sum = Math.sum(selectedTokenValues);
+        let sum = selectedTokenValues.reduce((sumValue, value)=> sumValue+value,0);
         console.log('sum', sum)
 
         if (game.cycle === 1){
@@ -172,11 +173,11 @@ class Player {
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue = sum;
-                var newHighestBet = Math.max(game.highestBet, this.betValue); //! update in server
                 //! playerTokens.forEach((token)=>this.removeToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
-                this.makeBet(game, isFirstPlayer); //  make player bet again
+                selectedTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
+                sucess = false; //  make player bet again
             }
         } else if (game.cycle === 2){
             let mustMatch = game.highestBet - this.betValue;
@@ -187,11 +188,12 @@ class Player {
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );
-                this.makeBet(game, isFirstPlayer); //  make player bet again
+                selectedTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
+                sucess = false; //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
-        return selectedTokenValues 
+        return [selectedTokenValues, sum, sucess]
     }
 
     makeFold(){

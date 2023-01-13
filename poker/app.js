@@ -48,8 +48,10 @@ io.on('connection', socket =>{
     })
 })
 
+var game = new Game(players);
+
  ee.on('game ready', () => {
-    game = new Game(players);
+    game.setPlayers(players);
     game.setupCards();
     //ee.emit('start round', game);
 })
@@ -59,6 +61,12 @@ ee.on('start round', (game)=>{
     let socketid = this.CurrentPlayer.socketid;
     let isFirstPlayer = true;
     io.to(socketid).emit('play once', game, isFirstPlayer);
+})
+
+io.on('made bet', (selectedTokenValues, sum) =>{
+    // update highest bet value
+    game.highestBet = Math.max(game.highestBet, sum)
+    // add tokens to common table, emit to all players
 })
 
 class Deck {
@@ -113,14 +121,11 @@ function clearCommonTokens(){
 // sort players so that first player at front
 //let game = Game(players);
 class Game {
-    constructor(players){
+    constructor(){
         this.winner = null;
         this.foldedCount = 0;
-        this.playerCount = players.length;
         this.cycle = 1;
         this.highestBet = 0;
-        this.players = players;
-        this.CurrentPlayer = this.players[0];
 
         // Get all defined class methods: only gets public methods
         const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
@@ -154,6 +159,11 @@ class Game {
         window.dispatchEvent(this.startRoundEvent);
     }
 
+    setPlayers(players){
+        this.playerCount = players.length;
+        this.players = players;
+        this.CurrentPlayer = this.players[0];
+    }
     // generate common cards and save for this game
     // generate player cards for each player
     setupCards(){

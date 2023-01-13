@@ -121,7 +121,13 @@
 
         socket.on('play once', (game, isFirstPlayer)=>{
             //! setup button listeners
-            let newHighestBet = player.makeBet(game, isFirstPlayer)
+
+            // continue to make bet until successfull
+            do {
+                let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
+            } while (success===false);
+            
+            socket.emit('made bet', selectedTokenValues, sum);
             //! remove button listeners
         })
 
