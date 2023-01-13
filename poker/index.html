@@ -119,8 +119,6 @@
             })
 
             socket.on('deal player cards', (playerCards)=>{
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = 'Dealing cards';
                 player.setPlayerCards(playerCards);
             })
 
@@ -136,9 +134,7 @@
                     console.log("success", success);
                     if (success){
                         console.log('emit to server')
-                        //player.betBtn.removeEventListener('click', betAction);
-                        //player.container.classList.remove('playing');
-                        console.log(socket.connected)
+                        msg.textContent = 'Other player is playing!';
                         socket.emit('made bet', selectedTokenValues, sum);
                     } else {
                         player.betBtn.addEventListener('click', betAction, {once: true}) // continue to make bet until successfull

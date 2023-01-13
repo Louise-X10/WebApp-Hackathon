@@ -29,7 +29,9 @@ io.on('connection', socket =>{
 
     socket.emit('ask username');
     console.log('ask for user name');
-    
+
+    io.game = new Game();
+
     /* socket.emit('ask username');
     console.log('ask for user name'); */
 
@@ -43,18 +45,27 @@ io.on('connection', socket =>{
         if (players.length < 2){
             socket.emit('waiting');
         } else {
-            ee.emit('game ready');
+            io.game.setGame(players);
+            console.log('game initial', io.game);
+            ee.emit('start round',io.game);
+            //ee.emit('game ready', game);
         }
     })
 
     socket.on('made bet', (selectedTokenValues, sum) =>{
         // update highest bet value
-        console.log(game.highestBet);
-        game.highestBet = Math.max(game.highestBet, sum)
+        io.game.highestBet = Math.max(io.game.highestBet, sum)
         console.log('user made a bet');
-        console.log(game.highestBet);
+        console.log(io.game.highestBet);
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
+
+        // call next player
+        console.log('update player', io.game);
+        io.game.CurrentPlayer += 1;
+        let socketid = io.game.players[io.game.CurrentPlayer].socketid;
+        let isFirstPlayer = false;
+        io.to(socketid).emit('play once', io.game, isFirstPlayer);
         
     })
 })
@@ -75,11 +86,9 @@ class Game {
             .forEach((method) => { this[method] = this[method].bind(this); });
     }
 
-    setGame(){
+    setGame(players){
+        this.setPlayers(players);
         this.setupCards();
-        this.setupListeners();
-        let startRoundEvent = new CustomEvent('startRound');
-        this.startRoundEvent = startRoundEvent;
     }
 
     // Don't need to reset listeners, need to remove prior cards and generate new cards, remove eval message
@@ -94,15 +103,12 @@ class Game {
         msg.textContent = ''
     }
 
-    playGame(){
-        window.dispatchEvent(this.startRoundEvent);
-    }
-
     setPlayers(players){
         this.playerCount = players.length;
         this.players = players;
-        this.CurrentPlayer = this.players[0];
+        this.CurrentPlayer = 0;
     }
+
     // generate common cards and save for this game
     // generate player cards for each player
     setupCards(){
@@ -123,23 +129,6 @@ class Game {
         console.log('player cards generated');
     }
 
-    // setup global listeners to play rounds
-    setupListeners(){
-        // when playOnce event is fired, play a new turn with current player then update
-        window.addEventListener('playOnce', (e) => {this.playerTurn(e.detail);})
-
-        // when startRound event is fired, a new round will initiate
-        window.addEventListener('startRound', (e)=>{this.oneRound();});
-    }
-
-    // Initiate new round, reset highest bet
-    oneRound(){
-        this.CurrentPlayer = this.player1;
-        this.highestBet = 0;
-        let playEvent = new CustomEvent('playOnce',{ detail: this.CurrentPlayer})
-        window.dispatchEvent(playEvent)
-        console.log('dispatch first play event')
-    }
 
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
@@ -535,17 +524,14 @@ class Game {
     }
 }
 
-var game = new Game();
-
-ee.on('game ready', () => {
-    game.setPlayers(players);
-    game.setupCards();
-    ee.emit('start round', game);
-})
+/* ee.on('game ready', (game) => {
+    game.setGame(players);
+    ee.emit('start round',game);
+}) */
 
 ee.on('start round', (game)=>{
     game.highestBet = 0;
-    let socketid = game.CurrentPlayer.socketid;
+    let socketid = game.players[game.CurrentPlayer].socketid;
     let isFirstPlayer = true;
     io.to(socketid).emit('play once', game, isFirstPlayer);
 })
