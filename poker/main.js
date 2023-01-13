@@ -158,7 +158,6 @@ class Player {
     // Make bet with selected tokens
     // If successful, remove selected tokens, update player bet value
     // If unsuccessul, unselected all tokens, make bet again
-    //! Change make bet to remove selected tokens and update bet values
     makeBet(game, isFirstPlayer) {
         let success = true;
         console.log('!running make bet')
@@ -192,6 +191,13 @@ class Player {
         }
 
         return [selectedTokenValues, sum, success]
+    }
+
+    receiveBet(selectedTokenValues) {
+        selectedTokenValues.forEach((value)=>{
+            let token = this.createToken(value);
+            this.commonTokenTable.appendChild(token);
+        })
     }
 
     makeFold(){

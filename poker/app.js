@@ -46,6 +46,17 @@ io.on('connection', socket =>{
             ee.emit('game ready');
         }
     })
+
+    socket.on('made bet', (selectedTokenValues, sum) =>{
+        // update highest bet value
+        console.log(game.highestBet);
+        game.highestBet = Math.max(game.highestBet, sum)
+        console.log('user made a bet');
+        console.log(game.highestBet);
+        // add tokens to common table, emit to all other players
+        socket.broadcast.emit('receive bet', selectedTokenValues);
+        
+    })
 })
 
 class Game {
@@ -539,12 +550,6 @@ ee.on('start round', (game)=>{
     io.to(socketid).emit('play once', game, isFirstPlayer);
 })
 
-io.on('made bet', (selectedTokenValues, sum) =>{
-    // update highest bet value
-    console.log('user made a bet')
-    //game.highestBet = Math.max(game.highestBet, sum)
-    // add tokens to common table, emit to all players
-})
 
 class Deck {
     constructor(){

@@ -96,57 +96,66 @@
     // Execute code after page is loaded
     window.addEventListener("load", (event) => {
 
-        socket.on('ask username', ()=>{
-        //Must enter username
-            do {
-                var username = window.prompt('Please enter a username');
-                console.log('my username', username);
-            } while (username===null);
-            player.username = username;
-            socket.emit('player ready', player); // pushing player only pushes properties e.g. username
-        })
-        
-        socket.on('waiting', ()=>{
-            let msg = document.querySelector('#evalMsg');
-            msg.textContent = 'Waiting for more players';
-        })
+        //socket.on('connected',()=>{
+            socket.on('connect', ()=>console.log('user connected'))
 
-        socket.on('deal common cards', (commonCards)=>{
-            player.setCommonCards(commonCards);
-        })
-
-        socket.on('deal player cards', (playerCards)=>{
-            let msg = document.querySelector('#evalMsg');
-            msg.textContent = 'Dealing cards';
-            player.setPlayerCards(playerCards);
-        })
-
-        socket.on('play once', (game, isFirstPlayer)=>{
-            console.log('start playing')
-            let msg = document.querySelector('#evalMsg');
-            msg.textContent = 'You are playing now!';
-            //! setup bet button listeners
-            player.betBtn.addEventListener('click', betAction, {once: true})
-
-            function betAction(){
-                console.log('bet action called')
-                let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
-                console.log(selectedTokenValues, sum, success)
-                console.log("success", success);
-                if (success){
-                    console.log('emit to server')
-                    //player.betBtn.removeEventListener('click', betAction);
-                    //player.container.classList.remove('playing');
-                    socket.emit('made bet', selectedTokenValues, sum);
-                } else {
-                    player.betBtn.addEventListener('click', betAction, {once: true})
-                    //window.dispatchEvent('play once', game, isFirstPlayer); // continue to make bet until successfull
-                }
-            }            
+            socket.on('ask username', ()=>{
+            //Must enter username
+                do {
+                    var username = window.prompt('Please enter a username');
+                    console.log('my username', username);
+                } while (username===null);
+                player.username = username;
+                socket.emit('player ready', player); // pushing player only pushes properties e.g. username
+            })
             
-        })
+            socket.on('waiting', ()=>{
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = 'Waiting for more players';
+            })
 
-        socket.on('print', (msg)=>console.log(msg))
+            socket.on('deal common cards', (commonCards)=>{
+                player.setCommonCards(commonCards);
+            })
+
+            socket.on('deal player cards', (playerCards)=>{
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = 'Dealing cards';
+                player.setPlayerCards(playerCards);
+            })
+
+            socket.on('play once', (game, isFirstPlayer)=>{
+                console.log('start playing')
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = 'You are playing now!';
+                
+                function betAction(){
+                    console.log('bet action called')
+                    let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
+                    console.log(selectedTokenValues, sum, success)
+                    console.log("success", success);
+                    if (success){
+                        console.log('emit to server')
+                        //player.betBtn.removeEventListener('click', betAction);
+                        //player.container.classList.remove('playing');
+                        console.log(socket.connected)
+                        socket.emit('made bet', selectedTokenValues, sum);
+                    } else {
+                        player.betBtn.addEventListener('click', betAction, {once: true}) // continue to make bet until successfull
+                    }
+                }
+
+                //! setup bet button listeners
+                player.betBtn.addEventListener('click', betAction, {once: true})
+            })
+
+            socket.on('receive bet', (selectedTokenValues)=>{
+                console.log('receiving bet');
+                player.receiveBet(selectedTokenValues);
+            })
+
+            socket.on('print', (msg)=>console.log(msg));
+        //})
 
     });
     //? Add this so that page finish loading before asking username
