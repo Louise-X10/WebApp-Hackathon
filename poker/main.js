@@ -10,7 +10,7 @@ function createToken(value){
 }
 
 class Player {
-    constructor(container, common, commonToken){
+    constructor(){
         this.playTable = document.querySelector('.player .table.cards');
         this.tokenTable = document.querySelector('.player .table.tokens');
         this.commonTable = document.querySelector('.common .table.cards');
@@ -20,8 +20,8 @@ class Player {
         this.foldBtn = document.querySelector('.player button.fold');
         
         this.folded = false;
-        this.playerCards = [null, null]; // [card1, card2]
-        this.commonCards = [];
+        this.playerCards = []; // [card1, card2]
+        this.commonCards = []; // [card1, ..., card5]
 
         this.money = 0; // total value of tokens this player owns
         this.tokens = {}; // token frequency dictionary {value : count}
@@ -46,19 +46,18 @@ class Player {
 
     // Display common cards
     setCommonCards (commonCards){
-        console.log('start setting');
-        this.commonCards = commonCards;
         commonCards.forEach(cardval=>{
             let card = new Card(cardval[0], cardval[1]); // create new card object from given values
+            this.commonCards.push(card); // push card object to this.commoncards
             card.displayCard(this.commonTable);
         });
     }
     
-
     // Display player cards, setup cardflip listener
-    setPlayerCards(card1, card2){
-        this.playerCards = [card1, card2];
-        this.playerCards.forEach(card => {
+    setPlayerCards(playerCards){
+        playerCards.forEach(cardval => {
+            let card = new Card(cardval[0], cardval[1]); 
+            this.playerCards.push(card);
             card.displayCard(this.playTable);
             card.container.addEventListener('click', this.flipListener)
         });

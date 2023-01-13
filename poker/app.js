@@ -19,7 +19,7 @@ server.listen(port, () => {
 });
 
 // actual server code
-var players = []
+var players = [] // [{socketID, username}, ...]
 var EventEmitter = require("events").EventEmitter;
 var ee = new EventEmitter();
 var game = null;
@@ -27,10 +27,8 @@ var game = null;
 io.on('connection', socket =>{
     console.log('new user connected');
 
-    setTimeout(()=>{
-        socket.emit('ask username');
-        console.log('ask for user name');
-    }, 1000)
+    socket.emit('ask username');
+    console.log('ask for user name');
     
     /* socket.emit('ask username');
     console.log('ask for user name'); */
@@ -38,6 +36,7 @@ io.on('connection', socket =>{
     socket.on('player ready', (player) => {
         console.log('receive player ready');
         players.push(player);
+        // players.push([socket.id, player.username]);
         socket.player = player;
 
         // wait until 2 players to start game
@@ -45,34 +44,31 @@ io.on('connection', socket =>{
         if (players.length < 2){
             socket.emit('waiting');
         } else {
-            console.log('all players ready', players);
             ee.emit('game ready');
+            console.log('all players ready');
         }
     })
 })
 
-ee.on('game ready', () => {
+ ee.on('game ready', () => {
     game = new Game(players);
-    let deck = new Deck();
-    let card1 = deck.deal();
-    let card2 = deck.deal();
-    let card3 = deck.deal();
-    let card4 = deck.deal();
-    let card5 = deck.deal();
-    let commonCards = [card1, card2, card3, card4, card5];
-    console.log('common cards generated');
-    io.emit('deal common cards', commonCards);
+    game.setupCards();
+    //const allSockets = await io.fetchSockets();
+    /* console.log()
+    let c = 1
+    for (socket in allSockets){
+        socket.emit('print', `Count at ${c}`);
+        c++;
+    } */
+    
+    /* for(socket of io.socket.socket){
+        if (socket.player.username === 'A'){
+            
+        }
+    }
+    io.emit('set player cards', [card1, card2], 'A'); */
     //game.setGame();
 })
-
-
-//console.log('game ready', game);
-/* io.on('start game', socket =>{
-
-}) */
-
-/* const commonTable = document.querySelector('.common .table.cards');
-const commonTokenTable = document.querySelector('.common .table.tokens'); */
 
 class Deck {
     constructor(){
@@ -169,51 +165,25 @@ class Game {
         window.dispatchEvent(this.startRoundEvent);
     }
 
-    // generate and save cards for this game
+    // generate common cards and save for this game
+    // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        this.card1 = deck.deal('card1', commonTable);
-        this.card2 = deck.deal('card2', commonTable);
-        this.card3 = deck.deal('card3', commonTable);
-        this.card4 = deck.deal('card4', commonTable);
-        this.card5 = deck.deal('card5', commonTable);
-        this.commonCards = [this.card1, this.card2, this.card3, this.card4, this.card5];
+        let card1 = deck.deal();
+        let card2 = deck.deal();
+        let card3 = deck.deal();
+        let card4 = deck.deal();
+        let card5 = deck.deal();
+        this.commonCards = [card1, card2, card3, card4, card5];
+        console.log('common cards generated');
+        io.emit('deal common cards', this.commonCards);
 
-        this.player1card1 = deck.deal('player1card1', this.player1.playtable);
-        this.player1card2 = deck.deal('player1card2', this.player1.playtable);
-        this.player2card1 = deck.deal('player2card1', this.player2.playtable);
-        this.player2card2 = deck.deal('player2card2', this.player2.playtable);
-
-        this.player1.setCards(this.player1card1, this.player1card2);
-        this.player2.setCards(this.player2card1, this.player2card2);
-    }
-
-    // setup user interaction with tokens and cards
-    setupTokenInteraction(){
-        //* Set up motion for tokens
-        // Click to select and highlight tokens
-        const tokens = document.querySelectorAll('.table.tokens img');
-        tokens.forEach(token => token.addEventListener('click', this.selectListener))
-        
-    }
-
-    // setup user interaction with cards
-    setupCardInteraction(){
-        //* Set up motion for cards
-        // Click on any player card on the table to flip it
-        let allCards = document.querySelectorAll('.card[id^=player]');
-        allCards.forEach(container => container.addEventListener('click', this.flipListener));
-    }
-
-    
-    
-    selectListener(event){
-        let token = event.target;
-        token.classList.toggle("selected");
-    }
-    
-    flipListener(event) {
-        event.currentTarget.classList.toggle('flip');
+        io.sockets.sockets.forEach(socket =>{
+            let card1 = deck.deal();
+            let card2 = deck.deal();
+            socket.emit('deal player cards', [card1, card2]);
+        })
+        console.log('player cards generated');
     }
 
     // setup global listeners to play rounds
