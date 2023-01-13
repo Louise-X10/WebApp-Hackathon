@@ -18,10 +18,16 @@ app.get('/', (req, res) => {
   });
 }); */
 
+var chatHistory = []
 // send message to everyone, including senter
 io.on('connection', (socket) => {
+  console.log('new user connected');
+  console.log('chat history', chatHistory);
+  chatHistory.forEach(msg=>io.emit('chat message', msg)); // load all previous messages
   socket.on('chat message', (msg) => { // all connected sockets listen to 'chat message' event
     console.log('message' + msg);
+    chatHistory.push(msg);
+    console.log('chat history update to', chatHistory);
     io.emit('chat message', msg); // once 'chat message' event fired, emit to all connected sockets
   });
 });
