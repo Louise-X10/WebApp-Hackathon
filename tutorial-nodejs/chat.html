@@ -17,6 +17,7 @@
   </head>
   <body>
     <ul id="messages"></ul>
+
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
@@ -37,12 +38,17 @@
     });
 
     //listen to 'chat message' and include it in page when captured
-    socket.on('chat message', function(msg) {
+    socket.on('chat message', function(msg, username) {
       var item = document.createElement('li');
-      item.textContent = msg;
+      item.textContent = msg + ' by ' + username;
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });
+
+    socket.on('ask username', ()=>{
+      let username = window.prompt('Please enter a username');
+      socket.emit('send username', username);
+    })
     
   </script>
 </html>

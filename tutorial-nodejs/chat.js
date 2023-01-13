@@ -18,18 +18,36 @@ app.get('/', (req, res) => {
   });
 }); */
 
-var chatHistory = []
+var chatHistory = [];
+var users = [];
+
 // send message to everyone, including senter
 io.on('connection', (socket) => {
   console.log('new user connected');
-  console.log('chat history', chatHistory);
-  chatHistory.forEach(msg=>io.emit('chat message', msg)); // load all previous messages
-  socket.on('chat message', (msg) => { // all connected sockets listen to 'chat message' event
-    console.log('message' + msg);
-    chatHistory.push(msg);
-    console.log('chat history update to', chatHistory);
-    io.emit('chat message', msg); // once 'chat message' event fired, emit to all connected sockets
+
+  // load all previous messages
+  chatHistory.forEach(history=>io.emit('chat message', history[0], history[1])); 
+
+  io.emit('ask username');
+  console.log('ask for user name');
+
+  // all connected sockets listen to 'send username' event
+  socket.on('send username', (username)=>{
+    socket.username = username;
+  })
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    socket.username = '';
+  })
+
+  // all connected sockets listen to 'chat message' event
+  socket.on('chat message', (msg) => { 
+    console.log('message ' + msg + ' by user ' + socket.username);
+    chatHistory.push([msg, socket.username]);
+    io.emit('chat message', msg, socket.username); // once 'chat message' event fired, emit to all connected sockets
   });
+
 });
 
 server.listen(port, () => {
