@@ -159,3 +159,31 @@ let player1Cards = player1.rankCards.map(x=>x);
 let player2Cards = player2.rankCards.map(x=>x);
 var winner = evaluateHighCards(player1Cards, player2Cards)
 evaluateWinner(player1, player2) // player1 should win
+
+// Debug tie winner
+game.evaluateHand(game.player1, game.commonCards.concat(game.player1.cards));
+game.evaluateHand(game.player2, game.commonCards.concat(game.player2.cards));
+var [winner, highCard] = game.evaluateWinner(game.player1, game.player2);
+
+game.card1 = new Card("spades", 6)
+game.card2 = new Card("clubs", 9)
+game.card3 = new Card("spades", 5)
+game.card4 = new Card("diamonds", 5)
+game.card5 = new Card("spades", "king")
+commonCards = [game.card1, game.card2, game.card3, game.card4, game.card5];
+
+game.player1card1 = new Card("spades", 3)
+game.player1card2 = new Card("hearts", 6)
+game.player2card1 = new Card("diamonds", 6)
+game.player2card2 = new Card("hearts", 3)
+
+
+[this.card1.suit, this.card1.number] = ["spades", 6]
+[this.card2.suit, this.card2.number] = ["clubs", 9]
+[this.card3.suit, this.card3.number] = ["spades", 5]
+[this.card4.suit, this.card4.number] = ["diamonds", 5]
+[this.card5.suit, this.card5.number] = ["spades", "king"]
+[this.player1card1.suit,this.player1card1.number] = ["spades", 3]
+[this.player1card2.suit,this.player1card2.number]  = ["hearts", 6]
+[this.player2card1.suit,this.player2card1.number]  = ["diamonds", 6]
+[this.player2card2.suit,this.player2card2.number]  = ["hearts", 3]
