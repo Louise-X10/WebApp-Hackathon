@@ -48,78 +48,6 @@ io.on('connection', socket =>{
     })
 })
 
-var game = new Game(players);
-
- ee.on('game ready', () => {
-    game.setPlayers(players);
-    game.setupCards();
-    //ee.emit('start round', game);
-})
-
-ee.on('start round', (game)=>{
-    this.highestBet = 0;
-    let socketid = this.CurrentPlayer.socketid;
-    let isFirstPlayer = true;
-    io.to(socketid).emit('play once', game, isFirstPlayer);
-})
-
-io.on('made bet', (selectedTokenValues, sum) =>{
-    // update highest bet value
-    game.highestBet = Math.max(game.highestBet, sum)
-    // add tokens to common table, emit to all players
-})
-
-class Deck {
-    constructor(){
-        this.deck = [];
-        this.reset();
-        this.shuffle();
-    }
-
-    reset() {
-        this.deck = [];
-        const suits = ['clubs', 'diamonds','hearts', 'spades'];
-        const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
-        for (let suit of suits) {
-            for (let value of values) {
-                this.deck.push([suit, value]);
-            }
-        }
-    }
-
-    shuffle() {
-        let totalNumOfCards = this.deck.length;
-        for (let i = 0; i < totalNumOfCards; i++){
-            let j = Math.floor(Math.random() * totalNumOfCards);
-            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
-        }
-    }
-
-    deal() {
-        const card = this.deck.pop();
-        return card;
-    }
-
-}
-
-//* Token functions
-
-function getTokenValue(token){
-    let val = token.className.split(' ')[1];
-    val = val.slice(1,val.length);
-    return Number(val);
-}
-
-// clear all tokens on common table
-function clearCommonTokens(){
-    let tokens = document.querySelectorAll(`.common .table.tokens img`);
-    for (let token of tokens){
-        commonTable.removeChild(token);
-    }
-}
-
-// sort players so that first player at front
-//let game = Game(players);
 class Game {
     constructor(){
         this.winner = null;
@@ -177,7 +105,6 @@ class Game {
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
-        console.log(this.players);
         for (let player of this.players){
             let socketid = player.socketid;
             io.to(socketid).emit('deal player cards', [card1, card2]);
@@ -596,3 +523,76 @@ class Game {
         return subTokenSet;
     }
 }
+
+var game = new Game();
+
+ee.on('game ready', () => {
+    game.setPlayers(players);
+    game.setupCards();
+    ee.emit('start round', game);
+})
+
+ee.on('start round', (game)=>{
+    game.highestBet = 0;
+    let socketid = game.CurrentPlayer.socketid;
+    let isFirstPlayer = true;
+    io.to(socketid).emit('play once', game, isFirstPlayer);
+})
+
+io.on('made bet', (selectedTokenValues, sum) =>{
+    // update highest bet value
+    game.highestBet = Math.max(game.highestBet, sum)
+    // add tokens to common table, emit to all players
+})
+
+class Deck {
+    constructor(){
+        this.deck = [];
+        this.reset();
+        this.shuffle();
+    }
+
+    reset() {
+        this.deck = [];
+        const suits = ['clubs', 'diamonds','hearts', 'spades'];
+        const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
+        for (let suit of suits) {
+            for (let value of values) {
+                this.deck.push([suit, value]);
+            }
+        }
+    }
+
+    shuffle() {
+        let totalNumOfCards = this.deck.length;
+        for (let i = 0; i < totalNumOfCards; i++){
+            let j = Math.floor(Math.random() * totalNumOfCards);
+            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
+        }
+    }
+
+    deal() {
+        const card = this.deck.pop();
+        return card;
+    }
+
+}
+
+//* Token functions
+
+function getTokenValue(token){
+    let val = token.className.split(' ')[1];
+    val = val.slice(1,val.length);
+    return Number(val);
+}
+
+// clear all tokens on common table
+function clearCommonTokens(){
+    let tokens = document.querySelectorAll(`.common .table.tokens img`);
+    for (let token of tokens){
+        commonTable.removeChild(token);
+    }
+}
+
+// sort players so that first player at front
+//let game = Game(players);

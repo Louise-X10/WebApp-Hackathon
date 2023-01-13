@@ -160,7 +160,7 @@ class Player {
     // If unsuccessul, unselected all tokens, make bet again
     //! Change make bet to remove selected tokens and update bet values
     makeBet(game, isFirstPlayer) {
-        success = true;
+        let success = true;
         console.log('!running make bet')
         let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
