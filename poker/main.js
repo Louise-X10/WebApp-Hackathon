@@ -121,6 +121,10 @@ class Player {
         return Number(val);
     }
 
+    removeToken(token){
+        this.tokenTable.removeChild(token);
+    }
+
     // move given token to player table
     //! Change collect mechanism to add tokens
     /* collectToken(token){
@@ -173,7 +177,7 @@ class Player {
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue = sum;
-                //! playerTokens.forEach((token)=>this.removeToken(token));
+                playerTokens.forEach((token)=>this.removeToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
                 sucess = false; //  make player bet again
@@ -183,7 +187,7 @@ class Player {
             if (mustMatch !== 0 && sum === mustMatch){
                 // If on cycle 2 and match highest bet, bet suceeds
                 this.betValue += sum;
-                //! playerTokens.forEach((token)=>this.removeToken(token));
+                playerTokens.forEach((token)=>this.removeToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );

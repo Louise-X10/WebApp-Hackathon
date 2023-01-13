@@ -542,7 +542,7 @@ ee.on('start round', (game)=>{
 io.on('made bet', (selectedTokenValues, sum) =>{
     // update highest bet value
     console.log('user made a bet')
-    game.highestBet = Math.max(game.highestBet, sum)
+    //game.highestBet = Math.max(game.highestBet, sum)
     // add tokens to common table, emit to all players
 })
 
