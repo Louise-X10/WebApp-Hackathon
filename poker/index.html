@@ -90,7 +90,11 @@
     var socket = io();
 
     socket.on('ask username', ()=>{
-      let username = window.prompt('Please enter a username');
+        //Must enter username
+        do {
+            var username = window.prompt('Please enter a username');
+            console.log('my username', username);
+        } while (username===null);
       socket.username = username;
       console.log('username entered');
       socket.emit('player ready', player, socket.username);

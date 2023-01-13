@@ -18,7 +18,6 @@ server.listen(port, () => {
 
 // actual server code
 var players = []
-var playerID = 1;
 io.on('connection', socket =>{
     console.log('new user connected');
 
@@ -28,8 +27,7 @@ io.on('connection', socket =>{
     // first player that is ready has playerID=1
     socket.on('player ready', (player, username) => {
         console.log('receive player ready');
-        players.push([player, username, playerID]);
-        playerID ++;
+        players.push([player, username]);
         console.log(players)
     })
 })
