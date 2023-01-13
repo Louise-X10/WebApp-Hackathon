@@ -16,8 +16,8 @@ class Player {
         this.commonTable = document.querySelector('.common .table.cards');
         this.commonTokenTable = document.querySelector('.common .table.tokens');
 
-        this.betBtn = document.querySelector('.player button.bet');
-        this.foldBtn = document.querySelector('.player button.fold');
+        this.betBtn = document.querySelector('.action button.bet');
+        this.foldBtn = document.querySelector('.action button.fold');
         
         this.folded = false;
         this.playerCards = []; // [card1, card2]
@@ -193,7 +193,7 @@ class Player {
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
-        return [selectedTokenValues, sum, sucess]
+        return [selectedTokenValues, sum, success]
     }
 
     makeFold(){

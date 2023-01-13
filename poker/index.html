@@ -90,6 +90,8 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io();
+    //var EventEmitter = require("events").EventEmitter;
+    //var ee = new EventEmitter();
 
     // Execute code after page is loaded
     window.addEventListener("load", (event) => {
@@ -121,15 +123,25 @@
 
         socket.on('play once', (game, isFirstPlayer)=>{
             console.log('start playing')
-            //! setup button listeners
+            //! setup bet button listeners
+            player.betBtn.addEventListener('click', betAction, {once: true})
 
-            // continue to make bet until successfull
-            do {
+            function betAction(){
+                console.log('bet action called')
                 let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
-            } while (success===false);
+                console.log(selectedTokenValues, sum, success)
+                console.log("success", success);
+                if (success){
+                    //player.betBtn.removeEventListener('click', betAction);
+                    //player.container.classList.remove('playing');
+                    socket.emit('made bet', selectedTokenValues, sum);
+                } else {
+                    player.betBtn.addEventListener('click', betAction, {once: true})
+                    betAction()
+                    //window.dispatchEvent('play once', game, isFirstPlayer); // continue to make bet until successfull
+                }
+            }            
             
-            socket.emit('made bet', selectedTokenValues, sum);
-            //! remove button listeners
         })
 
         socket.on('print', (msg)=>console.log(msg))
