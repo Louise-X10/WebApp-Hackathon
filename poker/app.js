@@ -51,13 +51,14 @@ io.on('connection', socket =>{
  ee.on('game ready', () => {
     game = new Game(players);
     game.setupCards();
-    //ee.emit('start round');
+    ee.emit('start round', game);
 })
 
-ee.on('start round', ()=>{
+ee.on('start round', (game)=>{
     this.highestBet = 0;
     let socketid = this.CurrentPlayer.socketid;
-    io.to(socketid).emit('play once');
+    let isFirstPlayer = true;
+    io.to(socketid).emit('play once', game, isFirstPlayer);
 })
 
 class Deck {

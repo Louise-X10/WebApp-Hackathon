@@ -1,3 +1,5 @@
+const { Socket } = require("socket.io");
+
 //* Token functions
 const cardPath = 'cardsSVG/';
 const tokenPath = 'tokensSVG/';
@@ -114,6 +116,13 @@ class Player {
         }
     }
 
+    // read token value and return
+    getTokenValue(token){
+        let val = token.className.split(' ')[1];
+        val = val.slice(1,val.length);
+        return Number(val);
+    }
+
     // move given token to player table
     //! Change collect mechanism to add tokens
     /* collectToken(token){
@@ -146,46 +155,45 @@ class Player {
             token.style.transform = '';}, 1000);
     } */
 
-    // Make bet and update highest bet, return whether bet was successful
+    //makeAction() // bet or fold
+
+    // Make bet, remove selected tokens, update player bet value, update server highest bet
+    // Return 
     //! Change make bet to remove selected tokens and update bet values
-    /* makeBet() {
-        let success = true;
+    makeBet(game, isFirstPlayer) {
         console.log('!running make bet')
         console.log(this)
         let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
         playerTokens = Array.from(playerTokens);
-        let sum = playerTokens.reduce((sumValue, token)=> sumValue+getTokenValue(token),0);
+        let sum = playerTokens.reduce((sumValue, token)=> sumValue+this.getTokenValue(token),0);
         console.log('sum', sum)
+
         if (game.cycle === 1){
-            let betSuceed = sum >= game.highestBet || this.firstPlayer === true;
+            let betSuceed = sum >= game.highestBet || isFirstPlayer;
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue = sum;
-                game.highestBet = Math.max(game.highestBet, this.betValue);
-                playerTokens.forEach((token)=>this.moveToken(token));
+                var newHighestBet = Math.max(game.highestBet, this.betValue); //! update in server
+                //! playerTokens.forEach((token)=>this.removeToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
-                success = false;
+                this.makeBet(game, isFirstPlayer); //  make player bet again
             }
         } else if (game.cycle === 2){
             let mustMatch = game.highestBet - this.betValue;
             if (mustMatch !== 0 && sum === mustMatch){
                 // If on cycle 2 and match highest bet, bet suceeds
                 this.betValue += sum;
-                playerTokens.forEach((token)=>this.moveToken(token));
+                //! playerTokens.forEach((token)=>this.removeToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );
-                success = false; //  make player bet again
+                this.makeBet(game, isFirstPlayer); //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
-        // Flip back any flipped cards
-        this.cards.forEach((card)=>{
-            if (card.isFlipped()){card.flip()};
-        })
-        return success;
-    } */
+        return selectedTokenValues 
+    }
 
     makeFold(){
         this.folded = true;
