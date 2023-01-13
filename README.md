@@ -41,8 +41,6 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Server's ability:
       -   control next button and common table
       -   deal cards to all players and common table: deal cards value and call client to display cards
-    - Match player to username:
-      - save username on client-side player object and server-side socket.username
 - To be completed
   - Players can only flip their own cards
   - Refine multiple token movement (animate different target positions), adjust delay

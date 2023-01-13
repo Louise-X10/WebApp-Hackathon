@@ -35,9 +35,8 @@ io.on('connection', socket =>{
 
     socket.on('player ready', (player) => {
         console.log('receive player ready');
+        player.socketid = socket.id;
         players.push(player);
-        // players.push([socket.id, player.username]);
-        socket.player = player;
 
         // wait until 2 players to start game
         //! Tempororay start condition
@@ -45,7 +44,6 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             ee.emit('game ready');
-            console.log('all players ready');
         }
     })
 })
@@ -53,21 +51,13 @@ io.on('connection', socket =>{
  ee.on('game ready', () => {
     game = new Game(players);
     game.setupCards();
-    //const allSockets = await io.fetchSockets();
-    /* console.log()
-    let c = 1
-    for (socket in allSockets){
-        socket.emit('print', `Count at ${c}`);
-        c++;
-    } */
-    
-    /* for(socket of io.socket.socket){
-        if (socket.player.username === 'A'){
-            
-        }
-    }
-    io.emit('set player cards', [card1, card2], 'A'); */
-    //game.setGame();
+    //ee.emit('start round');
+})
+
+ee.on('start round', ()=>{
+    this.highestBet = 0;
+    let socketid = this.CurrentPlayer.socketid;
+    io.to(socketid).emit('play once');
 })
 
 class Deck {
@@ -142,8 +132,6 @@ class Game {
 
     setGame(){
         this.setupCards();
-        this.setupCardInteraction();
-        this.setupTokenInteraction();
         this.setupListeners();
         let startRoundEvent = new CustomEvent('startRound');
         this.startRoundEvent = startRoundEvent;
@@ -178,11 +166,11 @@ class Game {
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
-        io.sockets.sockets.forEach(socket =>{
-            let card1 = deck.deal();
-            let card2 = deck.deal();
-            socket.emit('deal player cards', [card1, card2]);
-        })
+        console.log(this.players);
+        for (let player of this.players){
+            let socketid = player.socketid;
+            io.to(socketid).emit('deal player cards', [card1, card2]);
+        }
         console.log('player cards generated');
     }
 
