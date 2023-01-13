@@ -187,11 +187,10 @@ class Player {
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );
-                sucess = false; //  make player bet again
+                success = false; //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
-        //playerTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
         return [selectedTokenValues, sum, success]
     }
 

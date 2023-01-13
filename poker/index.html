@@ -140,7 +140,6 @@
                     socket.emit('made bet', selectedTokenValues, sum);
                 } else {
                     player.betBtn.addEventListener('click', betAction, {once: true})
-                    betAction()
                     //window.dispatchEvent('play once', game, isFirstPlayer); // continue to make bet until successfull
                 }
             }            
