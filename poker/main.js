@@ -176,7 +176,6 @@ class Player {
                 //! playerTokens.forEach((token)=>this.removeToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
-                selectedTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
                 sucess = false; //  make player bet again
             }
         } else if (game.cycle === 2){
@@ -188,11 +187,11 @@ class Player {
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
                 alert(`You must bet ${mustMatch} to match and stay in the game!` );
-                selectedTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
                 sucess = false; //  make player bet again
             } // If on cycle 2 and already match highest bet, do nothing
         }
 
+        playerTokens.forEach((token)=> token.classList.remove('selected')); // Unselect any selected tokens
         return [selectedTokenValues, sum, success]
     }
 
