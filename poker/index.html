@@ -91,6 +91,9 @@
   <script>
     var socket = io();
 
+    //? Add this so that page finish loading before asking username
+    // socket.on('connect', ()=>console.log('user connected'))
+
     socket.on('ask username', ()=>{
         //Must enter username
         do {
@@ -102,6 +105,10 @@
       socket.emit('player ready', player, socket.username);
     })
     
+    socket.on('waiting', ()=>{
+        let msg = document.querySelector('#evalMsg');
+        msg.textContent = 'Waiting for more players';
+    })
 
   </script>
   

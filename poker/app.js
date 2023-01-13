@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const port = 3000;
 
+
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
@@ -18,19 +19,43 @@ server.listen(port, () => {
 
 // actual server code
 var players = []
+var EventEmitter = require("events").EventEmitter;
+var ee = new EventEmitter();
+
 io.on('connection', socket =>{
     console.log('new user connected');
 
-    socket.emit('ask username');
-    console.log('ask for user name');
+    setTimeout(()=>{
+        socket.emit('ask username');
+        console.log('ask for user name');
+    }, 1000)
+    
+    /* socket.emit('ask username');
+    console.log('ask for user name'); */
+        
 
-    // first player that is ready has playerID=1
     socket.on('player ready', (player, username) => {
         console.log('receive player ready');
         players.push([player, username]);
-        console.log(players)
+
+        // wait until 2 players to start game
+        //! Tempororay start condition
+        if (players.length < 2){
+            socket.emit('waiting');
+        } else {
+            ee.emit('game ready');
+        }
     })
 })
+
+ee.on('game ready', () => {
+    console.log('implement code here');
+})
+
+//console.log('game ready', game);
+/* io.on('start game', socket =>{
+
+}) */
 
 const cardPath = 'cardsSVG/';
 
