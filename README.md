@@ -31,8 +31,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Match mechanism (simplified rules)
     - Initiate new game after game ends
     - Split tokens evenly for ties
+  - Multirounds: 
+    - Initialize new game and rotate player order
 - Woking on
-  - Initialize new game
   - Break ties with more than 2 players
   - Collect tokens after every player confirmed eval message
   - Start game after one player presses start, instead of waiting for definitive amount of players
@@ -48,8 +49,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Update common table status to all players
     - Store card as array [suit, value]
 - To be completed
-  - Multirounds: rotate player order
-  - Multirounds: big bind, small bind 
+  - Multirounds: big bind, small bind (not done)
   - Collect token movement (not essential)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
   - Reorganize token after collection (not essential)
