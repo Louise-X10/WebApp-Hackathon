@@ -41,6 +41,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Additional congrats message to winner
 - Woking on
   - Reset game
+  - BUG: evaluates none > one pair
   - BUG: game keeps running after fold
   - Break ties with more than 2 players
   - Standardize rules for no bets (i.e. checks)

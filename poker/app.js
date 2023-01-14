@@ -19,7 +19,7 @@ server.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
 
-// actual server code
+//* actual server code
 var players = [] // [{socketID, username}, ...]
 var allSockets = []
 var EventEmitter = require("events").EventEmitter;
@@ -110,12 +110,12 @@ io.on('connection', socket =>{
     })
 })
 
-
-
 /* ee.on('game ready', (game) => {
     game.setGame(players);
     ee.emit('start round',game);
 }) */
+
+//* Internal events
 
 ee.on('start round', ()=>{
     // Reset highest bet in current round, first player, and cycle
@@ -560,7 +560,9 @@ class Game {
         var needHighCard = false;
         const allRanks = this.players.map(player=>player.handRank);
         const maxRank = Math.max.apply(null, allRanks);
+        console.log(allRanks, maxRank)
         var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
+        console.log('evaluateWinner winners:', winners);
         if (winners.length === 1){
             // If have definitive winner
             return [winners, needHighCard];
