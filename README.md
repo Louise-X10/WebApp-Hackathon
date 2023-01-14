@@ -35,9 +35,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Initialize new game and rotate player order
     - Decide which cards to flip on client side
     - Subtract player.money after bet
+    - Reset player.betvalue after new round
 - Woking on
   - Add money after collect tokens
-  - Reset player.betvalue after new round
   - Break ties with more than 2 players
   - Collect tokens after every player confirmed eval message
   - Start game after one player presses start, instead of waiting for definitive amount of players

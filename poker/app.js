@@ -355,13 +355,13 @@ class Game {
         } else {
             // If have multiple winners with same hand
             needHighCard = true;
-            winners = this.evaluateHighCards(winners, evalRank = true);       
+            winners = this.evaluateHighCards(winners, true);       
             if (winners.length===1){
                 // If not more tie, return winner
                 return [winners, highCard];
             } else {
                 // If still tie, continue to evaluate remaining cards
-                winners = this.evaluateHighCards(winners, evalRank = false);
+                winners = this.evaluateHighCards(winners, false);
                 return [winners, highCard];
             }
         }
@@ -428,7 +428,9 @@ ee.on('start round', ()=>{
     io.game.cycle = 1;
     if (io.game.round === 3){
         console.log('completed all rounds, end game')
-        ee.emit('end game');
+        setTimeout(() => {
+            ee.emit('end game');
+        }, 2000);
     } else {
         ee.emit('start turn');
     }
@@ -493,6 +495,7 @@ ee.on('next round',()=>{
     console.log('next round initiated')
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
+    console.log(io.game.round)
     ee.emit('start round');
 })
 
