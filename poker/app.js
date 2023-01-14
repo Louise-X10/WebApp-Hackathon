@@ -559,10 +559,10 @@ class Game {
     
         var needHighCard = false;
         const allRanks = this.players.map(player=>player.handRank);
-        const maxRank = Math.max.apply(null, allRanks);
-        console.log(allRanks, maxRank)
-        var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
-        console.log('evaluateWinner winners:', winners);
+        const minRank = Math.min.apply(null, allRanks); // lower rank = winner
+        //console.log(allRanks, minRank)
+        var winners = this.players.filter(player=>player.handRank === minRank); // array of winners
+        //console.log('evaluateWinner winners:', winners);
         if (winners.length === 1){
             // If have definitive winner
             return [winners, needHighCard];
