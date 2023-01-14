@@ -96,7 +96,7 @@ class Player {
         return token;
     }
 
-    // Create and Place token of given value into table, Update token frequency dict
+    // Create and Place token of given value into player table, Update token frequency dict
     // Setup token select listener
     addToken(value){
         let token = this.createToken(value);
@@ -108,9 +108,17 @@ class Player {
 
     // clear all tokens on player table
     clearTokens(){
-        let tokens = document.querySelectorAll(`#player .table.tokens img`);
+        let tokens = this.tokenTable.querySelectorAll(`img`);
         for (let token of tokens){
             this.tokenTable.removeChild(token);
+        }
+    }
+
+    // clear all tokens on common table
+    clearCommonTokens(){
+        let tokens = this.commonTokenTable.querySelectorAll(`img`);
+        for (let token of tokens){
+            this.commonTokenTable.removeChild(token);
         }
     }
 
@@ -123,7 +131,7 @@ class Player {
 
     // move given token to player table
     //! Change collect mechanism to add tokens // Still animate movement
-    /* collectToken(token){
+/*     collectToken(token){
         let cloneToken = token.cloneNode();
         cloneToken.classList.add('hidden');
         let xi = token.getBoundingClientRect()['x'];

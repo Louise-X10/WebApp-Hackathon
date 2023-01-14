@@ -51,7 +51,7 @@
     </div>
 
     <!--Player 1 Container-->
-    <div class="area player" id="player1">
+    <div class="area player" id="player">
         <div class="table cards">
             <h2>Player's cards: </h2>
         </div>
@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <div class="area action" id="player1">
+    <div class="area action" id="player">
         <button class="fold">Fold</button>
         <button class="bet">Make A Bet!</button>
     </div>
@@ -170,6 +170,15 @@
                 let msg = document.querySelector('#evalMsg');
                 msg.textContent = evalMsg;
             })
+
+            socket.on('clear common tokens',()=>{
+                player.clearCommonTokens();
+            })
+
+            socket.on('collect tokens', (collectTokenValues)=>{
+                collectTokenValues.forEach(value=>player.addToken(value));
+            })
+
 
             socket.on('print', (msg)=>console.log(msg));
         //})
