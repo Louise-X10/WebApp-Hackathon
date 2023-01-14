@@ -151,7 +151,7 @@
                     player.makeFold(game);
                     socket.emit('made fold');
                 }
-                
+
                 // setup bet button listeners
                 player.betBtn.addEventListener('click', betAction, {once: true});
                 player.foldBtn.addEventListener('click', foldAction, {once: true})
@@ -162,10 +162,15 @@
                 player.receiveBet(selectedTokenValues);
             })
 
+            socket.on('flip common cards',(indices)=>{
+                player.flipCommonCards(indices);
+            })
+
             socket.on('print', (msg)=>console.log(msg));
         //})
 
     });
+
     //? Add this so that page finish loading before asking username
     // socket.on('connect', ()=>console.log('user connected'))
 

@@ -488,12 +488,14 @@ ee.on('next round',()=>{
         io.game.commonCards[0].flip();
         io.game.commonCards[1].flip();
         io.game.commonCards[2].flip();
-        // flip common cards on all users
+        io.emit('flip common cards', [0,1,2]); // flip common cards on all users
         ee.emit('start round');
     } else if (!io.game.commonCards[3].isFlipped()){
         io.game.commonCards[3].flip();
+        io.emit('flip common cards', [3]); // flip common cards on all users
     } else if (!io.game.commonCards[4].isFlipped()){
         io.game.commonCards[4].flip();
+        io.emit('flip common cards', [4]); // flip common cards on all users
         setTimeout(()=>{
             // Reveal hand and winner, send to all users
         }, 1000)

@@ -206,6 +206,12 @@ class Player {
         // Increment number of players folded in the game
         game.foldedCount ++;
     }
+
+    flipCommonCards(indices){
+        indices.forEach(idx=>{
+            this.commonCards[idx].flip();
+        })
+    }
 }
 
 class Card {
