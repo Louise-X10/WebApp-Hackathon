@@ -122,7 +122,13 @@
                 player.setPlayerCards(playerCards);
             })
 
-            socket.on('play once', (game, isFirstPlayer)=>{
+            socket.on('watch', (playerIdx)=>{
+                console.log('watching')
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = `Player ${playerIdx} is playing now!`;
+            })
+
+            socket.on('play', (game, isFirstPlayer)=>{
                 console.log('start playing')
                 let msg = document.querySelector('#evalMsg');
                 msg.textContent = 'You are playing now!';

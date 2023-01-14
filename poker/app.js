@@ -46,7 +46,6 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
-            console.log('game initial', io.game);
             ee.emit('start round',io.game);
             //ee.emit('game ready', game);
         }
@@ -533,7 +532,8 @@ ee.on('start round', (game)=>{
     game.highestBet = 0;
     let socketid = game.players[game.CurrentPlayer].socketid;
     let isFirstPlayer = true;
-    io.to(socketid).emit('play once', game, isFirstPlayer);
+    io.to(socketid).emit('play', game, isFirstPlayer);
+    io.sockets.sockets.get(socketid).broadcast.emit('watch', game.CurrentPlayer)
 })
 
 
