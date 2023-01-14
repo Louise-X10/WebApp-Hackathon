@@ -79,7 +79,7 @@ io.on('connection', socket =>{
         // console.log('current player is now ', io.game.players[io.game.CurrentPlayer]);
 
         // then proceed to next player
-        io.game.CurrentPlayer += 1;
+        io.game.CurrentPlayer++;
         console.log('bet, current player is updated to ', io.game.CurrentPlayer);
         ee.emit('start turn');
     })
@@ -88,8 +88,9 @@ io.on('connection', socket =>{
         // set folded status to true
         io.game.players[io.game.CurrentPlayer].folded = true;
         // proceed to next player
-        console.log('fold, current player is updated to ', io.game.CurrentPlayer);
-        io.game.CurrentPlayer += 1;
+        io.game.CurrentPlayer ++;
+        io.game.foldedCount ++;
+        console.log('fold, current player is updated to ', io.game.CurrentPlayer, io.game.foldedCount);
         ee.emit('start turn');
 
     })
@@ -497,6 +498,7 @@ ee.on('start turn', ()=>{
     }
 
     if (io.game.foldedCount === io.game.playerCount-1){
+        console.log('all else folded, end game early')
         ee.emit('end game early');
     } else if (io.game.CurrentPlayer === null){
         // If all players have played, start next round
@@ -508,8 +510,8 @@ ee.on('start turn', ()=>{
         //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
-            io.game.CurrentPlayer += 1;
-            console.log('proceed to next turn')
+            console.log('player already folded, skip to next player turn')
+            console.log(player)
             ee.emit('start turn');
         } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
             // If not folded, but at cycle 2 and already at highest bet, proceed to next player
@@ -532,7 +534,7 @@ ee.on('next round',()=>{
     console.log('next round initiated')
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
-    console.log(io.game.round)
+    console.log('round', io.game.round)
     ee.emit('start round');
 })
 
@@ -544,8 +546,9 @@ ee.on('end game',()=>{
     io.emit('display evalMsg', evalMsg);
 })
 
-ee.on('end game early',async ()=>{
+ee.on('end game early',()=>{
     var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
+    console.log('only non-fold winner', winners);
     var winnerName = winners[0].username;
     io.game.winners = winners;
     let evalMsg = "Winner is " + winnerName;
