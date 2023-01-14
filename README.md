@@ -40,6 +40,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
   - Add money after collect tokens
   - Break ties with more than 2 players
   - Collect tokens after every player confirmed eval message
+  - Standardize rules for no bets (i.e. checks)
   - Start game after one player presses start, instead of waiting for definitive amount of players
 - Online multi-user version with Socket.io
   - Client's ability:

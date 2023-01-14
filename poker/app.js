@@ -43,8 +43,8 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
-            ee.emit('end game');
-            //!ee.emit('start round');
+            // ee.emit('end game'); // for testing purposes
+            ee.emit('start round');
             //ee.emit('game ready', game);
         }
     })
@@ -64,7 +64,7 @@ io.on('connection', socket =>{
         serverPlayer.money = player.money;
         serverPlayer.betValue = player.betValue;
         serverPlayer.tokens = player.tokens;
-        console.log('current player is now ', io.game.players[io.game.CurrentPlayer]);
+        // console.log('current player is now ', io.game.players[io.game.CurrentPlayer]);
 
         // then proceed to next player
         io.game.CurrentPlayer += 1;
@@ -356,7 +356,6 @@ class Game {
         const allRanks = this.players.map(player=>player.handRank);
         const maxRank = Math.max.apply(null, allRanks);
         var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
-        console.log('winners', winners);
         if (winners.length === 1){
             // If have definitive winner
             return [winners, needHighCard];
@@ -437,9 +436,7 @@ ee.on('start round', ()=>{
     io.game.cycle = 1;
     if (io.game.round === 3){
         console.log('completed all rounds, end game')
-        setTimeout(() => {
-            ee.emit('end game');
-        }, 2000);
+        ee.emit('end game');
     } else {
         ee.emit('start turn');
     }
@@ -477,7 +474,7 @@ ee.on('start turn', ()=>{
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
         console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
-        console.log('current player is', player);
+        //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
             io.game.CurrentPlayer += 1;
@@ -521,7 +518,7 @@ ee.on('end game',()=>{
     }, 2000);
 })
 
-ee.on('end game early',()=>{
+ee.on('end game early',async ()=>{
     var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
     var winnerName = winners[0].username;
     io.game.winner = winners;
@@ -537,6 +534,7 @@ ee.on('end game early',()=>{
 
 
 ee.on('compute tokens',()=>{
+    console.log('computing tokens')
     // Split tokens if needed
     let commonTokenValues = io.game.commonTokenValues;
     if (winners.length === 1){
