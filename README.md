@@ -43,9 +43,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Remind players to start new game
     - Remind players current round number
     - Non-winner common tokens cleared on click
+    - Fixed fold issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
 - Woking on
   - Display own username
-  - BUG: fold action keeps getting called on client side, except when fold called at beginning (server side one-time listener)
+  - Add win due to fold message
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
