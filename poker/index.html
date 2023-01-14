@@ -199,13 +199,19 @@
                 window.alert(evalMsg);
                 console.log('alert message closed');
                 console.log('display and clear');
-                // Clear common tokens
-                player.clearCommonTokens();
-                // Set up reset listener
-                player.resetBtn.addEventListener('click', ()=>{
-                    player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
-                    socket.emit('ready for next game');
-                }, {once: true})
+
+                // Set up clear tokens listener
+                player.collectBtn.textContent = 'Clear Tokens';
+                player.collectBtn.addEventListener('click', ()=>{
+                    console.log('clearing tokens')
+                    player.clearCommonTokens();
+                    player.collectBtn.textContent = 'Collect Tokens';
+                    // Set up reset listener
+                    player.resetBtn.addEventListener('click', ()=>{
+                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
+                        socket.emit('ready for next game');
+                    }, {once: true})
+                }, {once: true});
             })
 
             socket.on('print', (msg)=>console.log(msg));
