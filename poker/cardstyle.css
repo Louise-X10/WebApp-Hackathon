@@ -1,16 +1,15 @@
-
-html {
+body {
     background-color: darkgreen;
 }
 
 header {
-    background-color: darkolivegreen;
+    background-color: rgb(219, 126, 157);
     padding: 10px;
 }
 
 header pre {
     font-size: larger;
-    color: aqua;
+    color: rgb(121, 244, 96);
 }
 
 h3 {
@@ -20,6 +19,7 @@ h3 {
 li {
     font-size: larger;
 }
+
 
 /* Table area */
 .area {
