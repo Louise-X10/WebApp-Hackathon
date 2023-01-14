@@ -49,6 +49,7 @@ class Player {
 
     // Display common cards
     setCommonCards (commonCards){
+        this.commonCards = [];
         commonCards.forEach(cardval=>{
             let card = new Card(cardval[0], cardval[1]); // create new card object from given values
             this.commonCards.push(card); // push card object to this.commoncards
@@ -58,6 +59,7 @@ class Player {
     
     // Display player cards, setup cardflip listener
     setPlayerCards(playerCards){
+        this.playerCards = [];
         playerCards.forEach(cardval => {
             let card = new Card(cardval[0], cardval[1]); 
             this.playerCards.push(card);
@@ -67,8 +69,8 @@ class Player {
     }
 
     clearAllCards(){
-        this.playerCards.forEach(card=>card.removeCard()); // remove card from its table
-        this.commonCards.forEach(card=>card.removeCard()); // remove card from its table
+        this.playerCards.forEach(card=>card.removeCard()); // remove card display from its table
+        this.commonCards.forEach(card=>card.removeCard()); // remove card display from its table
     }
 
     // Reset player status (except money etc)

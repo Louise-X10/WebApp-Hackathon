@@ -245,10 +245,17 @@ ee.on('end game early',()=>{
 
     io.to(winners[0].socketid).emit('display and collect', evalMsg, commonTokenValues);
     io.sockets.sockets.get(winners[0].socketid).broadcast.emit('display and clear', evalMsg);
+
+    io.game.commonTokenValues = [];
+    console.log('Game has ended!!!')
 })
 
 ee.on('reset game', ()=>{
     console.log('resetting game');
+    io.game.resetGame();
+    console.log('after reset, game is', io.game);
+    io.game.setupCards();
+    ee.emit('start round');
 })
 
 
@@ -311,20 +318,17 @@ class Game {
     // Don't need to reset listeners, need to remove prior cards and generate new cards, remove eval message
     resetGame(){
         // clear all cards
-        //io.emit('reset game');
-        this.commonCards.forEach(card=>card.removeCard());
+        this.commonCards = [];
         this.players.forEach(player=>{
-            player.cards.forEach(card => card.removeCard());
+            player.cards = [];
         })
-        // set up new game
-        this.setupCards();
-        // reset game status;
+        // reset game status
         this.winner = null;
         this.foldedCount = 0;
         this.cycle = 1;
         this.highestBet = 0;
         this.commonTokenValues = []; // already reset in 'compute tokens'
-        // rotate players;
+        // rotate players
         let firstPlayer = this.players.shift();
         this.players.push(firstPlayer);
         this.CurrentPlayer = 0;

@@ -109,6 +109,9 @@
             })
 
             socket.on('deal common cards', (commonCards)=>{
+                console.log('starting a new game');
+                player.clearAllCards();
+                player.resetStatus();
                 player.setCommonCards(commonCards);
             })
 
@@ -199,14 +202,7 @@
                     socket.emit('ready for next game');
                 }, {once: true})
             })
-
-            socket.on('reset game',()=>{
-                player.msg.textContent = 'Starting a new game!';
-                console.log('resetting game');
-                player.clearAllCards();
-                player.resetStatus();
-            })
-
+            
             socket.on('print', (msg)=>console.log(msg));
 
     });
