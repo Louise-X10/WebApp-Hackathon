@@ -3,6 +3,7 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { setTimeout } = require('timers/promises');
 const io = new Server(server);
 const port = 3000;
 
@@ -514,34 +515,45 @@ ee.on('next round',()=>{
     } else if (!io.game.commonCards[3].isFlipped()){
         io.game.commonCards[3].flip();
         io.emit('flip common cards', [3]); // flip common cards on all users
+        ee.emit('start round');
     } else if (!io.game.commonCards[4].isFlipped()){
         io.game.commonCards[4].flip();
         io.emit('flip common cards', [4]); // flip common cards on all users
+        // Wait to display all cards for a while before ending game
         setTimeout(()=>{
-            // Reveal hand and winner, send to all users
-            let evalMsg = io.game.returnEvalMsg();
-            io.emit('display evalMsg', evalMsg);
-        }, 1000)
-        //? Make collect tokens start after all users clicked confirm on alert popup window
-        setTimeout(()=>{
-            // Split tokens if needed
-            let commonTokenValues = io.game.commonTokenValues;
-            if (winners.length === 1){
-                var winnerTokenValues = commonTokenValues;
-            } else {
-                var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
-            }
-
-            // let winner users collect tokens
-            let winnersocketids = io.game.winners.forEach(player=>player.socketid);
-            for (let winnersocketid of winnersocketids){
-                io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
-            }
-            // clear common table for all users
-            io.emit('clear tokens');
-            // end game
-        }, 3000)
+            ee.emit('end game');
+        }, 2000);
     }
+})
+
+
+ee.on('end game',()=>{
+    // Reveal hand and winner, send to all users
+    let evalMsg = io.game.returnEvalMsg();
+    io.emit('display evalMsg', evalMsg);
+    
+    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
+    setTimeout(() => {
+        ee.emit('compute tokens');
+    }, 2000);
+})
+
+ee.on('compute tokens',()=>{
+    // Split tokens if needed
+    let commonTokenValues = io.game.commonTokenValues;
+    if (winners.length === 1){
+        var winnerTokenValues = commonTokenValues;
+    } else {
+        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+    }
+    // let winner users collect tokens
+    let winnersocketids = io.game.winners.forEach(player=>player.socketid);
+    for (let winnersocketid of winnersocketids){
+        io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
+    }
+    // clear common table for all users
+    io.emit('clear common tokens');
+
 })
 
 
