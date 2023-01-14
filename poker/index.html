@@ -8,19 +8,20 @@
   </head>
 
   <header>
-        <h1>Two-player Poker Card Game</h1>
+        <h1>Multi-player Poker Card Game</h1>
+        <h2> Refresh page until pop-up window asking for username appears! </h2>
         <h3>Instructions: </h3>
         <ul>
             <li>Player's cards can be flipped by clicking any time during the game.</li>
-            <li>Each game consists of 4 rounds, where the first round has no cards flipped. In each round, players take turns making a bet, then common cards are revealed.</li>
-            <li>In each player's turn, the player can click to view their cards. Players bet tokens by selecting tokens and pressing the 'Make Bet!' button. </li>
-            <li>After each player has taken a turn, press the 'Next Step' button to flip common cards and proceed to the next round.</li>
-            <li>After collecting tokens, press 'Reset Game' to start a new game.</li>
+            <li>Each game consists of 4 rounds, where round 0 has no cards flipped, round 1 flips first three cards, round 2 flips fourth card, and round 3 flips last card. In each round, players take turns making a bet. The common cards are automatically revealed once a round is finished. </li>
+            <li>In each player's turn, the players can bet tokens by selecting tokens and pressing the 'Make Bet!' button. The player can also choose to fold and quit this game. </li>
+            <li>Throughout the game, there will be a message area on the webpage displaying the current state of the game and reminder for what to do. The text will be shown in bright blue for contrast. </li>
+            <li>Once all rounds are done, a pop-up window will display the winner. This message will also be shown in the message area of the webpage. Then, winners can collect tokens and non-winners can clear the tokens by pressing the corresdoing buttons.</li>
+            <li>A new game will be initiated once all players have clicked the 'Reset Game' button. </li>
         </ul>
         <h3>Simplified rules:</h3>
         <p>For each turn, there are maximum two cycles. During the first cycle through all the players, raises are allowed. In the second cycle (if needed), only matches are allowed. </p>
-        <h3>Multiplayer rules:</h3>
-        <p>Play order is determined by the order of users entering their username. Play order will be cycled in new games.</p>
+        <p>Play order is determined by the order of users entering their username. Play order will be rotated in new games.</p>
         <pre id="evalMsg">      </pre>
 
   </header>
