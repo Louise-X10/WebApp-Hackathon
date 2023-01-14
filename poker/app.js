@@ -549,11 +549,6 @@ ee.on('end game early',async ()=>{
     io.game.winner = winners;
     let evalMsg = "Winner is " + winnerName;
     io.emit('display evalMsg', evalMsg);
-
-    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
-    setTimeout(() => {
-        ee.emit('compute tokens');
-    }, 2000);
 })
 
 
