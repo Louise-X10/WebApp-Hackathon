@@ -176,6 +176,8 @@
             })
 
             socket.on('collect tokens', (collectTokenValues)=>{
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent += "\nYou won! Congradulations!";
                 console.log('collecting tokens', collectTokenValues)
                 collectTokenValues.forEach(value=>{
                     player.money += value; // update player money
