@@ -43,7 +43,8 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
-            ee.emit('start round');
+            ee.emit('end game');
+            //!ee.emit('start round');
             //ee.emit('game ready', game);
         }
     })
@@ -165,7 +166,8 @@ class Game {
             this.evaluateHand(player, this.commonCards.concat(player.cards)); 
             evalMsg += `Player ${player.username}: ${player.handName}; `
         }
-        let [winners, highCard] = this.evaluateWinner(this.players);
+        console.log('eval msg after evaluate hand', evalMsg);
+        let [winners, highCard] = this.evaluateWinner();
 
         // Write winner name
         if (winners.length > 1){
@@ -186,6 +188,7 @@ class Game {
 
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
+        console.log('running evaluate hand')
         var cards = cardsGiven.map(x=>x); // make copy of given cards
         cards.sort((card1, card2)=> card1[1] - card2[1]); // sort [suit, value] in ascending number order
 
@@ -254,6 +257,7 @@ class Game {
             cards.shift();
             player.handCards = cards;
             player.handName = "None";
+            player.handRank = 9;
             return; 
         }
 
@@ -342,13 +346,16 @@ class Game {
 
     // Return [winners, highCard], array of winners of current round and whether highcard were used in eval
     evaluateWinner(){
+        console.log('running evaluate winner')
         // Return [winners, highCard]
         // needHighCard=true if winner rank name are the same and need to compare high cards
         // winner=null if both players have same cards
     
         let needHighCard = false;
-        const maxRank = Math.max(this.players.map(player=>player.handRank));
+        const allRanks = this.players.map(player=>player.handRank);
+        const maxRank = Math.max.apply(null, allRanks);
         var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
+        console.log('winners', winners);
         if (winners.length === 1){
             // If have definitive winner
             return [winners, needHighCard];
@@ -370,6 +377,7 @@ class Game {
     // Helper for evaluateWinner, return array of winners
     //! Currently only works with two tied winners
     evaluateHighCards(winners, evalRank){
+        console.log('running evaluate high cards')
         // already sorted in ascending order
         if (evalRank){
             var player1Cards = winners[0].rankCards.map(x=>x);
@@ -500,6 +508,7 @@ ee.on('next round',()=>{
 })
 
 ee.on('end game',()=>{
+    console.log('Running end game')
     // Reveal hand and winner, send to all users
     let evalMsg = io.game.returnEvalMsg();
     io.emit('display evalMsg', evalMsg);
