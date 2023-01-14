@@ -87,8 +87,9 @@ io.on('connection', socket =>{
 
     socket.on('made fold', ()=>{
         // set folded status to true
-        let serverPlayer = io.game.players[io.game.CurrentPlayer];
-        serverPlayer.folded = true;
+        console.log('receive made fold');
+        io.game.players[io.game.CurrentPlayer].folded = true;
+        //console.log('folded player', io.game.players[io.game.CurrentPlayer]);
         io.game.foldedCount ++;
         // proceed to next player
         io.game.CurrentPlayer ++;
