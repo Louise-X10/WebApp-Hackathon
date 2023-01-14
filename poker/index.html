@@ -105,8 +105,7 @@
             })
             
             socket.on('waiting', ()=>{
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = 'Waiting for more players';
+                player.msg.textContent = 'Waiting for more players';
             })
 
             socket.on('deal common cards', (commonCards)=>{
@@ -119,14 +118,12 @@
 
             socket.on('watch', (player)=>{
                 console.log('watching')
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = `Player ${player.username} is playing now!`;
+                player.msg.textContent = `Player ${player.username} is playing now!`;
             })
 
             socket.on('play', (game, isFirstPlayer)=>{
                 console.log('start playing')
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = 'You are playing now!';
+                player.msg.textContent = 'You are playing now!';
                 
                 function betAction(){
                     console.log('bet action called')
@@ -167,8 +164,7 @@
             socket.on('display and collect', (evalMsg, collectTokenValues)=>{
                 // Display congrats message
                 evalMsg += "\nYou won! Congradulations!";
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = evalMsg;
+                player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
 
@@ -183,7 +179,8 @@
                     player.clearCommonTokens();
                     // Set up reset listener
                     player.resetBtn.addEventListener('click', ()=>{
-                        socket.emit('ready for next game'); //! implement on server
+                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
+                        socket.emit('ready for next game');
                     }, {once: true})
                 }, {once: true});
             })
@@ -191,19 +188,21 @@
             // For non-winners
             socket.on('display and clear',(evalMsg)=>{
                 // Display message
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent = evalMsg;
+                player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
                 // Clear common tokens
                 player.clearCommonTokens();
                 // Set up reset listener
                 player.resetBtn.addEventListener('click', ()=>{
-                        socket.emit('ready for next game'); //! implement on server
-                    }, {once: true})
+                    player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
+                    socket.emit('ready for next game');
+                }, {once: true})
             })
 
             socket.on('reset game',()=>{
+                player.msg.textContent = 'Starting a new game!';
+                console.log('resetting game');
                 player.clearAllCards();
                 player.resetStatus();
             })

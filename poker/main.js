@@ -15,6 +15,7 @@ class Player {
         this.tokenTable = document.querySelector('.player .table.tokens');
         this.commonTable = document.querySelector('.common .table.cards');
         this.commonTokenTable = document.querySelector('.common .table.tokens');
+        this.msg = document.querySelector('#evalMsg');
 
         this.betBtn = document.querySelector('.action button.bet');
         this.foldBtn = document.querySelector('.action button.fold');
