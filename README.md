@@ -39,8 +39,8 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Collect tokens after every player confirmed eval message
     - Add money after collect tokens
     - Additional congrats message to winner
+    - Reset game: client click collect token button then click ready for next game. 
 - Woking on
-  - Reset game: client click collect token button then click ready for next game. 
   - BUG: game keeps running after fold
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
