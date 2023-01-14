@@ -167,7 +167,7 @@ class Game {
             evalMsg += `Player ${player.username}: ${player.handName}; `
         }
         console.log('eval msg after evaluate hand', evalMsg);
-        let [winners, highCard] = this.evaluateWinner();
+        let [winners, needHighCard] = this.evaluateWinner();
 
         // Write winner name
         if (winners.length > 1){
@@ -177,9 +177,10 @@ class Game {
             var winnerName = winners[0].username;
         }
         evalMsg += "\n Winner is " + winnerName;
+        console.log('eval msg after evaluate winner', evalMsg);
 
         // Write whether high cards were used to evaluate (for debug purposes)
-        if (highCard){
+        if (needHighCard){
             evalMsg += " after comparing highest cards"
         }
         this.winners = winners;
@@ -351,7 +352,7 @@ class Game {
         // needHighCard=true if winner rank name are the same and need to compare high cards
         // winner=null if both players have same cards
     
-        let needHighCard = false;
+        var needHighCard = false;
         const allRanks = this.players.map(player=>player.handRank);
         const maxRank = Math.max.apply(null, allRanks);
         var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
@@ -365,11 +366,11 @@ class Game {
             winners = this.evaluateHighCards(winners, true);       
             if (winners.length===1){
                 // If not more tie, return winner
-                return [winners, highCard];
+                return [winners,  needHighCard];
             } else {
                 // If still tie, continue to evaluate remaining cards
                 winners = this.evaluateHighCards(winners, false);
-                return [winners, highCard];
+                return [winners, needHighCard];
             }
         }
     }
@@ -511,6 +512,7 @@ ee.on('end game',()=>{
     console.log('Running end game')
     // Reveal hand and winner, send to all users
     let evalMsg = io.game.returnEvalMsg();
+    console.log('final eval msg', evalMsg)
     io.emit('display evalMsg', evalMsg);
     
     //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
