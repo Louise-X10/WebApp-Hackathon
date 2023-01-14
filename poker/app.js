@@ -587,6 +587,8 @@ ee.on('compute tokens',()=>{
     io.game.commonTokenValues = [];
 
     console.log('Game has ended!!!')
+
+    //io.timeout(5000).emit('reset game');
 /*     setTimeout(()=>{
         io.game.resetGame();
     }, 2000) */
