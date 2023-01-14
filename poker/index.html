@@ -46,7 +46,7 @@
     </div>
 
     <div class="area action" id="common">
-        <button class="next">Next Step</button>
+        <button class="collect">Collect tokens</button>
         <button class="reset">Reset Game</button>
     </div>
 
@@ -163,11 +163,28 @@
                 
             })
 
-            socket.on('display evalMsg',(evalMsg)=>{
+            socket.on('display and collect',(evalMsg, winners, collectTokenValues)=>{
+                // Add congrats message
+                let winnerNames = winners.map(winner => winner.username);
+                if (winnerNames.includes(player.username)){
+                    evalMsg += "\nYou won! Congradulations!";
+                    // Set up collect token listener
+                    player.collectBtn.addEventListener('click', ()=>{
+                        console.log('collecting tokens', collectTokenValues)
+                        collectTokenValues.forEach(value=>{
+                            player.money += value; // update player money
+                            player.addToken(value); // add token to table
+                            player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
+                        });
+                    }, {once: true});
+                }
+                // Display message on page and alert
                 let msg = document.querySelector('#evalMsg');
                 msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
+
+                
                 socket.emit('ready to collect');
             })
 
@@ -175,21 +192,11 @@
                 player.clearCommonTokens();
             })
 
-            socket.on('collect tokens', (collectTokenValues)=>{
-                let msg = document.querySelector('#evalMsg');
-                msg.textContent += "\nYou won! Congradulations!";
-                console.log('collecting tokens', collectTokenValues)
-                collectTokenValues.forEach(value=>{
-                    player.money += value; // update player money
-                    player.addToken(value); // add token to table
-                    player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
-                });
-            })
-
             socket.on('reset game',()=>{
                 player.clearAllCards();
                 player.resetStatus();
             })
+
             socket.on('print', (msg)=>console.log(msg));
 
     });

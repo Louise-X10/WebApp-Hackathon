@@ -3,9 +3,10 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const { setTimeout } = require('timers/promises');
+//const { setTimeout } = require('timers/promises');
 const io = new Server(server);
 const port = 3000;
+const playerNum = 2;
 
 // Serve all files
 app.use(express.static(__dirname));
@@ -51,7 +52,7 @@ io.on('connection', socket =>{
 
         // wait until 2 players to start game
         //! Tempororay start condition
-        if (players.length < 2){
+        if (players.length < playerNum){
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
@@ -203,10 +204,19 @@ ee.on('next round',()=>{
 
 ee.on('end game',()=>{
     console.log('Running end game')
-    // Reveal hand and winner, send to all users
+    // Compute eval message for all users
     let evalMsg = io.game.returnEvalMsg();
     console.log('final eval msg', evalMsg)
-    io.emit('display evalMsg', evalMsg);
+
+    // Compute tokens for all users
+    let commonTokenValues = io.game.commonTokenValues;
+    if (io.game.winners.length === 1){
+        var winnerTokenValues = commonTokenValues;
+    } else {
+        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+    }
+
+    io.emit('display and collect', evalMsg, io.game.winners, winnerTokenValues);
 })
 
 ee.on('end game early',()=>{

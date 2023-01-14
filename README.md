@@ -40,11 +40,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Add money after collect tokens
     - Additional congrats message to winner
 - Woking on
-  - Reset game
+  - Reset game: client click collect token button then click ready for next game. 
   - BUG: game keeps running after fold
-  - Break ties with more than 2 players
-  - Standardize rules for no bets (i.e. checks)
-  - Start game after one player presses start, instead of waiting for definitive amount of players
+  - FIX: Break ties with more than 2 players
+  - NEW: Create login page to enter player number, then redirect to / reveal poker page
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want
