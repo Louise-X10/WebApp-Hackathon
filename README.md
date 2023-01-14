@@ -40,7 +40,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Add money after collect tokens
 - Woking on
   - BUG: game keeps running after fold
-  - Slow down collect token movement
+  - Slow down collect token movement  (set time out)
   - Break ties with more than 2 players
   - Standardize rules for no bets (i.e. checks)
   - Start game after one player presses start, instead of waiting for definitive amount of players
