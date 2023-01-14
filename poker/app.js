@@ -518,6 +518,7 @@ ee.on('compute tokens',()=>{
     io.emit('clear common tokens');
 
     //! initiate new Game;
+    console.log('Game has ended!!!')
 
 })
 
@@ -554,22 +555,3 @@ class Deck {
     }
 
 }
-
-//* Token functions
-
-function getTokenValue(token){
-    let val = token.className.split(' ')[1];
-    val = val.slice(1,val.length);
-    return Number(val);
-}
-
-// clear all tokens on common table
-function clearCommonTokens(){
-    let tokens = document.querySelectorAll(`.common .table.tokens img`);
-    for (let token of tokens){
-        commonTable.removeChild(token);
-    }
-}
-
-// sort players so that first player at front
-//let game = Game(players);
