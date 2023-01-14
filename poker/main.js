@@ -181,7 +181,7 @@ class Player {
     }
 
     // Make bet with selected tokens
-    // If successful, remove selected tokens, update player bet value, money, tokens (freq)
+    // If successful, remove selected tokens, update player bet value (correctly for each round), money, tokens (freq)
     // If unsuccessul, unselected all tokens, make bet again
     makeBet(game, isFirstPlayer) {
         let success = true;

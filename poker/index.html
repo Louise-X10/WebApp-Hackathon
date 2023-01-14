@@ -160,14 +160,6 @@
 
             socket.on('flip common cards',()=>{
                 let endGame = player.flipCommonCards();
-                if (!endGame) {
-                    socket.emit('start round');
-                } else {
-                    // Wait to display all cards for a while before ending game
-                    setTimeout(()=>{
-                        socket.emit('end game');
-                    }, 2000);
-                }
                 
             })
 

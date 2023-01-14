@@ -67,7 +67,7 @@ io.on('connection', socket =>{
 
         // then proceed to next player
         io.game.CurrentPlayer += 1;
-        console.log('current player is updated to ', io.game.CurrentPlayer);
+        console.log('bet, current player is updated to ', io.game.CurrentPlayer);
         ee.emit('start turn');
     })
 
@@ -75,6 +75,7 @@ io.on('connection', socket =>{
         // set folded status to true
         io.game.players[io.game.CurrentPlayer].folded = true;
         // proceed to next player
+        console.log('fold, current player is updated to ', io.game.CurrentPlayer);
         io.game.CurrentPlayer += 1;
         ee.emit('start turn');
 
@@ -86,6 +87,7 @@ class Game {
         this.winner = null;
         this.foldedCount = 0;
         this.cycle = 1;
+        this.round = 0;
         this.highestBet = 0;
         this.commonTokenValues = [];
 
@@ -424,7 +426,13 @@ ee.on('start round', ()=>{
     io.game.highestBet = 0;
     io.game.CurrentPlayer = 0;
     io.game.cycle = 1;
-    ee.emit('start turn');
+    if (io.game.round === 3){
+        console.log('completed all rounds, end game')
+        ee.emit('end game');
+    } else {
+        ee.emit('start turn');
+    }
+    
 })
 
 ee.on('start turn', ()=>{
@@ -484,10 +492,11 @@ ee.on('start turn', ()=>{
 ee.on('next round',()=>{
     console.log('next round initiated')
     io.emit('flip common cards'); // decide which cards to flip on client side
+    io.game.round ++; // increment round
     ee.emit('start round');
 })
 
-io.on('end game',()=>{
+ee.on('end game',()=>{
     // Reveal hand and winner, send to all users
     let evalMsg = io.game.returnEvalMsg();
     io.emit('display evalMsg', evalMsg);
