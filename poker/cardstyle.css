@@ -3,11 +3,25 @@ html {
     background-color: darkgreen;
 }
 
+header {
+    background-color: darkolivegreen;
+    padding: 10px;
+}
+
 header pre {
     font-size: larger;
     color: aqua;
 }
 
+h3 {
+    margin: 0px;
+    padding: 0px;
+}
+li {
+    font-size: larger;
+}
+
+/* Table area */
 .area {
     padding-bottom: 10px;
 }
