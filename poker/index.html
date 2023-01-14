@@ -163,33 +163,38 @@
                 
             })
 
-            socket.on('display and collect',(evalMsg, winners, collectTokenValues)=>{
-                // Add congrats message
-                let winnerNames = winners.map(winner => winner.username);
-                if (winnerNames.includes(player.username)){
-                    evalMsg += "\nYou won! Congradulations!";
-                    // Set up collect token listener
-                    player.collectBtn.addEventListener('click', ()=>{
-                        console.log('collecting tokens', collectTokenValues)
-                        collectTokenValues.forEach(value=>{
-                            player.money += value; // update player money
-                            player.addToken(value); // add token to table
-                            player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
-                        });
-                    }, {once: true});
-                }
-                // Display message on page and alert
+            // For winners
+            socket.on('display and collect', (evalMsg, collectTokenValues)=>{
+                // Display congrats message
+                evalMsg += "\nYou won! Congradulations!";
                 let msg = document.querySelector('#evalMsg');
                 msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
 
-                
-                socket.emit('ready to collect');
+                // Set up collect and clear token listener
+                player.collectBtn.addEventListener('click', ()=>{
+                    console.log('collecting tokens', collectTokenValues)
+                    collectTokenValues.forEach(value=>{
+                        player.money += value; // update player money
+                        player.addToken(value); // add token to table
+                        player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
+                    });
+                    player.clearCommonTokens();
+                    socket.emit('ready for next game'); //! implement on server
+                }, {once: true});
             })
 
-            socket.on('clear common tokens',()=>{
+            // For non-winners
+            socket.on('display and clear',(evalMsg)=>{
+                // Display message
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = evalMsg;
+                window.alert(evalMsg);
+                console.log('alert message closed');
+                // Clear common tokens
                 player.clearCommonTokens();
+                socket.emit('ready for next game');
             })
 
             socket.on('reset game',()=>{

@@ -98,7 +98,7 @@ io.on('connection', socket =>{
     })
 
     // Make compute tokens start after all users clicked confirm on alert popup window
-    socket.on('ready to collect',()=>{
+/*     socket.on('ready to collect',()=>{
         console.log('ready to collect tokens');
         socket.readyCollect = true;
         console.log(allSockets.map(socket => socket.readyCollect));
@@ -108,7 +108,7 @@ io.on('connection', socket =>{
             console.log('calling compute tokens');
             ee.emit('compute tokens')
         }
-    })
+    }) */
 })
 
 /* ee.on('game ready', (game) => {
@@ -208,7 +208,8 @@ ee.on('end game',()=>{
     let evalMsg = io.game.returnEvalMsg();
     console.log('final eval msg', evalMsg)
 
-    // Compute tokens for all users
+    // Compute tokens for winners, split if needed
+    console.log('computing tokens')
     let commonTokenValues = io.game.commonTokenValues;
     if (io.game.winners.length === 1){
         var winnerTokenValues = commonTokenValues;
@@ -216,7 +217,22 @@ ee.on('end game',()=>{
         var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
     }
 
-    io.emit('display and collect', evalMsg, io.game.winners, winnerTokenValues);
+    // Figure out winners
+    let winnersocketids = io.game.winners.map(player=>player.socketid);
+    console.log('commonTokenValues', commonTokenValues);
+    console.log('winnersocketids', winnersocketids);
+    let allsocketids = allSockets.map(socket=>socket.id);
+    for (let socketid of allsocketids){
+        if (winnersocketids.includes(socketid)){
+            // Send message and token values to winners
+            io.to(socketid).emit('display and collect', evalMsg, winnerTokenValues);
+        } else {
+            // Send message to non-winners
+            io.to(socketid).emit('display and clear', evalMsg);
+        }
+    }
+    io.game.commonTokenValues = [];
+    console.log('Game has ended!!!')
 })
 
 ee.on('end game early',()=>{
@@ -227,37 +243,6 @@ ee.on('end game early',()=>{
     let evalMsg = "Winner is " + winnerName;
     console.log('final eval msg', evalMsg)
     io.emit('display evalMsg', evalMsg);
-})
-
-
-
-ee.on('compute tokens',()=>{
-    console.log('computing tokens')
-    // Split tokens if needed
-    let commonTokenValues = io.game.commonTokenValues;
-    if (io.game.winners.length === 1){
-        var winnerTokenValues = commonTokenValues;
-    } else {
-        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
-    }
-    // let winner users collect tokens
-    let winnersocketids = io.game.winners.map(player=>player.socketid);
-    console.log('commonTokenValues', commonTokenValues);
-    console.log('winnersocketids', winnersocketids);
-    for (let winnersocketid of winnersocketids){
-        io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
-    }
-    // clear common table for all users
-    io.emit('clear common tokens');
-    io.game.commonTokenValues = [];
-
-    console.log('Game has ended!!!')
-
-    //io.timeout(5000).emit('reset game');
-/*     setTimeout(()=>{
-        io.game.resetGame();
-    }, 2000) */
-
 })
 
 
