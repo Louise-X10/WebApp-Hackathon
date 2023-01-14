@@ -138,17 +138,17 @@ class Game {
 
 
     returnWinner(){
-        for(let player of this.players){
-            this.evaluateHand(player, this.commonCards.concat(player.cards));
+        for(const player of this.players){
+            this.evaluateHand(player, this.commonCards.concat(player.cards)); 
         }
     }
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
-        var cards = cardsGiven.map(x=>x); // sort cards in ascending number order
-        cards.sort((card1, card2)=> card1.number - card2.number);
+        var cards = cardsGiven.map(x=>x); // make copy of given cards
+        cards.sort((card1, card2)=> card1[1] - card2[1]); // sort [suit, value] in ascending number order
 
-        let numbers = cards.map(c => c.number);
-        let suits = cards.map(c => c.suit);
+        let suits = cards.map(c => c[0]);
+        let numbers = cards.map(c => c[1]);
         
         let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
         let numberFreqValues = Object.values(numberFreq);
@@ -248,7 +248,7 @@ class Game {
             return [];
         }
 
-        let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
+        let numbersCloneDuplicates = cards.map(c => c[1]); // clone numbers array
         let numbersNoDuplicate = new Set(numbersCloneDuplicates);
         let numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
 
@@ -367,8 +367,8 @@ class Game {
             this.nextStep(); // setup listener but don't start new round
         } else if (nextBtn.textContent === 'Reveal Hand') {
             // If normal end, reveal winner and hands, setup collect tokens
-            this.evaluateHand(this.player1, this.commonCards.concat(this.player1.cards));
-            this.evaluateHand(this.player2, this.commonCards.concat(this.player2.cards));
+            this.evaluateHand(this.player1, this.commonCards.concat(this.player1.cards)); //*
+            this.evaluateHand(this.player2, this.commonCards.concat(this.player2.cards)); //*
             var [winner, highCard] = this.evaluateWinner(this.player1, this.player2);
             if (winner.length > 1){
                 var winnerName = "tie between";

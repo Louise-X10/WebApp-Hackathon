@@ -43,7 +43,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
-    - Store card values (suit and number)
+    - Store card as array [suit, value]
 - To be completed
   - Multiplayer: big bind, small bind
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
