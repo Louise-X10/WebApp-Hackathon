@@ -43,6 +43,7 @@ http://hackathon.gloopen.com:3000/
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
     - Username: displayed at top of page
 - Woking on
+  - Display all players currently still in game on page
   - Move collect token and reset game button
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players
