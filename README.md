@@ -37,11 +37,14 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Subtract player.money after bet
     - Reset player.betvalue after new round
     - Collect tokens after every player confirmed eval message
+    - Add money after collect tokens
 - Woking on
-  - Add money after collect tokens
+  - BUG: game keeps running after fold
+  - Slow down collect token movement
   - Break ties with more than 2 players
   - Standardize rules for no bets (i.e. checks)
   - Start game after one player presses start, instead of waiting for definitive amount of players
+  - Additional congrats message to winner
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want

@@ -86,7 +86,8 @@ io.on('connection', socket =>{
 
     socket.on('made fold', ()=>{
         // set folded status to true
-        io.game.players[io.game.CurrentPlayer].folded = true;
+        let serverPlayer = io.game.players[io.game.CurrentPlayer];
+        serverPlayer.folded = true;
         // proceed to next player
         io.game.CurrentPlayer ++;
         io.game.foldedCount ++;
@@ -559,6 +560,7 @@ ee.on('end game early',()=>{
     var winnerName = winners[0].username;
     io.game.winners = winners;
     let evalMsg = "Winner is " + winnerName;
+    console.log('final eval msg', evalMsg)
     io.emit('display evalMsg', evalMsg);
 })
 
