@@ -220,10 +220,10 @@ ee.on('end game',()=>{
     for (let socketid of allsocketids){
         if (winnersocketids.includes(socketid)){
             // Send message and token values to winners
-            io.to(socketid).emit('display and collect', evalMsg, winnerTokenValues);
+            io.to(socketid).timeout(2000).emit('display and collect', evalMsg, winnerTokenValues);
         } else {
             // Send message to non-winners
-            io.to(socketid).emit('display and clear', evalMsg);
+            io.to(socketid).timeout(2000).emit('display and clear', evalMsg);
         }
     }
     io.game.commonTokenValues = [];
