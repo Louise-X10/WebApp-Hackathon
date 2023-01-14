@@ -141,7 +141,7 @@ class Game {
     }
 
 
-    // After computing for winner, set game.winner and write eval msg
+    // After computing for winner, set game.winner = winners array and write eval msg
     returnEvalMsg(){
         // Write handNames of each player (only for debug purpose)
         let evalMsg = '';
@@ -482,8 +482,9 @@ ee.on('start turn', ()=>{
     }
 
     if (io.game.foldedCount === io.game.playerCount-1){
-        //TODO end game early
+        ee.emit('end game early');
     } else if (io.game.CurrentPlayer === null){
+        // If all players have played, start next round
         ee.emit('next round');
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
@@ -526,6 +527,18 @@ ee.on('next round',()=>{
     }
 })
 
+ee.on('end game early',()=>{
+    var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
+    var winnerName = winners[0].username;
+    io.game.winner = winners;
+    let evalMsg = "Winner is " + winnerName;
+    io.emit('display evalMsg', evalMsg);
+
+    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
+    setTimeout(() => {
+        ee.emit('compute tokens');
+    }, 2000);
+})
 
 ee.on('end game',()=>{
     // Reveal hand and winner, send to all users
@@ -553,6 +566,8 @@ ee.on('compute tokens',()=>{
     }
     // clear common table for all users
     io.emit('clear common tokens');
+
+    //! initiate new Game;
 
 })
 
