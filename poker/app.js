@@ -85,17 +85,19 @@ io.on('connection', socket =>{
         ee.emit('start turn');
     })
 
-    socket.on('made fold', ()=>{
+    socket.once('made fold', ()=>{
         // set folded status to true
         console.log('receive made fold');
+        console.log(io.game.players);
+        console.log(io.game.CurrentPlayer);
+        console.log('folded player', io.game.players[io.game.CurrentPlayer]);
         io.game.players[io.game.CurrentPlayer].folded = true;
-        //console.log('folded player', io.game.players[io.game.CurrentPlayer]);
         io.game.foldedCount ++;
         // proceed to next player
         io.game.CurrentPlayer ++;
         console.log('fold, current player is updated to ', io.game.CurrentPlayer, 'fold count', io.game.foldedCount);
         ee.emit('start turn');
-
+        console.log('remove fold listener');
     })
 
     // After all users clicked ready for next game, reset game
