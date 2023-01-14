@@ -12,7 +12,10 @@ P.S. When two balls collide, they bounce off each other and both change to anoth
 ## Compound interest calculator
 Calculator with 4 input fields: primary amount, interest rate, time cycle, final amount. Given any 3 of the 4 fields, the calculator can compute the remaining field. More detailed instructions are given on the webpage. 
 
-## Poker (In progress)
+## Online two-player Poker (Playable)
+```
+http://hackathon.gloopen.com:3000/
+```
 - Completed 
   - Single-player:
     - Card flips
@@ -40,8 +43,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
     - Username: displayed at top of page
 - Woking on
+  - Move collect token and reset game button
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
-  - FIX: Break ties with more than 2 players
+  - NEW: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
 - Online multi-user version with Socket.io
   - Client's ability:
