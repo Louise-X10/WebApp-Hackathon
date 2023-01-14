@@ -23,7 +23,6 @@ server.listen(port, () => {
 var players = [] // [{socketID, username}, ...]
 var EventEmitter = require("events").EventEmitter;
 var ee = new EventEmitter();
-var game = null;
 
 io.on('connection', socket =>{
     console.log('new user connected');
@@ -101,14 +100,13 @@ class Game {
 
     // Don't need to reset listeners, need to remove prior cards and generate new cards, remove eval message
     resetGame(){
+        // clear all cards
         this.commonCards.forEach(card=>card.removeCard());
         this.players.forEach(player=>{
             player.cards.forEach(card => card.removeCard());
         })
+        // set up new game
         this.setupCards();
-        this.setupCardInteraction();
-        let msg = document.querySelector('#evalMsg');
-        msg.textContent = ''
     }
 
     setPlayers(players){

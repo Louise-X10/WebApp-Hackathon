@@ -90,13 +90,8 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io();
-    //var EventEmitter = require("events").EventEmitter;
-    //var ee = new EventEmitter();
-
     // Execute code after page is loaded
     window.addEventListener("load", (event) => {
-
-        //socket.on('connected',()=>{
             socket.on('connect', ()=>console.log('user connected'))
 
             socket.on('ask username', ()=>{
@@ -176,17 +171,20 @@
             })
 
             socket.on('collect tokens', (collectTokenValues)=>{
-                collectTokenValues.forEach(value=>player.addToken(value));
+                collectTokenValues.forEach(value=>{
+                    player.addToken(value); // add token to table
+                    player.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1; // update token frequency
+                });
             })
 
-
+            socket.on('reset game',()=>{
+                player.clearAllCards();
+                player.resetStatus();
+            })
             socket.on('print', (msg)=>console.log(msg));
-        //})
 
     });
 
-    //? Add this so that page finish loading before asking username
-    // socket.on('connect', ()=>console.log('user connected'))
 
   </script>
   

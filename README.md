@@ -48,6 +48,8 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Update common table status to all players
     - Store card as array [suit, value]
 - To be completed
-  - Multiplayer: big bind, small bind
+  - Multirounds: rotate player order
+  - Multirounds: big bind, small bind 
+  - Collect token movement (not essential)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
   - Reorganize token after collection (not essential)

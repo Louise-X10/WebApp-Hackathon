@@ -63,6 +63,25 @@ class Player {
         });
     }
 
+    clearAllCards(){
+        this.playerCards.forEach(card=>card.removeCard()); // remove card from its table
+        this.commonCards.forEach(card=>card.removeCard()); // remove card from its table
+    }
+
+    // Reset player status (except money etc)
+    resetStatus(){
+        this.folded = false;
+        this.playerCards = [];
+        this.commonCards = [];
+        this.betValue = 0; 
+
+        this.handCards = [];
+        this.handName = '';
+        this.handRank = null;
+        this.rankCards = [];
+        this.highCards = [];
+    }
+
     // Set tokens to totalvalue
     setTokens(totalValue=260) { // 4*50 + 4*10 + 4*5 = 260
         this.clearTokens();
@@ -285,20 +304,8 @@ class Card {
         return this.container.classList.contains('flip');
     }
 }
+
 console.log('main js complete')
 
 const player = new Player();
 console.log('player is', player);
-
-//! controlled by server
-// const nextBtn = document.querySelector('button.next');
-// const resetBtn = document.querySelector('button.reset');
-//player.setButtons(nextBtn, betBtn, foldBtn);
-
-
-//! in server
-// players = [player1, player2]
-/* const game = new Game(player1, player2);
-game.setGame();
-console.log('setup complete')
-game.playGame(); */
