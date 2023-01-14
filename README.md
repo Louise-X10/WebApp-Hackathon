@@ -33,9 +33,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Split tokens evenly for ties
   - Multirounds: 
     - Initialize new game and rotate player order
+    - Decide which cards to flip on client side
+    - Subtract player.money after bet
 - Woking on
-  - Decide which cards to flip on client side
-  -  Subtract player.money after bet
+  - Add money after collect tokens
   - Reset player.betvalue after new round
   - Break ties with more than 2 players
   - Collect tokens after every player confirmed eval message

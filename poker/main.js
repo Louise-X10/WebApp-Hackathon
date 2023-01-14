@@ -181,7 +181,7 @@ class Player {
     }
 
     // Make bet with selected tokens
-    // If successful, remove selected tokens, update player bet value
+    // If successful, remove selected tokens, update player bet value, money, tokens (freq)
     // If unsuccessul, unselected all tokens, make bet again
     makeBet(game, isFirstPlayer) {
         let success = true;
@@ -190,13 +190,15 @@ class Player {
         playerTokens = Array.from(playerTokens);
         let selectedTokenValues = playerTokens.map(token => this.getTokenValue(token));
         let sum = selectedTokenValues.reduce((sumValue, value)=> sumValue+value,0);
-        console.log('sum', sum)
+        console.log('total sum for this bet', sum)
 
         if (game.cycle === 1){
             let betSuceed = sum >= game.highestBet || isFirstPlayer;
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue += sum;
+                this.money -=sum;
+                selectedTokenValues.forEach(value=>this.tokens[value] --)
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
@@ -207,6 +209,8 @@ class Player {
             if (mustMatch !== 0 && sum === mustMatch){
                 // If on cycle 2 and match highest bet, bet suceeds
                 this.betValue += sum;
+                this.money -=sum;
+                selectedTokenValues.forEach(value=>this.tokens[value] --)
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again

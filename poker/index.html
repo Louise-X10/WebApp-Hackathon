@@ -135,7 +135,7 @@
                     console.log("success", success);
                     if (success){
                         console.log('emit bet to server')
-                        socket.emit('made bet', selectedTokenValues, sum);
+                        socket.emit('made bet', selectedTokenValues, sum, player);
                     } else {
                         player.betBtn.addEventListener('click', betAction, {once: true}) // continue to make bet until successfull
                     }

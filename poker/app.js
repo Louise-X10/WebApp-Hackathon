@@ -48,7 +48,7 @@ io.on('connection', socket =>{
         }
     })
 
-    socket.on('made bet', (selectedTokenValues, sum) =>{
+    socket.on('made bet', (selectedTokenValues, sum, player) =>{
         //update current token value on common token table
         io.game.commonTokenValues = io.game.commonTokenValues.concat(selectedTokenValues);
         // update highest bet value
@@ -58,12 +58,16 @@ io.on('connection', socket =>{
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
-        // update bet.value for this player
-        io.game.players[io.game.CurrentPlayer].betValue += sum;
+        // update bet.value, money, tokens for this player
+        let serverPlayer = io.game.players[io.game.CurrentPlayer];
+        serverPlayer.money = player.money;
+        serverPlayer.betValue = player.betValue;
+        serverPlayer.tokens = player.tokens;
+        console.log('current player is now ', io.game.players[io.game.CurrentPlayer]);
 
         // then proceed to next player
         io.game.CurrentPlayer += 1;
-        console.log('current player is now ', io.game.CurrentPlayer);
+        console.log('current player is updated to ', io.game.CurrentPlayer);
         ee.emit('start turn');
     })
 
@@ -419,6 +423,7 @@ ee.on('start round', ()=>{
     // Reset highest bet in current round, aand first player
     io.game.highestBet = 0;
     io.game.CurrentPlayer = 0;
+    io.game.cycle = 1;
     ee.emit('start turn');
 })
 
@@ -479,6 +484,7 @@ ee.on('start turn', ()=>{
 ee.on('next round',()=>{
     console.log('next round initiated')
     io.emit('flip common cards'); // decide which cards to flip on client side
+    ee.emit('start round');
 })
 
 io.on('end game',()=>{
