@@ -238,7 +238,7 @@ ee.on('end game early',()=>{
     console.log('only non-fold winner', winners);
     var winnerName = winners[0].username;
     io.game.winners = winners;
-    let evalMsg = "Winner is " + winnerName;
+    let evalMsg = "Winner is " + winnerName + "because eveyone else folded";
     console.log('final eval msg', evalMsg)
     let commonTokenValues = io.game.commonTokenValues;
 

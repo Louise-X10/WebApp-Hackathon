@@ -31,22 +31,15 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Match mechanism (simplified rules)
     - Initiate new game after game ends
     - Split tokens evenly for ties
-  - Multirounds: 
+  - Multiplayer and multirounds: 
     - Initialize new game and rotate player order
     - Decide which cards to flip on client side
-    - Subtract player.money after bet
-    - Reset player.betvalue after new round
-    - Collect tokens after every player confirmed eval message
-    - Add money after collect tokens
-    - Additional congrats message to winner
-    - Reset game: client click collect token button then click ready for next game. 
-    - Remind players to start new game
-    - Remind players current round number
-    - Non-winner common tokens cleared on click
-    - Fixed fold issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
+    - Bet: subtract player.money after bet, reset player.betvalue after new round
+    - Fold: fixed loop issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
+    - Reset game: client click collect / clear token button then click ready for next game, add player money after collect tokens
+    - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
 - Woking on
   - Display own username
-  - Add win due to fold message
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
@@ -63,6 +56,5 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Store card as array [suit, value]
 - To be completed
   - Multirounds: big bind, small bind (not done)
-  - Collect token movement slower (not essential)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
   - Reorganize token after collection (not essential)
