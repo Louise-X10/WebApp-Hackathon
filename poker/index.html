@@ -167,6 +167,7 @@
             socket.on('display and collect', (evalMsg, collectTokenValues)=>{
                 // Display congrats message
                 evalMsg += "\nYou won! Congradulations!";
+                evalMsg += "\n Click corresponding buttons to collect tokens and then start a new game!"
                 player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
@@ -191,6 +192,7 @@
             // For non-winners
             socket.on('display and clear',(evalMsg)=>{
                 // Display message
+                evalMsg += "\n Click corresponding button to start a new game!"
                 player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
@@ -202,7 +204,7 @@
                     socket.emit('ready for next game');
                 }, {once: true})
             })
-            
+
             socket.on('print', (msg)=>console.log(msg));
 
     });
