@@ -46,7 +46,7 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
-            ee.emit('start round',io.game);
+            ee.emit('start turn');
             //ee.emit('game ready', game);
         }
     })
@@ -60,12 +60,8 @@ io.on('connection', socket =>{
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
         // call next player
-        console.log('update player', io.game);
         io.game.CurrentPlayer += 1;
-        let socketid = io.game.players[io.game.CurrentPlayer].socketid;
-        let isFirstPlayer = false;
-        io.to(socketid).emit('play once', io.game, isFirstPlayer);
-        
+        ee.emit('start turn');
     })
 })
 
@@ -528,12 +524,28 @@ class Game {
     ee.emit('start round',game);
 }) */
 
-ee.on('start round', (game)=>{
-    game.highestBet = 0;
-    let socketid = game.players[game.CurrentPlayer].socketid;
-    let isFirstPlayer = true;
-    io.to(socketid).emit('play', game, isFirstPlayer);
-    io.sockets.sockets.get(socketid).broadcast.emit('watch', game.CurrentPlayer)
+ee.on('start turn', ()=>{
+    io.game.highestBet = 0;
+    var isFirstPlayer = false;
+    if (io.game.CurrentPlayer === 0){
+        isFirstPlayer = true;
+    } else if (io.game.CurrentPlayer === io.game.players.length){
+        // All players have played
+        if (io.game.cycle ===1 && !allMatch){
+            // start cycle 2
+        } else {
+            // start next round
+        }
+        
+        // If cycle=1 and some players.bet value != highest bet, start cycle 2
+        // If cycle=1 and all match, start next round
+        // If cycle=2, must all match, start next round
+
+    }
+    let player = io.game.players[io.game.CurrentPlayer];
+    let socketid = player.socketid;
+    io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
+    io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game.CurrentPlayer) // other players watch
 })
 
 
