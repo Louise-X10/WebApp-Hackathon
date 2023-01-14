@@ -138,11 +138,29 @@ class Game {
 
 
     returnWinner(){
+        // Write handNames of each player (only for debug purpose)
+        let evalMsg = '';
         for(const player of this.players){
             this.evaluateHand(player, this.commonCards.concat(player.cards)); 
+            evalMsg += `Player ${player.username}: ${player.handName}; `
         }
-        let [winner, highCard] = this.evaluateWinner(this.players);
+        let [winners, highCard] = this.evaluateWinner(this.players);
+
+        // Write winner name
+        if (winners.length > 1){
+            var winnerName = "tie between";
+            winners.forEach(winner=> winnerName = winnerName+ ' ' + winner.username + ' ');
+        } else {
+            var winnerName = winners[0].username;
+        }
+        evalMsg += "\n Winner is " + winnerName;
+
+        // Write whether high cards were used to evaluate (for debug purposes)
+        if (highCard){
+            evalMsg += " after comparing highest cards"
+        }
     }
+    
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
         var cards = cardsGiven.map(x=>x); // make copy of given cards
@@ -299,9 +317,9 @@ class Game {
         
     }
 
-    // Return winner of current round
-    evaluateWinner(player1, player2){
-        // Return [winner, highCard]
+    // Return [winners, highCard], array of winners of current round and whether highcard were used in eval
+    evaluateWinner(){
+        // Return [winners, highCard]
         // needHighCard=true if winner rank name are the same and need to compare high cards
         // winner=null if both players have same cards
     
@@ -327,6 +345,7 @@ class Game {
     }
 
     // Helper for evaluateWinner, return array of winners
+    //! Currently only works with two tied winners
     evaluateHighCards(winners, evalRank){
         // already sorted in ascending order
         if (evalRank){
