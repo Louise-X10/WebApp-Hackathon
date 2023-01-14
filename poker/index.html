@@ -122,11 +122,13 @@
             socket.on('watch', (player)=>{
                 console.log('watching')
                 player.msg.textContent = `Player ${player.username} is playing now!`;
+                player.msg.textContent += `\nRound: ${game.round}`;
             })
 
             socket.on('play', (game, isFirstPlayer)=>{
                 console.log('start playing')
                 player.msg.textContent = 'You are playing now!';
+                player.msg.textContent += `\nRound: ${game.round}`;
                 
                 function betAction(){
                     console.log('bet action called')
