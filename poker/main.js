@@ -234,10 +234,20 @@ class Player {
         game.foldedCount ++;
     }
 
-    flipCommonCards(indices){
-        indices.forEach(idx=>{
-            this.commonCards[idx].flip();
-        })
+
+    flipCommonCards(){
+        let endGame = false;
+        if (!this.commonCards[0].isFlipped()){
+            this.commonCards[0].flip();
+            this.commonCards[1].flip();
+            this.commonCards[2].flip();
+        } else if (!this.commonCards[3].isFlipped()){
+            this.commonCards[3].flip();
+        } else if (!this.commonCards[4].isFlipped()){
+            this.commonCards[4].flip();
+            endGame = true;
+        }
+        return endGame;
     }
 }
 

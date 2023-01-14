@@ -478,24 +478,18 @@ ee.on('start turn', ()=>{
 
 ee.on('next round',()=>{
     console.log('next round initiated')
-    if (!io.game.commonCards[0].isFlipped()){
-        io.game.commonCards[0].flip();
-        io.game.commonCards[1].flip();
-        io.game.commonCards[2].flip();
-        io.emit('flip common cards', [0,1,2]); // flip common cards on all users
-        ee.emit('start round');
-    } else if (!io.game.commonCards[3].isFlipped()){
-        io.game.commonCards[3].flip();
-        io.emit('flip common cards', [3]); // flip common cards on all users
-        ee.emit('start round');
-    } else if (!io.game.commonCards[4].isFlipped()){
-        io.game.commonCards[4].flip();
-        io.emit('flip common cards', [4]); // flip common cards on all users
-        // Wait to display all cards for a while before ending game
-        setTimeout(()=>{
-            ee.emit('end game');
-        }, 2000);
-    }
+    io.emit('flip common cards'); // decide which cards to flip on client side
+})
+
+io.on('end game',()=>{
+    // Reveal hand and winner, send to all users
+    let evalMsg = io.game.returnEvalMsg();
+    io.emit('display evalMsg', evalMsg);
+    
+    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
+    setTimeout(() => {
+        ee.emit('compute tokens');
+    }, 2000);
 })
 
 ee.on('end game early',()=>{
@@ -511,16 +505,7 @@ ee.on('end game early',()=>{
     }, 2000);
 })
 
-ee.on('end game',()=>{
-    // Reveal hand and winner, send to all users
-    let evalMsg = io.game.returnEvalMsg();
-    io.emit('display evalMsg', evalMsg);
-    
-    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
-    setTimeout(() => {
-        ee.emit('compute tokens');
-    }, 2000);
-})
+
 
 ee.on('compute tokens',()=>{
     // Split tokens if needed

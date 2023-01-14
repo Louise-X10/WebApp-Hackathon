@@ -34,8 +34,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
   - Multirounds: 
     - Initialize new game and rotate player order
 - Woking on
+  - Decide which cards to flip on client side
+  -  Subtract player.money after bet
   - Reset player.betvalue after new round
-  - Subtract player.money after bet
   - Break ties with more than 2 players
   - Collect tokens after every player confirmed eval message
   - Start game after one player presses start, instead of waiting for definitive amount of players
