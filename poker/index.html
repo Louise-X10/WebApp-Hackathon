@@ -166,6 +166,9 @@
             socket.on('display evalMsg',(evalMsg)=>{
                 let msg = document.querySelector('#evalMsg');
                 msg.textContent = evalMsg;
+                window.alert(evalMsg);
+                console.log('alert message closed');
+                socket.emit('ready to collect');
             })
 
             socket.on('clear common tokens',()=>{

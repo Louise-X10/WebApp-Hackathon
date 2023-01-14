@@ -36,10 +36,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Decide which cards to flip on client side
     - Subtract player.money after bet
     - Reset player.betvalue after new round
+    - Collect tokens after every player confirmed eval message
 - Woking on
   - Add money after collect tokens
   - Break ties with more than 2 players
-  - Collect tokens after every player confirmed eval message
   - Standardize rules for no bets (i.e. checks)
   - Start game after one player presses start, instead of waiting for definitive amount of players
 - Online multi-user version with Socket.io

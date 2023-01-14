@@ -27,8 +27,17 @@ var ee = new EventEmitter();
 
 io.on('connection', socket =>{
     console.log('new user connected');
+
+    // Keep track of all connected servers, used for collect tokens
     socket.readyCollect = false;
     allSockets.push(socket);
+    console.log(allSockets.map(socket => socket.readyCollect));
+
+    socket.on('disconnect', function() {
+        console.log('new user disconnected');
+        allSockets = allSockets.filter(listSocket => listSocket!==socket); // remove socket from list
+        console.log(allSockets.map(socket => socket.readyCollect));
+    });
 
     socket.emit('ask username');
     console.log('ask for user name');
@@ -83,6 +92,18 @@ io.on('connection', socket =>{
         io.game.CurrentPlayer += 1;
         ee.emit('start turn');
 
+    })
+
+    // Make compute tokens start after all users clicked confirm on alert popup window
+    socket.on('ready to collect',()=>{
+        socket.readyCollect = true;
+        console.log(allSockets.map(socket => socket.readyCollect));
+        let allReady = allSockets.filter(socket => socket.readyCollect === true).length === allSockets.length;
+        console.log('one user ready to collect', allReady)
+        if (allReady){
+            console.log('calling compute tokens');
+            ee.emit('compute tokens')
+        }
     })
 })
 
@@ -520,16 +541,6 @@ ee.on('end game',()=>{
     let evalMsg = io.game.returnEvalMsg();
     console.log('final eval msg', evalMsg)
     io.emit('display evalMsg', evalMsg);
-})
-
-//? Make compute tokens start after all users clicked confirm on alert popup window
-io.on('read to collect',(socket)=>{
-    socket.readyCollect = true;
-    let allReady = allSockets.forEach(socket => socket.readyCollect === true);
-    if (allReady){
-        console.log('calling compute tokens');
-        ee.emit('compute tokens')
-    }
 })
 
 ee.on('end game early',async ()=>{
