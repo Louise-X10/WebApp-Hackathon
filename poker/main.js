@@ -19,6 +19,7 @@ class Player {
         this.betBtn = document.querySelector('.action button.bet');
         this.foldBtn = document.querySelector('.action button.fold');
         this.collectBtn = document.querySelector('.action button.collect');
+        this.resetBtn = document.querySelector('.action button.reset');
         
         this.folded = false;
         this.playerCards = []; // [card1, card2]

@@ -29,15 +29,15 @@ var ee = new EventEmitter();
 io.on('connection', socket =>{
     console.log('new user connected');
 
-    // Keep track of all connected servers, used for collect tokens
-    socket.readyCollect = false;
+    // Keep track of all connected servers, used for checking if received response from all servers
+    socket.ready = false;
     allSockets.push(socket);
-    console.log(allSockets.map(socket => socket.readyCollect));
+    console.log(allSockets.map(socket => socket.ready));
 
     socket.on('disconnect', function() {
         console.log('new user disconnected');
         allSockets = allSockets.filter(listSocket => listSocket!==socket); // remove socket from list
-        console.log(allSockets.map(socket => socket.readyCollect));
+        console.log(allSockets.map(socket => socket.ready));
     });
 
     socket.emit('ask username');
@@ -97,18 +97,17 @@ io.on('connection', socket =>{
 
     })
 
-    // Make compute tokens start after all users clicked confirm on alert popup window
-/*     socket.on('ready to collect',()=>{
-        console.log('ready to collect tokens');
-        socket.readyCollect = true;
-        console.log(allSockets.map(socket => socket.readyCollect));
-        let allReady = allSockets.filter(socket => socket.readyCollect === true).length === allSockets.length;
-        console.log('one user ready to collect', allReady)
+    // After all users clicked ready for next game, reset game
+    socket.on('ready for next game',()=>{
+        socket.ready = true;
+        console.log(allSockets.map(socket => socket.ready));
+        let allReady = allSockets.filter(socket => socket.ready === true).length === allSockets.length;
+        console.log('one more user ready', allReady)
         if (allReady){
-            console.log('calling compute tokens');
-            ee.emit('compute tokens')
+            console.log('calling reset game');
+            ee.emit('reset game');
         }
-    }) */
+    })
 })
 
 /* ee.on('game ready', (game) => {
@@ -242,7 +241,14 @@ ee.on('end game early',()=>{
     io.game.winners = winners;
     let evalMsg = "Winner is " + winnerName;
     console.log('final eval msg', evalMsg)
-    io.emit('display evalMsg', evalMsg);
+    let commonTokenValues = io.game.commonTokenValues;
+
+    io.to(winners[0].socketid).emit('display and collect', evalMsg, commonTokenValues);
+    io.sockets.sockets.get(winners[0].socketid).broadcast.emit('display and clear', evalMsg);
+})
+
+ee.on('reset game', ()=>{
+    console.log('resetting game');
 })
 
 
@@ -305,7 +311,7 @@ class Game {
     // Don't need to reset listeners, need to remove prior cards and generate new cards, remove eval message
     resetGame(){
         // clear all cards
-        io.emit('reset game');
+        //io.emit('reset game');
         this.commonCards.forEach(card=>card.removeCard());
         this.players.forEach(player=>{
             player.cards.forEach(card => card.removeCard());

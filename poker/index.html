@@ -181,7 +181,10 @@
                         player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
                     });
                     player.clearCommonTokens();
-                    socket.emit('ready for next game'); //! implement on server
+                    // Set up reset listener
+                    player.resetBtn.addEventListener('click', ()=>{
+                        socket.emit('ready for next game'); //! implement on server
+                    }, {once: true})
                 }, {once: true});
             })
 
@@ -194,7 +197,10 @@
                 console.log('alert message closed');
                 // Clear common tokens
                 player.clearCommonTokens();
-                socket.emit('ready for next game');
+                // Set up reset listener
+                player.resetBtn.addEventListener('click', ()=>{
+                        socket.emit('ready for next game'); //! implement on server
+                    }, {once: true})
             })
 
             socket.on('reset game',()=>{
