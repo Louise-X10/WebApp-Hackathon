@@ -122,7 +122,7 @@ class Player {
     }
 
     // move given token to player table
-    //! Change collect mechanism to add tokens
+    //! Change collect mechanism to add tokens // Still animate movement
     /* collectToken(token){
         let cloneToken = token.cloneNode();
         cloneToken.classList.add('hidden');
@@ -152,8 +152,6 @@ class Player {
         setTimeout(()=>{this.commonTokenTable.appendChild(token);
             token.style.transform = '';}, 1000);
     }
-
-    //makeAction() // bet or fold
 
     // Make bet with selected tokens
     // If successful, remove selected tokens, update player bet value
@@ -193,6 +191,7 @@ class Player {
         return [selectedTokenValues, sum, success]
     }
 
+    // Update common table with other players' bets
     receiveBet(selectedTokenValues) {
         selectedTokenValues.forEach((value)=>{
             let token = this.createToken(value);
@@ -203,7 +202,7 @@ class Player {
     makeFold(game){
         // Set folded status to true
         this.folded = true;
-        
+
         // Increment number of players folded in the game
         game.foldedCount ++;
     }

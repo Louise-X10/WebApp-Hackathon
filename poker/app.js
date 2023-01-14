@@ -46,7 +46,7 @@ io.on('connection', socket =>{
             socket.emit('waiting');
         } else {
             io.game.setGame(players);
-            ee.emit('start turn');
+            ee.emit('start round');
             //ee.emit('game ready', game);
         }
     })
@@ -331,12 +331,6 @@ class Game {
         return [this.player1, this.player2]; // tie with completely same cards
     }
 
-    //* Set up nextBtn listener and proceed to next step
-    nextStep() {
-        // Make next button clickable once every round
-        nextBtn.addEventListener('click', this.nextAction, {once: true});
-    }
-
     // After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
     nextAction (){
         document.querySelector('.area.common').classList.remove('playing');
@@ -438,10 +432,15 @@ class Game {
     ee.emit('start round',game);
 }) */
 
-ee.on('start turn', ()=>{
+ee.on('start round', ()=>{
+    // Reset highest bet in current round, aand first player
     io.game.highestBet = 0;
-    var isFirstPlayer = false;
+    io.game.CurrentPlayer = 0;
+    ee.emit('start turn');
+})
 
+ee.on('start turn', ()=>{
+    var isFirstPlayer = false;
     // Figure out whose turn to play
     if (io.game.CurrentPlayer === 0){
         isFirstPlayer = true;
@@ -463,6 +462,7 @@ ee.on('start turn', ()=>{
         //TODO end game early
     } else if (io.game.CurrentPlayer === null){
         //TODO Start next round
+        ee.emit('next round');
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
         if (player.folded){
@@ -481,6 +481,29 @@ ee.on('start turn', ()=>{
         }
     }
     
+})
+
+ee.on('next round',()=>{
+    if (!io.game.commonCards[0].isFlipped()){
+        io.game.commonCards[0].flip();
+        io.game.commonCards[1].flip();
+        io.game.commonCards[2].flip();
+        // flip common cards on all users
+        ee.emit('start round');
+    } else if (!io.game.commonCards[3].isFlipped()){
+        io.game.commonCards[3].flip();
+    } else if (!io.game.commonCards[4].isFlipped()){
+        io.game.commonCards[4].flip();
+        setTimeout(()=>{
+            // Reveal hand and winner, send to all users
+        }, 1000)
+        //! Make collect tokens start after all users clicked confirm on alert popup window
+        setTimeout(()=>{
+            // collect tokens, send to all users
+            // end game
+        })
+    }
+
 })
 
 
