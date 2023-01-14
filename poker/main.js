@@ -200,24 +200,12 @@ class Player {
         })
     }
 
-    makeFold(){
-        this.folded = true;
-        // Flip back any flipped cards
-        this.playerCards.forEach((card)=>{
-            if (card.container.classList.contains('flip')){card.flip()};
-        })
-        // Unselect any selected tokens
-        let selectedTokens = this.tokenTable.querySelectorAll('.token.selected');
-        selectedTokens.forEach((token)=> token.classList.remove('selected'));
+    makeFold(game){
         // Set folded status to true
         this.folded = true;
+        
         // Increment number of players folded in the game
         game.foldedCount ++;
-        // Remove token and card listeners
-        //! Don't need to remove listener for folded players, they just wont get interact with server anymore
-        /* let tokens = this.tokenTable.querySelectorAll('.token');
-        tokens.forEach(token=>token.removeEventListener('click', this.selectListener))
-        this.playerCards.forEach(card => card.container.removeEventListener('click', this.flipListener)); */
     }
 }
 

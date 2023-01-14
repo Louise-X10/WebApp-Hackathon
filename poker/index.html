@@ -140,15 +140,21 @@
                     console.log("success", success);
                     if (success){
                         console.log('emit to server')
-                        msg.textContent = 'Other player is playing!';
                         socket.emit('made bet', selectedTokenValues, sum);
                     } else {
                         player.betBtn.addEventListener('click', betAction, {once: true}) // continue to make bet until successfull
                     }
                 }
 
-                //! setup bet button listeners
-                player.betBtn.addEventListener('click', betAction, {once: true})
+                function foldAction(){
+                    console.log('fold action called')
+                    player.makeFold(game);
+                    socket.emit('made fold');
+                }
+                
+                // setup bet button listeners
+                player.betBtn.addEventListener('click', betAction, {once: true});
+                player.foldBtn.addEventListener('click', foldAction, {once: true})
             })
 
             socket.on('receive bet', (selectedTokenValues)=>{
