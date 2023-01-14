@@ -21,11 +21,14 @@ server.listen(port, () => {
 
 // actual server code
 var players = [] // [{socketID, username}, ...]
+var allSockets = []
 var EventEmitter = require("events").EventEmitter;
 var ee = new EventEmitter();
 
 io.on('connection', socket =>{
     console.log('new user connected');
+    socket.readyCollect = false;
+    allSockets.push(socket);
 
     socket.emit('ask username');
     console.log('ask for user name');
@@ -404,6 +407,7 @@ class Game {
                 return [winners[1]];
             }
         }
+        console.log('winners', winners);
         return winners; // tie with completely same cards
     }
 
@@ -516,11 +520,16 @@ ee.on('end game',()=>{
     let evalMsg = io.game.returnEvalMsg();
     console.log('final eval msg', evalMsg)
     io.emit('display evalMsg', evalMsg);
-    
-    //? Future fix: Make compute tokens start after all users clicked confirm on alert popup window
-    setTimeout(() => {
-        ee.emit('compute tokens');
-    }, 2000);
+})
+
+//? Make compute tokens start after all users clicked confirm on alert popup window
+io.on('read to collect',(socket)=>{
+    socket.readyCollect = true;
+    let allReady = allSockets.forEach(socket => socket.readyCollect === true);
+    if (allReady){
+        console.log('calling compute tokens');
+        ee.emit('compute tokens')
+    }
 })
 
 ee.on('end game early',async ()=>{
