@@ -119,9 +119,9 @@
                 player.setPlayerCards(playerCards);
             })
 
-            socket.on('watch', (player)=>{
+            socket.on('watch', (game, serverPlayer)=>{
                 console.log('watching')
-                player.msg.textContent = `Player ${player.username} is playing now!`;
+                player.msg.textContent = `Player ${serverPlayer.username} is playing now!`;
                 player.msg.textContent += `\nRound: ${game.round}`;
             })
 

@@ -40,9 +40,9 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Add money after collect tokens
     - Additional congrats message to winner
     - Reset game: client click collect token button then click ready for next game. 
+    - Remind players to start new game
+    - Remind players current round number
 - Woking on
-  - Display round number, reminder to press next button
-  - FIX: eval message incorrect when player is watching
   - BUG: game keeps running after fold
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page

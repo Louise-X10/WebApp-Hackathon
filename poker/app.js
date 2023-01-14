@@ -182,7 +182,7 @@ ee.on('start turn', ()=>{
             console.log('current player acts')
             let socketid = player.socketid;
             io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
-            io.sockets.sockets.get(socketid).broadcast.emit('watch', player) // other players watch
+            io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game, player) // other players watch
         }
     }
     
