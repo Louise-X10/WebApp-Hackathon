@@ -52,6 +52,8 @@ io.on('connection', socket =>{
     })
 
     socket.on('made bet', (selectedTokenValues, sum) =>{
+        //update current token value on common token table
+        io.game.commonTokenValues = io.game.commonTokenValues.concat(selectedTokenValues);
         // update highest bet value
         io.game.highestBet = Math.max(io.game.highestBet, sum)
         console.log('user made a bet');
@@ -80,6 +82,7 @@ class Game {
         this.foldedCount = 0;
         this.cycle = 1;
         this.highestBet = 0;
+        this.commonTokenValues = [];
 
         // Get all defined class methods: only gets public methods
         const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
@@ -137,7 +140,7 @@ class Game {
     }
 
 
-    // After computing for winner, write eval msg
+    // After computing for winner, set game.winner and write eval msg
     returnEvalMsg(){
         // Write handNames of each player (only for debug purpose)
         let evalMsg = '';
@@ -160,7 +163,7 @@ class Game {
         if (highCard){
             evalMsg += " after comparing highest cards"
         }
-
+        this.winners = winners;
         return evalMsg;
     }
 
@@ -424,26 +427,25 @@ class Game {
     }
 
 
-    //TODO: Split token in progress
+    //TODO: Need to verify split token works in edge cases
     // Return array of token values for each pile
-    splitTokens(tokenSet, pile){
-        tokenSet = Array.from(tokenSet); // convert Nodelist to array
-        let sum = tokenSet.reduce((sumValue, token)=> sumValue+getTokenValue(token),0)
+    splitTokens(tokenValues, pile){
+        let sum = tokenValues.reduce((sumValue, tokenValue)=> sumValue+tokenValue,0)
         // round to nearest multiple of pile
         let subSum = Math.floor(sum / pile) - Math.floor(sum / pile)% pile; // for pile = 2 players, ceiling doesn't matter
 
-        let subTokenSet = [];
-        while (subSum - Math.sum(tokenSet1) >= 50){
-            subTokenSet.push(50);
+        let subTokenValues = [];
+        while (subSum - Math.sum(subTokenValues) >= 50){
+            subTokenValues.push(50);
         }
-        while (subSum - Math.sum(tokenSet1) >= 10){
-            subTokenSet.push(10);
+        while (subSum - Math.sum(subTokenValues) >= 10){
+            subTokenValues.push(10);
         }
-        while (subSum - Math.sum(tokenSet1) >= 5){
-            subTokenSet.push(5);
+        while (subSum - Math.sum(subTokenValues) >= 5){
+            subTokenValues.push(5);
         }
 
-        return subTokenSet;
+        return subTokenValues;
     }
 }
 
@@ -520,12 +522,25 @@ ee.on('next round',()=>{
             let evalMsg = io.game.returnEvalMsg();
             io.emit('display evalMsg', evalMsg);
         }, 1000)
-
         //? Make collect tokens start after all users clicked confirm on alert popup window
         setTimeout(()=>{
-            // collect tokens, send to all users
+            // Split tokens if needed
+            let commonTokenValues = io.game.commonTokenValues;
+            if (winners.length === 1){
+                var winnerTokenValues = commonTokenValues;
+            } else {
+                var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+            }
+
+            // let winner users collect tokens
+            let winnersocketids = io.game.winners.forEach(player=>player.socketid);
+            for (let winnersocketid of winnersocketids){
+                io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
+            }
+            // clear common table for all users
+            io.emit('clear tokens');
             // end game
-        })
+        }, 3000)
     }
 })
 
