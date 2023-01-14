@@ -145,7 +145,7 @@
 
                 function foldAction(){
                     console.log('fold action called')
-                    player.makeFold(game);
+                    player.makeFold();
                     console.log('emit fold to server')
                     socket.emit('made fold');
                 }

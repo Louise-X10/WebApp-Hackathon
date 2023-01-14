@@ -89,9 +89,9 @@ io.on('connection', socket =>{
         // set folded status to true
         let serverPlayer = io.game.players[io.game.CurrentPlayer];
         serverPlayer.folded = true;
+        io.game.foldedCount ++;
         // proceed to next player
         io.game.CurrentPlayer ++;
-        io.game.foldedCount ++;
         console.log('fold, current player is updated to ', io.game.CurrentPlayer, 'fold count', io.game.foldedCount);
         ee.emit('start turn');
 
@@ -168,7 +168,7 @@ ee.on('start turn', ()=>{
         //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
-            console.log('player already folded, skip to next player turn', player.username)
+            console.log('player ', player.username, ' already folded, skip to next player turn')
             io.game.CurrentPlayer += 1;
             ee.emit('start turn');
         } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
@@ -238,6 +238,8 @@ ee.on('end game early',()=>{
     let evalMsg = "Winner is " + winnerName;
     console.log('final eval msg', evalMsg)
     let commonTokenValues = io.game.commonTokenValues;
+
+    console.log('winnersocketid', winners[0].socketid);
 
     io.to(winners[0].socketid).emit('display and collect', evalMsg, commonTokenValues);
     io.sockets.sockets.get(winners[0].socketid).broadcast.emit('display and clear', evalMsg);

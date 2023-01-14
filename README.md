@@ -44,7 +44,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Remind players current round number
     - Non-winner common tokens automatically cleared
 - Woking on
-  - BUG: incorrect evaluation of two "None" ranks
+  - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - BUG: game keeps running after fold
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page

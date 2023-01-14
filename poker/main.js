@@ -235,12 +235,9 @@ class Player {
         })
     }
 
-    makeFold(game){
-        // Set folded status to true
+    // Set folded status to true
+    makeFold(){
         this.folded = true;
-
-        // Increment number of players folded in the game
-        game.foldedCount ++;
     }
 
 
