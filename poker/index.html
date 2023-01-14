@@ -180,7 +180,7 @@
                 collectTokenValues.forEach(value=>{
                     player.money += value; // update player money
                     player.addToken(value); // add token to table
-                    player.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1; // update token frequency
+                    player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
                 });
             })
 
