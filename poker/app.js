@@ -90,13 +90,14 @@ io.on('connection', socket =>{
         // proceed to next player
         io.game.CurrentPlayer ++;
         io.game.foldedCount ++;
-        console.log('fold, current player is updated to ', io.game.CurrentPlayer, io.game.foldedCount);
+        console.log('fold, current player is updated to ', io.game.CurrentPlayer, 'fold count', io.game.foldedCount);
         ee.emit('start turn');
 
     })
 
     // Make compute tokens start after all users clicked confirm on alert popup window
     socket.on('ready to collect',()=>{
+        console.log('ready to collect tokens');
         socket.readyCollect = true;
         console.log(allSockets.map(socket => socket.readyCollect));
         let allReady = allSockets.filter(socket => socket.readyCollect === true).length === allSockets.length;
@@ -477,13 +478,20 @@ ee.on('start round', ()=>{
 
 ee.on('start turn', ()=>{
     console.log('new turn initiated')
+
+    if (io.game.foldedCount === io.game.playerCount-1){
+        console.log('all else folded, end game early')
+        ee.emit('end game early');
+        return;
+    }
+
     var isFirstPlayer = false;
-    // Figure out whose turn to play
+    // Decide whether we have reached edge cases, i.e. all players player, or should proceed to next round
     if (io.game.CurrentPlayer === 0){
         isFirstPlayer = true;
     } else if (io.game.CurrentPlayer === io.game.playerCount){
-        console.log('all players have played')
         // All players have played, i.e. current player incremented over by 1
+        console.log('all players have played')
         let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
         if (io.game.cycle ===1 && !allMatch){
             console.log('start second cycle')
@@ -497,21 +505,20 @@ ee.on('start turn', ()=>{
         }
     }
 
-    if (io.game.foldedCount === io.game.playerCount-1){
-        console.log('all else folded, end game early')
-        ee.emit('end game early');
-    } else if (io.game.CurrentPlayer === null){
-        // If all players have played, start next round
+    // Act accoridngly
+    if (io.game.CurrentPlayer === null){
+        // If this round is done, start next round
         console.log('proceed to next round')
         ee.emit('next round');
+        return;
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
         console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
         //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
-            console.log('player already folded, skip to next player turn')
-            console.log(player)
+            console.log('player already folded, skip to next player turn', player.username)
+            io.game.CurrentPlayer += 1;
             ee.emit('start turn');
         } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
             // If not folded, but at cycle 2 and already at highest bet, proceed to next player
