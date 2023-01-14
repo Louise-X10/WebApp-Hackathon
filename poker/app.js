@@ -137,7 +137,8 @@ class Game {
     }
 
 
-    returnWinner(){
+    // After computing for winner, write eval msg
+    returnEvalMsg(){
         // Write handNames of each player (only for debug purpose)
         let evalMsg = '';
         for(const player of this.players){
@@ -159,8 +160,10 @@ class Game {
         if (highCard){
             evalMsg += " after comparing highest cards"
         }
+
+        return evalMsg;
     }
-    
+
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
         var cards = cardsGiven.map(x=>x); // make copy of given cards
@@ -514,14 +517,16 @@ ee.on('next round',()=>{
         io.emit('flip common cards', [4]); // flip common cards on all users
         setTimeout(()=>{
             // Reveal hand and winner, send to all users
+            let evalMsg = io.game.returnEvalMsg();
+            io.emit('display evalMsg', evalMsg);
         }, 1000)
-        //! Make collect tokens start after all users clicked confirm on alert popup window
+
+        //? Make collect tokens start after all users clicked confirm on alert popup window
         setTimeout(()=>{
             // collect tokens, send to all users
             // end game
         })
     }
-
 })
 
 

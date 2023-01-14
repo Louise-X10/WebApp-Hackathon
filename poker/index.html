@@ -166,6 +166,11 @@
                 player.flipCommonCards(indices);
             })
 
+            socket.on('display evalMsg',(evalMsg)=>{
+                let msg = document.querySelector('#evalMsg');
+                msg.textContent = evalMsg;
+            })
+
             socket.on('print', (msg)=>console.log(msg));
         //})
 
