@@ -32,7 +32,10 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Initiate new game after game ends
     - Split tokens evenly for ties
 - Woking on
-  - start next round
+  - Initialize new game
+  - Break ties with more than 2 players
+  - Collect tokens after every player confirmed eval message
+  - Start game after one player presses start, instead of waiting for definitive amount of players
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want
