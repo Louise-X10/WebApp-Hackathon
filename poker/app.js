@@ -189,7 +189,7 @@ ee.on('start turn', ()=>{
 })
 
 ee.on('next round',()=>{
-    console.log('next round initiated')
+    console.log('next round initiated, flip cards')
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
     console.log('round', io.game.round)
@@ -216,6 +216,7 @@ ee.on('end game',()=>{
     console.log('commonTokenValues', commonTokenValues);
     console.log('winnersocketids', winnersocketids);
     let allsocketids = allSockets.map(socket=>socket.id);
+    //! Set time out so last card can be flipped before displaying eval messages
     for (let socketid of allsocketids){
         if (winnersocketids.includes(socketid)){
             // Send message and token values to winners
@@ -462,7 +463,8 @@ class Game {
             cards.shift();
 /*             player.handCards = cards;
             player.rankCards = []; */
-            var handBool = [false, false, false, false, false];
+            var handBool = false;
+            var handCards = [];
             player.handName = "None";
             player.handRank = 9;
             return; 

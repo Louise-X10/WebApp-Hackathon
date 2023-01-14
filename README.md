@@ -43,6 +43,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Remind players to start new game
     - Remind players current round number
 - Woking on
+  - BUG: incorrect evaluation of two "None" ranks
   - BUG: game keeps running after fold
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page

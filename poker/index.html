@@ -173,7 +173,7 @@
                 player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
-
+                console.log('display and collect');
                 // Set up collect and clear token listener
                 player.collectBtn.addEventListener('click', ()=>{
                     console.log('collecting tokens', collectTokenValues)
@@ -198,6 +198,7 @@
                 player.msg.textContent = evalMsg;
                 window.alert(evalMsg);
                 console.log('alert message closed');
+                console.log('display and clear');
                 // Clear common tokens
                 player.clearCommonTokens();
                 // Set up reset listener
