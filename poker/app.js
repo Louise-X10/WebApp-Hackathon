@@ -110,6 +110,180 @@ io.on('connection', socket =>{
     })
 })
 
+
+
+/* ee.on('game ready', (game) => {
+    game.setGame(players);
+    ee.emit('start round',game);
+}) */
+
+ee.on('start round', ()=>{
+    // Reset highest bet in current round, first player, and cycle
+    io.game.highestBet = 0;
+    io.game.CurrentPlayer = 0;
+    io.game.cycle = 1;
+    if (io.game.round === 3){
+        io.game.round = 0;
+        console.log('completed all rounds, end game')
+        ee.emit('end game');
+    } else {
+        ee.emit('start turn');
+    }
+    
+})
+
+ee.on('start turn', ()=>{
+    console.log('new turn initiated')
+
+    if (io.game.foldedCount === io.game.playerCount-1){
+        console.log('all else folded, end game early')
+        ee.emit('end game early');
+        return;
+    }
+
+    var isFirstPlayer = false;
+    // Decide whether we have reached edge cases, i.e. all players player, or should proceed to next round
+    if (io.game.CurrentPlayer === 0){
+        isFirstPlayer = true;
+    } else if (io.game.CurrentPlayer === io.game.playerCount){
+        // All players have played, i.e. current player incremented over by 1
+        console.log('all players have played')
+        let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
+        if (io.game.cycle ===1 && !allMatch){
+            console.log('start second cycle')
+            // start cycle 2
+            io.game.cycle = 2;
+            io.game.CurrentPlayer = 0;
+        } else {
+            // start next round
+            io.game.cycle = 1;
+            io.game.CurrentPlayer = null;
+        }
+    }
+
+    // Act accoridngly
+    if (io.game.CurrentPlayer === null){
+        // If this round is done, start next round
+        console.log('proceed to next round')
+        ee.emit('next round');
+        return;
+    } else {
+        let player = io.game.players[io.game.CurrentPlayer];
+        console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
+        //console.log('current player is', player);
+        if (player.folded){
+            // If folded, proceed to next player
+            console.log('player already folded, skip to next player turn', player.username)
+            io.game.CurrentPlayer += 1;
+            ee.emit('start turn');
+        } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
+            // If not folded, but at cycle 2 and already at highest bet, proceed to next player
+            console.log('skip player in cycle 2')
+            io.game.CurrentPlayer += 1;
+            console.log('proceed to next turn')
+            ee.emit('start turn');
+        } else {
+            // If not folded, take action
+            console.log('current player acts')
+            let socketid = player.socketid;
+            io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
+            io.sockets.sockets.get(socketid).broadcast.emit('watch', player) // other players watch
+        }
+    }
+    
+})
+
+ee.on('next round',()=>{
+    console.log('next round initiated')
+    io.emit('flip common cards'); // decide which cards to flip on client side
+    io.game.round ++; // increment round
+    console.log('round', io.game.round)
+    ee.emit('start round');
+})
+
+ee.on('end game',()=>{
+    console.log('Running end game')
+    // Reveal hand and winner, send to all users
+    let evalMsg = io.game.returnEvalMsg();
+    console.log('final eval msg', evalMsg)
+    io.emit('display evalMsg', evalMsg);
+})
+
+ee.on('end game early',()=>{
+    var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
+    console.log('only non-fold winner', winners);
+    var winnerName = winners[0].username;
+    io.game.winners = winners;
+    let evalMsg = "Winner is " + winnerName;
+    console.log('final eval msg', evalMsg)
+    io.emit('display evalMsg', evalMsg);
+})
+
+
+
+ee.on('compute tokens',()=>{
+    console.log('computing tokens')
+    // Split tokens if needed
+    let commonTokenValues = io.game.commonTokenValues;
+    if (io.game.winners.length === 1){
+        var winnerTokenValues = commonTokenValues;
+    } else {
+        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+    }
+    // let winner users collect tokens
+    let winnersocketids = io.game.winners.map(player=>player.socketid);
+    console.log('commonTokenValues', commonTokenValues);
+    console.log('winnersocketids', winnersocketids);
+    for (let winnersocketid of winnersocketids){
+        io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
+    }
+    // clear common table for all users
+    io.emit('clear common tokens');
+    io.game.commonTokenValues = [];
+
+    console.log('Game has ended!!!')
+
+    //io.timeout(5000).emit('reset game');
+/*     setTimeout(()=>{
+        io.game.resetGame();
+    }, 2000) */
+
+})
+
+
+class Deck {
+    constructor(){
+        this.deck = [];
+        this.reset();
+        this.shuffle();
+    }
+
+    reset() {
+        this.deck = [];
+        const suits = ['clubs', 'diamonds','hearts', 'spades'];
+        const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
+        for (let suit of suits) {
+            for (let value of values) {
+                this.deck.push([suit, value]);
+            }
+        }
+    }
+
+    shuffle() {
+        let totalNumOfCards = this.deck.length;
+        for (let i = 0; i < totalNumOfCards; i++){
+            let j = Math.floor(Math.random() * totalNumOfCards);
+            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
+        }
+    }
+
+    deal() {
+        const card = this.deck.pop();
+        return card;
+    }
+
+}
+
 class Game {
     constructor(){
         this.winner = null;
@@ -455,176 +629,4 @@ class Game {
 
         return subTokenValues;
     }
-}
-
-/* ee.on('game ready', (game) => {
-    game.setGame(players);
-    ee.emit('start round',game);
-}) */
-
-ee.on('start round', ()=>{
-    // Reset highest bet in current round, first player, and cycle
-    io.game.highestBet = 0;
-    io.game.CurrentPlayer = 0;
-    io.game.cycle = 1;
-    if (io.game.round === 3){
-        io.game.round = 0;
-        console.log('completed all rounds, end game')
-        ee.emit('end game');
-    } else {
-        ee.emit('start turn');
-    }
-    
-})
-
-ee.on('start turn', ()=>{
-    console.log('new turn initiated')
-
-    if (io.game.foldedCount === io.game.playerCount-1){
-        console.log('all else folded, end game early')
-        ee.emit('end game early');
-        return;
-    }
-
-    var isFirstPlayer = false;
-    // Decide whether we have reached edge cases, i.e. all players player, or should proceed to next round
-    if (io.game.CurrentPlayer === 0){
-        isFirstPlayer = true;
-    } else if (io.game.CurrentPlayer === io.game.playerCount){
-        // All players have played, i.e. current player incremented over by 1
-        console.log('all players have played')
-        let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
-        if (io.game.cycle ===1 && !allMatch){
-            console.log('start second cycle')
-            // start cycle 2
-            io.game.cycle = 2;
-            io.game.CurrentPlayer = 0;
-        } else {
-            // start next round
-            io.game.cycle = 1;
-            io.game.CurrentPlayer = null;
-        }
-    }
-
-    // Act accoridngly
-    if (io.game.CurrentPlayer === null){
-        // If this round is done, start next round
-        console.log('proceed to next round')
-        ee.emit('next round');
-        return;
-    } else {
-        let player = io.game.players[io.game.CurrentPlayer];
-        console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
-        //console.log('current player is', player);
-        if (player.folded){
-            // If folded, proceed to next player
-            console.log('player already folded, skip to next player turn', player.username)
-            io.game.CurrentPlayer += 1;
-            ee.emit('start turn');
-        } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
-            // If not folded, but at cycle 2 and already at highest bet, proceed to next player
-            console.log('skip player in cycle 2')
-            io.game.CurrentPlayer += 1;
-            console.log('proceed to next turn')
-            ee.emit('start turn');
-        } else {
-            // If not folded, take action
-            console.log('current player acts')
-            let socketid = player.socketid;
-            io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
-            io.sockets.sockets.get(socketid).broadcast.emit('watch', player) // other players watch
-        }
-    }
-    
-})
-
-ee.on('next round',()=>{
-    console.log('next round initiated')
-    io.emit('flip common cards'); // decide which cards to flip on client side
-    io.game.round ++; // increment round
-    console.log('round', io.game.round)
-    ee.emit('start round');
-})
-
-ee.on('end game',()=>{
-    console.log('Running end game')
-    // Reveal hand and winner, send to all users
-    let evalMsg = io.game.returnEvalMsg();
-    console.log('final eval msg', evalMsg)
-    io.emit('display evalMsg', evalMsg);
-})
-
-ee.on('end game early',()=>{
-    var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
-    console.log('only non-fold winner', winners);
-    var winnerName = winners[0].username;
-    io.game.winners = winners;
-    let evalMsg = "Winner is " + winnerName;
-    console.log('final eval msg', evalMsg)
-    io.emit('display evalMsg', evalMsg);
-})
-
-
-
-ee.on('compute tokens',()=>{
-    console.log('computing tokens')
-    // Split tokens if needed
-    let commonTokenValues = io.game.commonTokenValues;
-    if (io.game.winners.length === 1){
-        var winnerTokenValues = commonTokenValues;
-    } else {
-        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
-    }
-    // let winner users collect tokens
-    let winnersocketids = io.game.winners.map(player=>player.socketid);
-    console.log('commonTokenValues', commonTokenValues);
-    console.log('winnersocketids', winnersocketids);
-    for (let winnersocketid of winnersocketids){
-        io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
-    }
-    // clear common table for all users
-    io.emit('clear common tokens');
-    io.game.commonTokenValues = [];
-
-    console.log('Game has ended!!!')
-
-    //io.timeout(5000).emit('reset game');
-/*     setTimeout(()=>{
-        io.game.resetGame();
-    }, 2000) */
-
-})
-
-
-class Deck {
-    constructor(){
-        this.deck = [];
-        this.reset();
-        this.shuffle();
-    }
-
-    reset() {
-        this.deck = [];
-        const suits = ['clubs', 'diamonds','hearts', 'spades'];
-        const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
-        for (let suit of suits) {
-            for (let value of values) {
-                this.deck.push([suit, value]);
-            }
-        }
-    }
-
-    shuffle() {
-        let totalNumOfCards = this.deck.length;
-        for (let i = 0; i < totalNumOfCards; i++){
-            let j = Math.floor(Math.random() * totalNumOfCards);
-            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
-        }
-    }
-
-    deal() {
-        const card = this.deck.pop();
-        return card;
-    }
-
 }
