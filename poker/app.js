@@ -465,6 +465,7 @@ ee.on('start round', ()=>{
     io.game.CurrentPlayer = 0;
     io.game.cycle = 1;
     if (io.game.round === 3){
+        io.game.round = 0;
         console.log('completed all rounds, end game')
         ee.emit('end game');
     } else {
@@ -546,7 +547,7 @@ ee.on('end game',()=>{
 ee.on('end game early',async ()=>{
     var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
     var winnerName = winners[0].username;
-    io.game.winner = winners;
+    io.game.winners = winners;
     let evalMsg = "Winner is " + winnerName;
     io.emit('display evalMsg', evalMsg);
 })
@@ -557,13 +558,15 @@ ee.on('compute tokens',()=>{
     console.log('computing tokens')
     // Split tokens if needed
     let commonTokenValues = io.game.commonTokenValues;
-    if (winners.length === 1){
+    if (io.game.winners.length === 1){
         var winnerTokenValues = commonTokenValues;
     } else {
         var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
     }
     // let winner users collect tokens
-    let winnersocketids = io.game.winners.forEach(player=>player.socketid);
+    let winnersocketids = io.game.winners.map(player=>player.socketid);
+    console.log('commonTokenValues', commonTokenValues);
+    console.log('winnersocketids', winnersocketids);
     for (let winnersocketid of winnersocketids){
         io.to(winnersocketid).emit('collect tokens', winnerTokenValues);
     }
@@ -572,9 +575,9 @@ ee.on('compute tokens',()=>{
     io.game.commonTokenValues = [];
 
     console.log('Game has ended!!!')
-    setTimeout(()=>{
+/*     setTimeout(()=>{
         io.game.resetGame();
-    }, 2000)
+    }, 2000) */
 
 })
 
