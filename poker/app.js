@@ -141,6 +141,7 @@ class Game {
         for(const player of this.players){
             this.evaluateHand(player, this.commonCards.concat(player.cards)); 
         }
+        let [winner, highCard] = this.evaluateWinner(this.players);
     }
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
@@ -215,7 +216,7 @@ class Game {
             return; 
         }
 
-        // Select hand cards from handBool if needed
+        // Select hand cards from handBool if not already calculated
         if (handBool !== false){
             var handCards = cards.filter((value, index)=>handBool[index]);
         }
@@ -232,6 +233,10 @@ class Game {
                 player.highCards.push(maxCard);
                 remainingLength--;
             }
+        } else {
+            // If hand consists of 5 cards (e.g. straight, flush)
+            player.rankCards = handCards;
+            player.highCards = [];
         }
         
         // handCards.sort((card1, card2)=> card1.number - card2.number); // Sort in ascending order
@@ -297,46 +302,54 @@ class Game {
     // Return winner of current round
     evaluateWinner(player1, player2){
         // Return [winner, highCard]
-        // highCard=true if rank name are the same and need to compare high cards
+        // needHighCard=true if winner rank name are the same and need to compare high cards
         // winner=null if both players have same cards
-        let highCard = false;
-        if (player1.handRank < player2.handRank){
-            return [[player1], highCard];
-        } else if (player1.handRank > player2.handRank){
-            return [[player2], highCard];
+    
+        let needHighCard = false;
+        const maxRank = Math.max(this.players.map(player=>player.handRank));
+        var winners = this.players.filter(player=>player.handRank === maxRank); // array of winners
+        if (winners.length === 1){
+            // If have definitive winner
+            return [winners, needHighCard];
         } else {
-            highCard = true;
-            // sorted in ascending order
-            let player1Cards = player1.rankCards.map(x=>x);
-            let player2Cards = player2.rankCards.map(x=>x);
-            var winner = this.evaluateHighCards(player1Cards, player2Cards);
-            // If not tie, return winner
-            if (winner.length===1){
-                return [winner, highCard];
+            // If have multiple winners with same hand
+            needHighCard = true;
+            winners = this.evaluateHighCards(winners, evalRank = true);       
+            if (winners.length===1){
+                // If not more tie, return winner
+                return [winners, highCard];
+            } else {
+                // If still tie, continue to evaluate remaining cards
+                winners = this.evaluateHighCards(winners, evalRank = false);
+                return [winners, highCard];
             }
-            // If tie, continue to evaluate remaining cards
-            player1Cards = player1.highCards.map(x=>x);
-            player2Cards = player2.highCards.map(x=>x);
-            winner = this.evaluateHighCards(player1Cards, player2Cards);
-            return [winner, highCard];
         }
     }
 
     // Helper for evaluateWinner, return array of winners
-    evaluateHighCards(player1Cards, player2Cards){
+    evaluateHighCards(winners, evalRank){
+        // already sorted in ascending order
+        if (evalRank){
+            var player1Cards = winners[0].rankCards.map(x=>x);
+            var player2Cards = winners[1].rankCards.map(x=>x);
+        } else {
+            var player1Cards = winners[0].highCards.map(x=>x);
+            var player2Cards = winners[1].highCards.map(x=>x);
+        }
+        
         // Compare list of cards by number until list exhausts
         while(player1Cards.length>0){
             let player1card = player1Cards.pop();
             let player2card = player2Cards.pop();
-            if (player1card.number === player2card.number){
+            if (player1card[1] === player2card[1]){
                 continue
-            } else if (player1card.number > player2card.number){
-                return [this.player1];
-            } else if (player1card.number < player2card.number){
-                return [this.player2];
+            } else if (player1card[1] > player2card[1]){
+                return [winners[0]];
+            } else if (player1card[1] < player2card[1]){
+                return [winners[1]];
             }
         }
-        return [this.player1, this.player2]; // tie with completely same cards
+        return winners; // tie with completely same cards
     }
 
     endGame(earlyEnd=false){ 
