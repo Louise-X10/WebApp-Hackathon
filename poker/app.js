@@ -187,7 +187,9 @@ class Game {
         return evalMsg;
     }
 
-    // Set player.hand and player.handName
+    // Set player handCards (5 optimal cards), handName, handRank
+    // rankCards (portion of handcards that make up rank)
+    // highCards (portion of handcards that doesn't contribute to rank)
     evaluateHand(player, cardsGiven){
         console.log('running evaluate hand')
         var cards = cardsGiven.map(x=>x); // make copy of given cards
@@ -218,45 +220,48 @@ class Game {
         // handCards: list of cards to form a hand
         // handName: name of hand
         // handBool: list of booleans [true, false, ...] used to generate handCards from cards
+        // define handCards / handBool; set player handName, handRank
         if (isStraightFlush){
             var handCards = straightFlushCards;
             var handBool = false;
-            var handName = "Straight Flush";
+            player.handName = "Straight Flush";
             player.handRank = 1;
         } else if (numberFreqValues.includes(4)){
             var handBool = numbers.map((num) => numberFreq[num]===4);
-            var handName = "Four of a kind";
+            player.handName = "Four of a kind";
             player.handRank = 2;
         } else if (numberFreqValues.includes(3) && numberFreqValues.includes(2)){
             var handBool = numbers.map((num) => numberFreq[num]===3 || numberFreq[num]===2);
-            var handName = "Full House";
+            player.handName = "Full House";
             player.handRank = 3;
         } else if (isFlush){
             var handBool = suits.map((num) => suitFreq[num]>=5);
-            var handName = "Flush";
+            player.handName = "Flush";
             player.handRank = 4;
         } else if (isStraight){
             var handCards = straightCards;
             var handBool = false;
-            var handName = "Straight";
+            player.handName = "Straight";
             player.handRank = 5;
         } else if (numberFreqValues.includes(3)){
             var handBool = numbers.map((num) => numberFreq[num]===3);
-            var handName = "Three of a kind";
+            player.handName = "Three of a kind";
             player.handRank = 6;
         } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
             var handBool = numbers.map((num) => numberFreq[num]===2);
-            var handName = "Two pairs";
+            player.handName = "Two pairs";
             player.handRank = 7;
         } else if (numberFreqValues.includes(2)){
             var handBool = numbers.map((num) => numberFreq[num]===2);
-            var handName = "One pair";
+            player.handName = "One pair";
             player.handRank = 8;
         } else {
             // if no hand at all, select highest valued cards, i.e. remove two lowest
             cards.shift();
             cards.shift();
-            player.handCards = cards;
+/*             player.handCards = cards;
+            player.rankCards = []; */
+            var handBool = [false, false, false, false, false];
             player.handName = "None";
             player.handRank = 9;
             return; 
@@ -267,27 +272,26 @@ class Game {
             var handCards = cards.filter((value, index)=>handBool[index]);
         }
         
-        // Select highest cards from remaining cards (ascending order)
-        if (handCards.length < 5){
-            let remainingCards = cards.filter(card => !handCards.includes(card));
-            let remainingLength = 5 - handCards.length;
+        if (handCards.length === 5){
+            // If hand already consists of 5 cards (e.g. straight, flush)
+            player.handCards = handCards;
+            player.rankCards = handCards;
+            player.highCards = [];
+        } else {
+            // Select highest cards from remaining cards (ascending order)
             player.rankCards = handCards.map(x=>x);
             player.highCards = [];
+
+            let remainingCards = cards.filter(card => !handCards.includes(card));
+            let remainingLength = 5 - handCards.length;
             while(remainingLength>0){
                 let maxCard = remainingCards.pop(); // card with max number is at the end
                 handCards.push(maxCard);
                 player.highCards.push(maxCard);
                 remainingLength--;
             }
-        } else {
-            // If hand consists of 5 cards (e.g. straight, flush)
-            player.rankCards = handCards;
-            player.highCards = [];
+            player.handCards = handCards;
         }
-        
-        // handCards.sort((card1, card2)=> card1.number - card2.number); // Sort in ascending order
-        player.handCards = handCards;
-        player.handName = handName;
     }
 
     // Only checks for straight, no flush, in given set of cards
@@ -377,7 +381,7 @@ class Game {
     // Helper for evaluateWinner, return array of winners
     //! Currently only works with two tied winners
     evaluateHighCards(winners, evalRank){
-        console.log('running evaluate high cards')
+        console.log('running evaluate high cards', winners, evalRank)
         // already sorted in ascending order
         if (evalRank){
             var player1Cards = winners[0].rankCards.map(x=>x);
@@ -387,6 +391,7 @@ class Game {
             var player2Cards = winners[1].highCards.map(x=>x);
         }
         
+        console.log(player1Cards, 'and', player2Cards)
         // Compare list of cards by number until list exhausts
         while(player1Cards.length>0){
             let player1card = player1Cards.pop();
