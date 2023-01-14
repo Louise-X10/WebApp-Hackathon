@@ -193,6 +193,7 @@ class Player {
         console.log('total sum for this bet', sum)
 
         if (game.cycle === 1){
+            this.betValue = 0; // reset player bet value on new round
             let betSuceed = sum >= game.highestBet || isFirstPlayer;
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value

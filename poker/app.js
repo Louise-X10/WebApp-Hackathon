@@ -420,7 +420,7 @@ class Game {
 }) */
 
 ee.on('start round', ()=>{
-    // Reset highest bet in current round, aand first player
+    // Reset highest bet in current round, first player, and cycle
     io.game.highestBet = 0;
     io.game.CurrentPlayer = 0;
     io.game.cycle = 1;
