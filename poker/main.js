@@ -196,7 +196,7 @@ class Player {
             let betSuceed = sum >= game.highestBet || isFirstPlayer;
             if (betSuceed){
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
-                this.betValue = sum;
+                this.betValue += sum;
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );

@@ -58,8 +58,12 @@ io.on('connection', socket =>{
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
-        // once player has played, proceed to next player
+        // update bet.value for this player
+        io.game.players[io.game.CurrentPlayer].betValue += sum;
+
+        // then proceed to next player
         io.game.CurrentPlayer += 1;
+        console.log('current player is now ', io.game.CurrentPlayer);
         ee.emit('start turn');
     })
 
@@ -419,14 +423,17 @@ ee.on('start round', ()=>{
 })
 
 ee.on('start turn', ()=>{
+    console.log('new turn initiated')
     var isFirstPlayer = false;
     // Figure out whose turn to play
     if (io.game.CurrentPlayer === 0){
         isFirstPlayer = true;
     } else if (io.game.CurrentPlayer === io.game.playerCount){
-        // All players have played
+        console.log('all players have played')
+        // All players have played, i.e. current player incremented over by 1
         let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
         if (io.game.cycle ===1 && !allMatch){
+            console.log('start second cycle')
             // start cycle 2
             io.game.cycle = 2;
             io.game.CurrentPlayer = 0;
@@ -441,19 +448,26 @@ ee.on('start turn', ()=>{
         ee.emit('end game early');
     } else if (io.game.CurrentPlayer === null){
         // If all players have played, start next round
+        console.log('proceed to next round')
         ee.emit('next round');
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
+        console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
+        console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
             io.game.CurrentPlayer += 1;
+            console.log('proceed to next turn')
             ee.emit('start turn');
         } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
             // If not folded, but at cycle 2 and already at highest bet, proceed to next player
+            console.log('skip player in cycle 2')
             io.game.CurrentPlayer += 1;
+            console.log('proceed to next turn')
             ee.emit('start turn');
         } else {
             // If not folded, take action
+            console.log('current player acts')
             let socketid = player.socketid;
             io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
             io.sockets.sockets.get(socketid).broadcast.emit('watch', player) // other players watch
@@ -463,6 +477,7 @@ ee.on('start turn', ()=>{
 })
 
 ee.on('next round',()=>{
+    console.log('next round initiated')
     if (!io.game.commonCards[0].isFlipped()){
         io.game.commonCards[0].flip();
         io.game.commonCards[1].flip();

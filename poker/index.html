@@ -131,10 +131,10 @@
                 function betAction(){
                     console.log('bet action called')
                     let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
-                    console.log(selectedTokenValues, sum, success)
+                    //console.log(selectedTokenValues, sum, success)
                     console.log("success", success);
                     if (success){
-                        console.log('emit to server')
+                        console.log('emit bet to server')
                         socket.emit('made bet', selectedTokenValues, sum);
                     } else {
                         player.betBtn.addEventListener('click', betAction, {once: true}) // continue to make bet until successfull
@@ -144,6 +144,7 @@
                 function foldAction(){
                     console.log('fold action called')
                     player.makeFold(game);
+                    console.log('emit fold to server')
                     socket.emit('made fold');
                 }
 
