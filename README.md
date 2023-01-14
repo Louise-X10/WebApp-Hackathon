@@ -38,10 +38,12 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Flip own cards and select own tokens whenever they want
     - Make bet and animate token movement to common table
     - Collect tokens and animate token movement to player table (not done)
+    - Store card objects
   - Server's ability:
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
+    - Store card values (suit and number)
 - To be completed
   - Multiplayer: big bind, small bind
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)

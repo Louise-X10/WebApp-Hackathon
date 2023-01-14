@@ -127,13 +127,21 @@ class Game {
         io.emit('deal common cards', this.commonCards);
 
         for (let player of this.players){
+            let playercard1 = deck.deal();
+            let playercard2 = deck.deal();
             let socketid = player.socketid;
-            io.to(socketid).emit('deal player cards', [card1, card2]);
+            player.cards = [playercard1, playercard2];
+            io.to(socketid).emit('deal player cards', [playercard1, playercard2]);
         }
         console.log('player cards generated');
     }
 
 
+    returnWinner(){
+        for(let player of this.players){
+            this.evaluateHand(player, this.commonCards.concat(player.cards));
+        }
+    }
     // Set player.hand and player.handName
     evaluateHand(player, cardsGiven){
         var cards = cardsGiven.map(x=>x); // sort cards in ascending number order
@@ -331,29 +339,6 @@ class Game {
         return [this.player1, this.player2]; // tie with completely same cards
     }
 
-    // After pressing next button: flip common cards, display eval message, collect tokens and end this round (set startRound=true)
-    nextAction (){
-        document.querySelector('.area.common').classList.remove('playing');
-        if(nextBtn.textContent === 'Next Step'){
-            console.log(this)
-            if (!this.card1.isFlipped()){
-                this.card1.flip();
-                this.card2.flip();
-                this.card3.flip();
-                window.dispatchEvent(this.startRoundEvent);
-            } else if (!this.card4.isFlipped()){
-                this.card4.flip();
-                window.dispatchEvent(this.startRoundEvent);
-            } else if (!this.card5.isFlipped()){
-                this.card5.flip();
-                nextBtn.textContent = 'Reveal Hand';
-                this.nextStep(); // setup listener but don't start new round because don't need to bet anymore
-            }
-        } else {
-            this.endGame();
-        }
-    }
-
     endGame(earlyEnd=false){ 
         if (nextBtn.textContent === 'Collect tokens') {
             // Last step: collect tokens
@@ -461,7 +446,6 @@ ee.on('start turn', ()=>{
     if (io.game.foldedCount === io.game.playerCount-1){
         //TODO end game early
     } else if (io.game.CurrentPlayer === null){
-        //TODO Start next round
         ee.emit('next round');
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
