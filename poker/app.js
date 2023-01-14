@@ -378,56 +378,6 @@ class Game {
         return winners; // tie with completely same cards
     }
 
-    endGame(earlyEnd=false){ 
-        if (nextBtn.textContent === 'Collect tokens') {
-            // Last step: collect tokens
-            let commonTokens = commonTokenTable.querySelectorAll('.token');
-            if (this.winner.length === 1){
-                commonTokens.forEach((token)=>this.winner[0].collectToken(token));
-            } else {
-                subTokenSet = splitTokens(commonTokens);
-                clearCommonTokens();
-                // Add pile of token to each winner player
-                this.winner.forEach(winner =>{
-                    subTokenSet.forEach((value)=> winner.addToken(value));
-                })
-            }
-            nextBtn.textContent = 'Next Step';
-            // initiate new Game;
-            resetBtn.addEventListener('click', this.resetGame, {once: true});
-        } else if (earlyEnd){
-            var winner = players.filter(player => !player.folded)
-            var winnerName = winner[0].container.getAttribute('id');
-            this.winner = winner;
-            let evalMsg = "Winner is " + winnerName;
-            nextBtn.textContent = 'Collect tokens';
-            let msg = document.querySelector('#evalMsg');
-            msg.textContent = evalMsg;
-            this.nextStep(); // setup listener but don't start new round
-        } else if (nextBtn.textContent === 'Reveal Hand') {
-            // If normal end, reveal winner and hands, setup collect tokens
-            this.evaluateHand(this.player1, this.commonCards.concat(this.player1.cards)); //*
-            this.evaluateHand(this.player2, this.commonCards.concat(this.player2.cards)); //*
-            var [winner, highCard] = this.evaluateWinner(this.player1, this.player2);
-            if (winner.length > 1){
-                var winnerName = "tie between";
-                winner.forEach(winner=> winnerName = winnerName+ ' ' + winner.container.getAttribute('id') + ' ');
-            } else {
-                var winnerName = winner[0].container.getAttribute('id');
-            }
-            let evalMsg = "Player1: " + this.player1.handName + "; Player2: " + this.player2.handName + "\n Winner is " + winnerName;
-            if (highCard){
-                evalMsg += " after comparing highest cards"
-            }
-            this.winner = winner;
-            let msg = document.querySelector('#evalMsg');
-            msg.textContent = evalMsg;
-            nextBtn.textContent = 'Collect tokens';
-            this.nextStep(); // setup listener but don't start new round
-        } 
-    }
-
-
     //TODO: Need to verify split token works in edge cases
     // Return array of token values for each pile
     splitTokens(tokenValues, pile){
