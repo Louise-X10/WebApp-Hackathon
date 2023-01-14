@@ -32,9 +32,6 @@ io.on('connection', socket =>{
 
     io.game = new Game();
 
-    /* socket.emit('ask username');
-    console.log('ask for user name'); */
-
     socket.on('player ready', (player) => {
         console.log('receive player ready');
         player.socketid = socket.id;
@@ -56,8 +53,8 @@ io.on('connection', socket =>{
         io.game.commonTokenValues = io.game.commonTokenValues.concat(selectedTokenValues);
         // update highest bet value
         io.game.highestBet = Math.max(io.game.highestBet, sum)
-        console.log('user made a bet');
-        console.log(io.game.highestBet);
+        console.log('user made a bet', sum);
+        console.log('highest bet now', io.game.highestBet);
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
@@ -459,7 +456,7 @@ ee.on('start turn', ()=>{
             // If not folded, take action
             let socketid = player.socketid;
             io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
-            io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game.CurrentPlayer) // other players watch
+            io.sockets.sockets.get(socketid).broadcast.emit('watch', player) // other players watch
         }
     }
     

@@ -200,7 +200,7 @@ class Player {
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
-                sucess = false; //  make player bet again
+                success = false; //  make player bet again
             }
         } else if (game.cycle === 2){
             let mustMatch = game.highestBet - this.betValue;
