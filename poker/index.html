@@ -9,7 +9,7 @@
 
   <header>
         <h1>Multi-player Poker Card Game</h1>
-        <h2> Refresh page until pop-up window asking for username appears! </h2>
+        <h2 id="username"> Refresh page until pop-up window asking for username appears! </h2>
         <h3>Instructions: </h3>
         <ul>
             <li>Player's cards can be flipped by clicking any time during the game.</li>
@@ -101,6 +101,8 @@
                     var username = window.prompt('Please enter a username');
                     console.log('my username', username);
                 } while (username===null);
+                let usernameText = document.querySelector('#username');
+                usernameText.textContent = 'Username: ' + username; // display username on page
                 player.username = username;
                 socket.emit('player ready', player); // pushing player only pushes properties e.g. username
             })

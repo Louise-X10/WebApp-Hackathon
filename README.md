@@ -38,8 +38,8 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Fold: fixed loop issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
     - Reset game: client click collect / clear token button then click ready for next game, add player money after collect tokens
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
+    - Username: displayed at top of page
 - Woking on
-  - Display own username
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - FIX: Break ties with more than 2 players
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
