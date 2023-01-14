@@ -42,6 +42,7 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Reset game: client click collect token button then click ready for next game. 
     - Remind players to start new game
     - Remind players current round number
+    - Non-winner common tokens automatically cleared
 - Woking on
   - BUG: incorrect evaluation of two "None" ranks
   - BUG: game keeps running after fold
