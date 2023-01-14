@@ -32,18 +32,17 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
     - Initiate new game after game ends
     - Split tokens evenly for ties
 - Woking on
-  - makeFold
+  - start next round
 - Online multi-user version with Socket.io
   - Client's ability:
-    - move token and common table
-    - control own table
-    - select tokens (not visible to others, don't need to pass to server)
-    - bet tokens (send value to server)
+    - Flip own cards and select own tokens whenever they want
+    - Make bet and animate token movement to common table
+    - Collect tokens and animate token movement to player table (not done)
   - Server's ability:
-    -   control next button and common table
-    -   deal cards to all players and common table: deal cards value and call client to display cards
+    - Deal cards to all players and common table
+    - Decide whose turn to play (i.e. next button)
+    - Update common table status to all players
 - To be completed
-  - Players can only flip their own cards
-  - Refine multiple token movement (animate different target positions), adjust delay
-  - Reorganize token after collection
   - Multiplayer: big bind, small bind
+  - Refine multiple token movement (animate different target positions), adjust delay (not essential)
+  - Reorganize token after collection (not essential)
