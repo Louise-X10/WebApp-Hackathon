@@ -99,8 +99,8 @@ class Game {
     }
 
     setPlayers(players){
-        this.playerCount = players.length;
         this.players = players;
+        this.playerCount = players.length;
         this.CurrentPlayer = 0;
     }
 
@@ -414,7 +414,7 @@ class Game {
                     this.CurrentPlayer = this.player2;
                     break;
                 case (this.player2):
-                    let allMatch = this.players.map(player=>player.betValue).filter(value => value === this.highestBet).length === this.players.length;
+                    let allMatch = this.players.map(player=>player.betValue).filter(value => value === this.highestBet).length === this.playerCount;
                     if (!allMatch && this.cycle===1){
                         // If not all players match during first cycle, play second cycle
                         console.log("Currently player2, next round player 1 (next cycle)");
@@ -527,25 +527,42 @@ class Game {
 ee.on('start turn', ()=>{
     io.game.highestBet = 0;
     var isFirstPlayer = false;
+
+    // Figure out whose turn to play
     if (io.game.CurrentPlayer === 0){
         isFirstPlayer = true;
-    } else if (io.game.CurrentPlayer === io.game.players.length){
+    } else if (io.game.CurrentPlayer === io.game.playerCount){
         // All players have played
+        let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
         if (io.game.cycle ===1 && !allMatch){
             // start cycle 2
+            io.game.cycle = 2;
+            io.game.CurrentPlayer = 0;
         } else {
             // start next round
+            io.game.cycle = 1;
+            io.game.CurrentPlayer = null;
         }
-        
-        // If cycle=1 and some players.bet value != highest bet, start cycle 2
-        // If cycle=1 and all match, start next round
-        // If cycle=2, must all match, start next round
-
     }
-    let player = io.game.players[io.game.CurrentPlayer];
-    let socketid = player.socketid;
-    io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
-    io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game.CurrentPlayer) // other players watch
+
+    if (io.game.foldedCount === io.game.playerCount-1){
+        // end game early
+    } else if (io.game.CurrentPlayer === null){
+        // Start next round
+    } else {
+        let player = io.game.players[io.game.CurrentPlayer];
+        if (player.folded){
+            // If folded, proceed to next player
+        } else if (io.game.cycle===2 && player.betValue === io.game.highestBet) {
+            // If not folded, but at cycle 2 and already at highest bet, proceed to next player
+        } else {
+            // If not folded, take action
+            let socketid = player.socketid;
+            io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
+            io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game.CurrentPlayer) // other players watch
+        }
+    }
+    
 })
 
 
