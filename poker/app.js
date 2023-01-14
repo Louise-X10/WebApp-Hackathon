@@ -110,11 +110,6 @@ io.on('connection', socket =>{
     })
 })
 
-/* ee.on('game ready', (game) => {
-    game.setGame(players);
-    ee.emit('start round',game);
-}) */
-
 //* Internal events
 
 ee.on('start round', ()=>{
@@ -323,7 +318,7 @@ class Game {
             player.cards = [];
         })
         // reset game status
-        this.winner = null;
+        this.winners = null;
         this.foldedCount = 0;
         this.cycle = 1;
         this.highestBet = 0;
