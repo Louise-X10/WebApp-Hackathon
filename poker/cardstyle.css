@@ -30,12 +30,16 @@ button.start {
     padding: 20px;
     font-size: 16px;
     font-weight: bold;
-    background-color: orangered; 
+    background-color: rgb(255, 170, 0); 
     border-color: black;
     border-radius: 50%; /* make button round */
     right: 230px;
     top: 450px; /* default font size 1em = 13px, 35em = 455px */
     position: absolute;
+}
+
+button.start.restart {
+    background-color: plum; 
 }
 
 /* Table area */

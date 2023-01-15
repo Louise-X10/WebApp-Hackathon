@@ -112,6 +112,8 @@
             socket.on('start game', ()=>{
                 // remove start listener
                 player.startBtn = document.querySelector('button.start');
+                player.startBtn.textContent = 'Reset';
+                player.startBtn.classList.add('restart');
             })
 
             socket.on('deal common cards', (commonCards)=>{

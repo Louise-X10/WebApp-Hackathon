@@ -61,7 +61,7 @@ io.on('connection', socket =>{
 
     socket.on('ready to start', ()=>{
         io.game.setGame(loggedPlayers);
-        io.emit('start game'); // clear player start listener
+        io.emit('start game'); // clear player start button listener
         ee.emit('start round'); // start game
 
     })
