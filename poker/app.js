@@ -49,6 +49,7 @@ io.on('connection', socket =>{
         console.log('receive player ready');
         player.socketid = socket.id;
         players.push(player);
+        io.emit('log all players', players); // update log whenever new player connects
 
         // wait until 2 players to start game
         //! Tempororay start condition

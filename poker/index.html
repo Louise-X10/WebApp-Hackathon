@@ -27,6 +27,8 @@
             <li>For each turn, there are maximum two cycles. During the first cycle through all the players, raises (i.e. bet more than previous players) are allowed. In the second cycle (if needed), only matches (i.e. in a single round, all players' total bet value matches the highest total bet value) are allowed.</li>
             <li>Play order is determined by the order users entered their username. Play order will be rotated in new games.</li>
         </ul>
+        <h3> All Players: </h3>
+        <p id = 'logplayers'></p>
         <pre id="evalMsg"> Waiting for username. </pre>
     </header>
 
@@ -92,6 +94,14 @@
                 socket.emit('player ready', player); // pushing player only pushes properties e.g. username
             })
             
+            socket.on('log all players', (players)=>{
+                let log = document.querySelector('#logplayers');
+                log.textContent = ''
+                players.forEach(serverPlayer => {
+                    log.textContent += serverPlayer.username + ' '
+                })
+            })
+
             socket.on('waiting', ()=>{
                 player.msg.textContent = 'Waiting for more players';
             })
