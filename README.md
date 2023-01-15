@@ -39,12 +39,11 @@ http://hackathon.gloopen.com:3000/
     - Decide which cards to flip on client side
     - Bet: subtract player.money after bet, reset player.betvalue after new round
     - Fold: fixed loop issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
-    - Reset game: client click collect / clear token button then click ready for next game, add player money after collect tokens
+    - Reset game: reset round, client click collect / clear token button then click ready for next game, add player money after collect tokens
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
     - Username: displayed at top of page
 - Woking on
   - Display all players currently still in game on page
-  - Reset round in new game
   - Exchange tokens
   - Highlight previous player's bet
   - Player that disconnects and reconnects with same name should use same socket?
