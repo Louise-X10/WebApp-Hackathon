@@ -43,18 +43,18 @@ http://hackathon.gloopen.com:3000/
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
     - Username: displayed at top of page
     - Log users: display all players currently still in game on page
+    - Start game: game starts once any player presses start
 - Woking on
   - Exchange tokens
   - Highlight previous player's bet
   - Integrate start and restart game button
-  - During game, player that disconnects and reconnects with same name should use same socket?
+  - Reposition start button
   - Move collect token and reset game button, bigger
-  - NEW: Create login page to enter player number, then redirect to / reveal poker page
-    - Use different ports for different player numbers, or
-    - Start game once one user presses 'start game' (need to display all players that have logged in)
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players
-  
+- What happens if player disconnects
+  - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
+  - 
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want

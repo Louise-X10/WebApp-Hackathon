@@ -6,7 +6,6 @@ const { Server } = require("socket.io");
 //const { setTimeout } = require('timers/promises');
 const io = new Server(server);
 const port = 3000;
-const playerNum = 3;
 
 // Serve all files
 app.use(express.static(__dirname));
