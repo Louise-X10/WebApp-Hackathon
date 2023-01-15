@@ -58,16 +58,13 @@ io.on('connection', socket =>{
         loggedPlayers.push(player);
         io.emit('log all players', loggedPlayers); // update log whenever new player connects
 
-        // wait until 2 players to start game
-        //! Tempororay start condition
-        if (loggedPlayers.length < playerNum){
-            socket.emit('waiting');
-        } else {
-            io.game.setGame(loggedPlayers);
-            // ee.emit('end game'); // for testing purposes
-            ee.emit('start round');
-            //ee.emit('game ready', game);
-        }
+    })
+
+    socket.on('ready to start', ()=>{
+        io.game.setGame(loggedPlayers);
+        io.emit('start game'); // clear player start listener
+        ee.emit('start round'); // start game
+
     })
 
     socket.on('made bet', (selectedTokenValues, sum, player) =>{
@@ -135,7 +132,6 @@ ee.on('start round', ()=>{
     } else {
         ee.emit('start turn');
     }
-    
 })
 
 ee.on('start turn', ()=>{

@@ -21,6 +21,7 @@ class Player {
         this.foldBtn = document.querySelector('.action button.fold');
         this.collectBtn = document.querySelector('.action button.collect');
         this.resetBtn = document.querySelector('.action button.reset');
+        this.startBtn = document.querySelector('button.start');
         
         this.folded = false;
         this.playerCards = []; // [card1, card2]

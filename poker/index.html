@@ -92,6 +92,12 @@
                 let usernameText = document.querySelector('#username');
                 usernameText.textContent = 'Username: ' + username; // display username on page
                 player.username = username;
+                player.msg.textContent = 'Waiting for more players';
+                // Set up start listener
+                player.startBtn.addEventListener('click', ()=>{
+                    socket.emit('ready to start')
+                }, {once: true})
+                // Signal player is ready to server
                 socket.emit('player ready', player); // pushing player only pushes properties e.g. username
             })
             
@@ -103,8 +109,9 @@
                 })
             })
 
-            socket.on('waiting', ()=>{
-                player.msg.textContent = 'Waiting for more players';
+            socket.on('start game', ()=>{
+                // remove start listener
+                player.startBtn = document.querySelector('button.start');
             })
 
             socket.on('deal common cards', (commonCards)=>{
