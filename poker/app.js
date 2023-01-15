@@ -209,12 +209,12 @@ ee.on('end game',()=>{
         var winners = noFoldPlayers;
         io.game.winners = winners; // Set io.game.winners
         var winnerName = winners[0].username;
-        let evalMsg = "Winner is " + winnerName + "because eveyone else folded"; // Compute eval message
+        var evalMsg = "Winner is " + winnerName + " because eveyone else folded"; // Compute eval message
         console.log('final eval msg', evalMsg);
         var winnerTokenValues = io.game.commonTokenValues;
     } else {
         // End game normally
-        let evalMsg = io.game.returnEvalMsg(); // Set io.game.winners and Compute eval message for all users
+        var evalMsg = io.game.returnEvalMsg(); // Set io.game.winners and Compute eval message for all users
         console.log('final eval msg', evalMsg)
         // Compute tokens for winners, split if needed
         console.log('computing tokens')

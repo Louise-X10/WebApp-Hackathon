@@ -88,7 +88,7 @@ class Player {
     }
 
     // Set tokens to totalvalue
-    setTokens(totalValue=500) { // 4*50 + 4*10 + 4*5 = 260
+    setTokens(totalValue=260) { // 4*50 + 4*10 + 4*5 = 260
         this.clearTokens();
         while (this.money < totalValue && this.money < 200){
             this.addToken(50);
