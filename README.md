@@ -42,12 +42,13 @@ http://hackathon.gloopen.com:3000/
     - Reset game: reset round, client click collect / clear token button then click ready for next game, add player money after collect tokens
     - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
     - Username: displayed at top of page
+    - Log users: display all players currently still in game on page
 - Woking on
-  - Display all players currently still in game on page
   - Exchange tokens
   - Highlight previous player's bet
+  - Integrate start and restart game button
   - During game, player that disconnects and reconnects with same name should use same socket?
-  - Move collect token and reset game button
+  - Move collect token and reset game button, bigger
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
     - Use different ports for different player numbers, or
     - Start game once one user presses 'start game' (need to display all players that have logged in)
