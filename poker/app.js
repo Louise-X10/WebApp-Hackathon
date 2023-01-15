@@ -137,7 +137,6 @@ ee.on('start turn', ()=>{
         console.log('all else folded, end game early')
         io.game.round = 3;
         ee.emit('start round');
-        //ee.emit('end game early');
         return;
     }
 
@@ -203,22 +202,33 @@ ee.on('next round',()=>{
 
 ee.on('end game',()=>{
     console.log('Running end game')
-    // Compute eval message for all users
-    let evalMsg = io.game.returnEvalMsg();
-    console.log('final eval msg', evalMsg)
 
-    // Compute tokens for winners, split if needed
-    console.log('computing tokens')
-    let commonTokenValues = io.game.commonTokenValues;
-    if (io.game.winners.length === 1){
-        var winnerTokenValues = commonTokenValues;
+    let noFoldPlayers = io.game.players.filter(player => !player.folded) // player who hasn't folded
+    if (noFoldPlayers.length === 1){
+        // Ended game early due to folds
+        var winners = noFoldPlayers;
+        io.game.winners = winners; // Set io.game.winners
+        var winnerName = winners[0].username;
+        let evalMsg = "Winner is " + winnerName + "because eveyone else folded"; // Compute eval message
+        console.log('final eval msg', evalMsg);
+        var winnerTokenValues = io.game.commonTokenValues;
     } else {
-        var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+        // End game normally
+        let evalMsg = io.game.returnEvalMsg(); // Set io.game.winners and Compute eval message for all users
+        console.log('final eval msg', evalMsg)
+        // Compute tokens for winners, split if needed
+        console.log('computing tokens')
+        let commonTokenValues = io.game.commonTokenValues;
+        if (io.game.winners.length === 1){
+            var winnerTokenValues = commonTokenValues;
+        } else {
+            var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+        }
     }
 
     // Figure out winners
     let winnersocketids = io.game.winners.map(player=>player.socketid);
-    console.log('commonTokenValues', commonTokenValues);
+    console.log('winnerTokenValues', winnerTokenValues);
     console.log('winnersocketids', winnersocketids);
     let allsocketids = allSockets.map(socket=>socket.id);
     //! Set time out so last card can be flipped before displaying eval messages
@@ -231,24 +241,6 @@ ee.on('end game',()=>{
             io.to(socketid).timeout(2000).emit('display and clear', evalMsg);
         }
     }
-    io.game.commonTokenValues = [];
-    console.log('Game has ended!!!')
-})
-
-ee.on('end game early',()=>{
-    var winners = io.game.players.filter(player => !player.folded) // the only player who hasn't folded
-    console.log('only non-fold winner', winners);
-    var winnerName = winners[0].username;
-    io.game.winners = winners;
-    let evalMsg = "Winner is " + winnerName + "because eveyone else folded";
-    console.log('final eval msg', evalMsg)
-    let commonTokenValues = io.game.commonTokenValues;
-
-    console.log('winnersocketid', winners[0].socketid);
-
-    io.to(winners[0].socketid).emit('display and collect', evalMsg, commonTokenValues);
-    io.sockets.sockets.get(winners[0].socketid).broadcast.emit('display and clear', evalMsg);
-
     io.game.commonTokenValues = [];
     console.log('Game has ended!!!')
 })
