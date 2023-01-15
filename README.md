@@ -46,7 +46,7 @@ http://hackathon.gloopen.com:3000/
   - Display all players currently still in game on page
   - Exchange tokens
   - Highlight previous player's bet
-  - Player that disconnects and reconnects with same name should use same socket?
+  - During game, player that disconnects and reconnects with same name should use same socket?
   - Move collect token and reset game button
   - NEW: Create login page to enter player number, then redirect to / reveal poker page
     - Use different ports for different player numbers, or
@@ -60,6 +60,7 @@ http://hackathon.gloopen.com:3000/
     - Make bet and animate token movement to common table
     - Collect tokens and animate token movement to player table (not done)
     - Store card objects
+    - Has player as a global variable
   - Server's ability:
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)

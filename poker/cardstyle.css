@@ -5,6 +5,7 @@ body {
 header {
     background-color: rgb(219, 126, 157);
     padding: 10px;
+    position: relative;
 }
 
 header pre {
@@ -20,6 +21,22 @@ li {
     font-size: larger;
 }
 
+button {
+    cursor: pointer; /* change cursor to hand pointer when hovering */
+    padding: 5px;
+}
+
+button.start {
+    padding: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: orangered; 
+    border-color: black;
+    border-radius: 50%; /* make button round */
+    right: 230px;
+    top: 450px; /* default font size 1em = 13px, 35em = 455px */
+    position: absolute;
+}
 
 /* Table area */
 .area {
