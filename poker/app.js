@@ -44,6 +44,8 @@ io.on('connection', socket =>{
         }
     });
 
+    //console.log('print users before asking') - Not working, may have to do with alert
+    //io.emit('log all players', loggedPlayers); // update log whenever some player disconnects
     socket.emit('ask username');
     console.log('ask for user name');
 
