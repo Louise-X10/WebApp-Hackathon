@@ -44,10 +44,17 @@ http://hackathon.gloopen.com:3000/
     - Username: displayed at top of page
 - Woking on
   - Display all players currently still in game on page
+  - Reset round in new game
+  - Exchange tokens
+  - Highlight previous player's bet
+  - Player that disconnects and reconnects with same name should use same socket?
   - Move collect token and reset game button
+  - NEW: Create login page to enter player number, then redirect to / reveal poker page
+    - Use different ports for different player numbers, or
+    - Start game once one user presses 'start game' (need to display all players that have logged in)
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players
-  - NEW: Create login page to enter player number, then redirect to / reveal poker page
+  
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want

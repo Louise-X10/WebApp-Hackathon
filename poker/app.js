@@ -135,7 +135,9 @@ ee.on('start turn', ()=>{
 
     if (io.game.foldedCount === io.game.playerCount-1){
         console.log('all else folded, end game early')
-        ee.emit('end game early');
+        io.game.round = 3;
+        ee.emit('start round');
+        //ee.emit('end game early');
         return;
     }
 
