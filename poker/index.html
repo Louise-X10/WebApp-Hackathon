@@ -54,7 +54,7 @@
 
     <div class="area action" id="common">
         <button class="collect">Collect tokens</button>
-        <button class="reset">Reset Game</button>
+        <button class="next">Next Game</button>
     </div>
 
     <div class="area player" id="player">
@@ -195,8 +195,8 @@
                         player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
                     });
                     player.clearCommonTokens();
-                    // Set up reset listener
-                    player.resetBtn.addEventListener('click', ()=>{
+                    // Set up next game listener
+                    player.nextBtn.addEventListener('click', ()=>{
                         player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
                         socket.emit('ready for next game');
                     }, {once: true})
@@ -218,8 +218,8 @@
                     console.log('clearing tokens')
                     player.clearCommonTokens();
                     player.collectBtn.textContent = 'Collect Tokens';
-                    // Set up reset listener
-                    player.resetBtn.addEventListener('click', ()=>{
+                    // Set up next game listener
+                    player.nextBtn.addEventListener('click', ()=>{
                         player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
                         socket.emit('ready for next game');
                     }, {once: true})

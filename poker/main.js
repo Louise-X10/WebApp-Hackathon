@@ -20,7 +20,7 @@ class Player {
         this.betBtn = document.querySelector('.action button.bet');
         this.foldBtn = document.querySelector('.action button.fold');
         this.collectBtn = document.querySelector('.action button.collect');
-        this.resetBtn = document.querySelector('.action button.reset');
+        this.nextBtn = document.querySelector('.action button.next');
         this.startBtn = document.querySelector('button.start');
         
         this.folded = false;
