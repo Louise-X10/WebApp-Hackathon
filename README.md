@@ -47,7 +47,6 @@ http://hackathon.gloopen.com:3000/
 - Woking on
   - Exchange tokens
   - Integrate start and restart game button
-  - BUG: remove bet listener after game end
   - Reposition start button
   - Move collect token and reset game button, bigger
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)

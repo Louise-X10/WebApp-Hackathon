@@ -139,7 +139,8 @@
                 player.msg.textContent += `\nHighest bet value: ${game.highestBet}`;
                 
                 function betAction(){
-                    console.log('bet action called')
+                    console.log('bet action called');
+                    player.foldBtn.removeEventListener('click', foldAction, {once: true})
                     let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
                     //console.log(selectedTokenValues, sum, success)
                     console.log("success", success);
@@ -153,6 +154,7 @@
 
                 function foldAction(){
                     console.log('fold action called')
+                    player.betBtn.removeEventListener('click', betAction, {once: true});
                     player.makeFold();
                     console.log('emit fold to server')
                     socket.emit('made fold');
@@ -161,7 +163,7 @@
 
                 // setup bet button listeners
                 player.betBtn.addEventListener('click', betAction, {once: true});
-                player.foldBtn.addEventListener('click', foldAction, {once: true})
+                player.foldBtn.addEventListener('click', foldAction, {once: true});
             })
 
             socket.on('receive bet', (selectedTokenValues)=>{
