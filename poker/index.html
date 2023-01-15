@@ -129,12 +129,14 @@
                 console.log('watching')
                 player.msg.textContent = `Player ${serverPlayer.username} is playing now!`;
                 player.msg.textContent += `\nRound: ${game.round}`;
+                player.msg.textContent += `\nHighest bet value: ${game.highestBet}`;
             })
 
             socket.on('play', (game, isFirstPlayer)=>{
                 console.log('start playing')
                 player.msg.textContent = 'You are playing now!';
                 player.msg.textContent += `\nRound: ${game.round}`;
+                player.msg.textContent += `\nHighest bet value: ${game.highestBet}`;
                 
                 function betAction(){
                     console.log('bet action called')
@@ -164,7 +166,8 @@
 
             socket.on('receive bet', (selectedTokenValues)=>{
                 console.log('receiving bet');
-                player.receiveBet(selectedTokenValues);
+                player.receiveBet(selectedTokenValues); // update common table
+                // display message of previous bet value
             })
 
             socket.on('flip common cards',()=>{

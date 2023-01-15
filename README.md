@@ -40,21 +40,21 @@ http://hackathon.gloopen.com:3000/
     - Bet: subtract player.money after bet, reset player.betvalue after new round
     - Fold: fixed loop issue by setting one-time listener on server side, but still not sure why client keeps firing fold event
     - Reset game: reset round, client click collect / clear token button then click ready for next game, add player money after collect tokens
-    - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number
+    - Message: display result (congrats winner and say if winning due to folds), remind players to start new game, record current round number, record highest bet value per round
     - Username: displayed at top of page
     - Log users: display all players currently still in game on page
     - Start game: game starts once any player presses start
 - Woking on
   - Exchange tokens
-  - Highlight previous player's bet
   - Integrate start and restart game button
+  - BUG: remove bet listener after game end
   - Reposition start button
   - Move collect token and reset game button, bigger
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players
 - What happens if player disconnects
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
-  - 
+  - Pause game if someone disconnects, save game session info, reload game once reconnect
 - Online multi-user version with Socket.io
   - Client's ability:
     - Flip own cards and select own tokens whenever they want
