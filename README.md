@@ -66,6 +66,7 @@ http://hackathon.gloopen.com:3000/
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
     - Store card as array [suit, value]
+    - Save list of loggedplayers, list of sockets
 - To be completed
   - Multirounds: big bind, small bind (not done)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)

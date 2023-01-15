@@ -20,7 +20,8 @@
             <li>Throughout the game, there will be a message area on the webpage displaying the current state of the game and reminders for what to do. The text will be shown in bright colors for contrast. </li>
             <li>Once all rounds are done, a pop-up window will display the winner. This message will also be shown in the message area of the webpage. </li>
             <li>Then, winners can collect tokens and non-winners can clear the tokens by pressing the corresponding buttons.</li>
-            <li>A new game will be initiated once all players have clicked the 'Reset Game' button. </li>
+            <li>A new game will be initiated once all players have clicked the 'Next Game' button. </li>
+            <li>NOTE: You can click `Reset` to start a brand new game, all players will start fresh, previous tokens won and lost will all be rest. </li>
         </ul>
         <h3>Simplified poker rules:</h3>
         <ul>
@@ -95,7 +96,9 @@
                 player.msg.textContent = 'Waiting for more players';
                 // Set up start listener
                 player.startBtn.addEventListener('click', ()=>{
+                    console.log('pressing start button')
                     socket.emit('ready to start')
+                    player.startBtn = document.querySelector('button.start');
                 }, {once: true})
                 // Signal player is ready to server
                 socket.emit('player ready', player); // pushing player only pushes properties e.g. username
@@ -110,10 +113,29 @@
             })
 
             socket.on('start game', ()=>{
-                // remove start listener
-                player.startBtn = document.querySelector('button.start');
+                // clear start listener
+                // player.startBtn = document.querySelector('button.start');
+                // setup reset button
                 player.startBtn.textContent = 'Reset';
-                player.startBtn.classList.add('restart');
+                player.startBtn.classList.add('reset');
+                // setup reset listener
+                player.startBtn.addEventListener('click', ()=>{
+                    console.log('pressing reset button')
+                    socket.emit('reset game');
+                }, {once: true})
+            })
+
+            socket.on('reset game requested', ()=>{
+                // clear start listener
+                player.startBtn = document.querySelector('button.start');
+                // setup reset button
+                player.startBtn.textContent = 'Reset';
+                player.startBtn.classList.add('reset');
+                //! Alert players a reset has been requested
+                // setup reset listener
+                player.startBtn.addEventListener('click', ()=>{
+                    socket.emit('reset game');
+                }, {once: true})
             })
 
             socket.on('deal common cards', (commonCards)=>{

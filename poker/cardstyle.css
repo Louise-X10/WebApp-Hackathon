@@ -38,7 +38,7 @@ button.start {
     position: absolute;
 }
 
-button.start.restart {
+button.start.reset {
     background-color: plum; 
 }
 

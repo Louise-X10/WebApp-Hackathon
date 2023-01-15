@@ -61,9 +61,16 @@ io.on('connection', socket =>{
 
     socket.on('ready to start', ()=>{
         io.game.setGame(loggedPlayers);
-        io.emit('start game'); // clear player start button listener
+        io.emit('start game'); // clear player start button and setup reset button
         ee.emit('start round'); // start game
 
+    })
+
+    socket.on('reset game',()=>{
+        console.log('reset game requested')
+        io.game.setGame(loggedPlayers);
+        io.emit('reset game requested'); // clear player start button and setup reset button
+        ee.emit('start round'); // start game
     })
 
     socket.on('made bet', (selectedTokenValues, sum, player) =>{
@@ -104,15 +111,15 @@ io.on('connection', socket =>{
         console.log('remove fold listener');
     })
 
-    // After all users clicked ready for next game, reset game
+    // After all users clicked ready for next game, setup next game
     socket.on('ready for next game',()=>{
         socket.ready = true;
         console.log(allSockets.map(socket => socket.ready));
         let allReady = allSockets.filter(socket => socket.ready === true).length === allSockets.length;
         console.log('one more user ready', allReady)
         if (allReady){
-            console.log('calling reset game');
-            ee.emit('reset game');
+            console.log('calling next game');
+            ee.emit('next game');
         }
     })
 })
@@ -248,10 +255,10 @@ ee.on('end game',()=>{
     console.log('Game has ended!!!')
 })
 
-ee.on('reset game', ()=>{
-    console.log('resetting game');
+ee.on('next game', ()=>{
+    console.log('setting up next game');
     io.game.resetGame();
-    console.log('after reset, game is', io.game);
+    console.log('next game is', io.game);
     io.game.setupCards();
     ee.emit('start round');
 })
