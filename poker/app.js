@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 //const { setTimeout } = require('timers/promises');
 const io = new Server(server);
 const port = 3000;
-const playerNum = 2;
+const playerNum = 3;
 
 // Serve all files
 app.use(express.static(__dirname));
@@ -21,8 +21,8 @@ server.listen(port, () => {
 });
 
 //* actual server code
-var players = [] // [{socketID, username}, ...]
-var allSockets = []
+var loggedPlayers = [] // [player {username, socketid, ...}, ...]
+var allSockets = [] // [socket {ready=false, player(optional)...}, ...]
 var EventEmitter = require("events").EventEmitter;
 var ee = new EventEmitter();
 
@@ -36,8 +36,12 @@ io.on('connection', socket =>{
 
     socket.on('disconnect', function() {
         console.log('new user disconnected');
-        allSockets = allSockets.filter(listSocket => listSocket!==socket); // remove socket from list
+        allSockets = allSockets.filter(listedSocket => listedSocket!==socket); // remove socket from list
         console.log(allSockets.map(socket => socket.ready));
+        if (socket.player!==undefined) {
+            loggedPlayers = loggedPlayers.filter(player => player!= socket.player); // remove socket player from list of logged players
+            io.emit('log all players', loggedPlayers); // update log whenever some player disconnects
+        }
     });
 
     socket.emit('ask username');
@@ -48,15 +52,16 @@ io.on('connection', socket =>{
     socket.on('player ready', (player) => {
         console.log('receive player ready');
         player.socketid = socket.id;
-        players.push(player);
-        io.emit('log all players', players); // update log whenever new player connects
+        socket.player = player;
+        loggedPlayers.push(player);
+        io.emit('log all players', loggedPlayers); // update log whenever new player connects
 
         // wait until 2 players to start game
         //! Tempororay start condition
-        if (players.length < playerNum){
+        if (loggedPlayers.length < playerNum){
             socket.emit('waiting');
         } else {
-            io.game.setGame(players);
+            io.game.setGame(loggedPlayers);
             // ee.emit('end game'); // for testing purposes
             ee.emit('start round');
             //ee.emit('game ready', game);
