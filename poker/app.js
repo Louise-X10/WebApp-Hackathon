@@ -434,7 +434,7 @@ class Game {
             var straightFlushCards = this.returnStraight(flushCards);
         }
         let straightCards = this.returnStraight(cards);
-        console.log('straight cards', straightCards);
+        //console.log('straight cards', straightCards);
         let isStraightFlush = straightFlushCards.length > 0;
         let isStraight = straightCards.length > 0;
 
@@ -486,7 +486,6 @@ class Game {
             var handCards = [];
             player.handName = "None";
             player.handRank = 9;
-            return; 
         }
 
         // Select hand cards from handBool if not already calculated
@@ -552,7 +551,7 @@ class Game {
         }
 
         let straightNumbers = numbersClone.slice(startIndex,endIndex);
-        console.log('straight numbers', straightNumbers);
+        //console.log('straight numbers', straightNumbers);
         // If longer than 5 straight, remove the smaller numbers
         while (straightNumbers.length > 5){
             straightNumbers.shift();
