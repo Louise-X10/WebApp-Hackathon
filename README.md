@@ -13,12 +13,17 @@ P.S. When two balls collide, they bounce off each other and both change to anoth
 Calculator with 4 input fields: primary amount, interest rate, time cycle, final amount. Given any 3 of the 4 fields, the calculator can compute the remaining field. More detailed instructions are given on the webpage. 
 
 ## Online two-player Poker (Playable)
-A non-playable view of the poker game webpage is accessible at `https://louise-x10.github.io/22-23-Winter-Hackathon/poker/`. 
+A playable version of the poker game is accessible at `http://hackathon.gloopen.com:3000/`
 
-A playable version of the poker game is accessible at `http://hackathon.gloopen.com:3000/`.
+A non-playable view of the poker game webpage is accessible at `https://louise-x10.github.io/22-23-Winter-Hackathon/poker/`
 
 ### Todo list
 - Woking on
+  - Make who's playing more obvious
+  - Display winner's hand?
+  - BUG: evaluate tie
+  - BUG: winner clear tokens?
+  - Change background during your turn
   - Exchange tokens: big to small, small to big
   - Highlight current player in message area
   - Update rotated player order in message area after new game
