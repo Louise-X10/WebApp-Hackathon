@@ -255,12 +255,7 @@ ee.on('end game',()=>{
 
 ee.on('next game', ()=>{
     console.log('setting up next game');
-    io.game.resetGame(); // rotate game players
-    
-    let firstPlayer = loggedPlayers.shift();
-    loggedPlayers.push(firstPlayer);
-    io.emit('log all players', loggedPlayers); // rotate logged players
-
+    io.game.resetGame(); // rotate game players and logged players
     console.log('next game is', io.game);
     io.game.setupCards();
 
@@ -365,6 +360,7 @@ class Game {
 
         for (let player of this.players){
             let playercard1 = deck.deal();
+            let playercard2 = deck.deal();
             let socketid = player.socketid;
             player.commonCards = this.commonCards;
             player.playerCards = [playercard1, playercard2];

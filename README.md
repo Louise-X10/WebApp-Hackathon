@@ -21,7 +21,10 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 - Woking on
   - Highlight current player in message area  
   - Update rotated player order in message area after new game
+  - BUG: Three pairs evaluation
 - Additional features:
+  - Differentiate clickable buttons
+  - Can directly click next game if no common tokens
   - Exchange tokens: big to small, small to big
   - Display winner's hand?
   - Break ties with more than 2 players
