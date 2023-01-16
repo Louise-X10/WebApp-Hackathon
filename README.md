@@ -19,11 +19,11 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Make who's playing more obvious
+  - Make who's playing more obvious, Change background during your turn
   - Display winner's hand?
   - BUG: evaluate tie
   - BUG: winner clear tokens?
-  - Change background during your turn
+  - BUG: reveal last card before alert message for other players
   - Exchange tokens: big to small, small to big
   - Highlight current player in message area
   - Update rotated player order in message area after new game
