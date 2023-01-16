@@ -412,10 +412,10 @@ class Game {
     evaluateHand(player, cardsGiven){
         console.log('running evaluate hand', cardsGiven)
         var cards = cardsGiven.map(x=>x); // make copy of given cards
-        cards.sort((card1, card2)=> card1[1] - card2[1]); // sort [suit, value] in ascending number order
+        cards.sort((card1, card2)=> card1.number - card2.number); // sort [suit, value] in ascending number order
 
-        let suits = cards.map(c => c[0]);
-        let numbers = cards.map(c => c[1]);
+        let suits = cards.map(c => c.suit);
+        let numbers = cards.map(c => c.number);
         
         let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
         let numberFreqValues = Object.values(numberFreq);
@@ -523,7 +523,7 @@ class Game {
             return [];
         }
 
-        let numbersCloneDuplicates = cards.map(c => c[1]); // clone numbers array
+        let numbersCloneDuplicates = cards.map(c => c.number); // clone numbers array
         let numbersNoDuplicate = new Set(numbersCloneDuplicates);
         let numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
 
@@ -619,11 +619,11 @@ class Game {
         while(player1Cards.length>0){
             let player1card = player1Cards.pop();
             let player2card = player2Cards.pop();
-            if (player1card[1] === player2card[1]){
+            if (player1card.number === player2card.number){
                 continue
-            } else if (player1card[1] > player2card[1]){
+            } else if (player1card.number > player2card.number){
                 return [winners[0]];
-            } else if (player1card[1] < player2card[1]){
+            } else if (player1card.number < player2card.number){
                 return [winners[1]];
             }
         }

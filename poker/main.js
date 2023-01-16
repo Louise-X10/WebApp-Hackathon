@@ -51,8 +51,8 @@ class Player {
     // Display common cards
     setCommonCards (commonCards){
         this.commonCards = [];
-        commonCards.forEach(cardval=>{
-            let card = new Card(cardval[0], cardval[1]); // create new card object from given values
+        commonCards.forEach(cardobj=>{
+            let card = new Card(cardobj.suit, cardobj.number); // create new card object from given values
             this.commonCards.push(card); // push card object to this.commoncards
             card.displayCard(this.commonTable);
         });
@@ -61,8 +61,8 @@ class Player {
     // Display player cards, setup cardflip listener
     setPlayerCards(playerCards){
         this.playerCards = [];
-        playerCards.forEach(cardval => {
-            let card = new Card(cardval[0], cardval[1]); 
+        playerCards.forEach(cardobj => {
+            let card = new Card(cardobj.suit, cardobj.number); 
             this.playerCards.push(card);
             card.displayCard(this.playTable);
             card.container.addEventListener('click', this.flipListener)
