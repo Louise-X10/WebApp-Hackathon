@@ -134,21 +134,14 @@
             })
 
             socket.on('reset game requested', ()=>{
-                // clear reset listener
                 //! Alert players a reset has been requested
                 alert('WARNING: Game is about to restart! You will start fresh. ');
                 console.log('adding reset listener')
+                // add reset listener
                 player.startBtn.addEventListener('click', resetAction, {once: true})
-                //player.startBtn = player.startBtn.cloneNode();
-                // setup start button
-                /* player.startBtn.textContent = 'Start';
-                player.startBtn.classList.remove('reset');
-                
-                // setup start listener
-                console.log('adding start listener')
-                player.startBtn.addEventListener('click', startAction, {once: true}) */
-                // reset player tokens
+                // reset player
                 player.clearCommonTokens();
+                player.clearAllCards();
                 player.resetPlayer();
             })
 

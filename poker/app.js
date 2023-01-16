@@ -68,8 +68,8 @@ io.on('connection', socket =>{
 
     socket.on('reset game',()=>{
         console.log('reset game requested')
-        io.game.setGame(loggedPlayers); // set new Game
         io.emit('reset game requested'); // alert all players about reset, clear start listeners and setup reset button
+        io.game.setGame(loggedPlayers); // set new Game
         ee.emit('start round'); // start game
     })
 
@@ -78,8 +78,7 @@ io.on('connection', socket =>{
         io.game.commonTokenValues = io.game.commonTokenValues.concat(selectedTokenValues);
         // update highest bet value
         io.game.highestBet = Math.max(io.game.highestBet, sum)
-        console.log('user made a bet', sum);
-        console.log('highest bet now', io.game.highestBet);
+        console.log('user made a bet', sum, 'highest bet now', io.game.highestBet);
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
@@ -92,7 +91,7 @@ io.on('connection', socket =>{
 
         // then proceed to next player
         io.game.CurrentPlayer++;
-        console.log('bet, current player is updated to ', io.game.CurrentPlayer);
+        //console.log('bet, current player is updated to ', io.game.CurrentPlayer);
         ee.emit('start turn');
     })
 
@@ -203,10 +202,9 @@ ee.on('start turn', ()=>{
 })
 
 ee.on('next round',()=>{
-    console.log('next round initiated, flip cards')
+    console.log('flip cards', 'next round', io.game.round ++)
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
-    console.log('round', io.game.round)
     ee.emit('start round');
 })
 
