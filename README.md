@@ -47,7 +47,6 @@ http://hackathon.gloopen.com:3000/
     - Reset game: game restarts once any player presses restart, alert users about reset
 - Woking on
   - Exchange tokens
-  - Reposition start button
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players
 - What happens if player disconnects

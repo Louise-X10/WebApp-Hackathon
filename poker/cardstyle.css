@@ -31,14 +31,13 @@ div.start {
 
 div.instruction{
     flex: auto;
-    border: 1px solid black;
 }
 
 div.button {
     flex: auto;
+    /* position button at center */
     position: relative;
-    border: 1px solid black;
-    text-align: center; /* position button at center */
+    text-align: center; 
     justify-content: center;
     
 }
