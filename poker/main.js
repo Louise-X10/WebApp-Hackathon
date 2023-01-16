@@ -28,7 +28,7 @@ class Player {
         this.commonCards = []; // [card1, ..., card5]
 
         this.money = 0; // total value of tokens this player owns
-        this.tokens = {}; // token frequency dictionary {value : count}
+        this.tokenFreq = {}; // token frequency dictionary {value : count}
         this.betValue = 0; // current bet value in one round
 
         this.handCards = []; // in ascending order after evaluate
@@ -96,7 +96,7 @@ class Player {
         this.commonCards = []; // [card1, ..., card5]
 
         this.money = 0; // total value of tokens this player owns
-        this.tokens = {}; // token frequency dictionary {value : count}
+        this.tokenFreq = {}; // token frequency dictionary {value : count}
         this.betValue = 0; // current bet value in one round
 
         this.handCards = []; // in ascending order after evaluate
@@ -147,12 +147,13 @@ class Player {
         let token = this.createToken(value);
         this.tokenTable.appendChild(token);
         this.money += value;
-        this.tokens[value]? this.tokens[value] ++ : this.tokens[value] = 1;
+        this.tokenFreq[value]? this.tokenFreq[value] ++ : this.tokenFreq[value] = 1;
         token.addEventListener('click', this.selectListener);
     }
 
-    // clear all tokens on player table
+    // clear all tokens on player table, clear token freq
     clearTokens(){
+        this.tokenFreq = {};
         let tokens = this.tokenTable.querySelectorAll(`img`);
         for (let token of tokens){
             this.tokenTable.removeChild(token);
@@ -224,7 +225,7 @@ class Player {
                 // If on cycle 1, and bet higher than previous, then suceed and update highest bet value
                 this.betValue += sum;
                 this.money -=sum;
-                selectedTokenValues.forEach(value=>this.tokens[value] --)
+                selectedTokenValues.forEach(value=>this.tokenFreq[value] --)
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else {
                 alert(`You must bet at least ${game.highestBet} to match and stay in the game!` );
@@ -236,7 +237,7 @@ class Player {
                 // If on cycle 2 and match highest bet, bet suceeds
                 this.betValue += sum;
                 this.money -=sum;
-                selectedTokenValues.forEach(value=>this.tokens[value] --)
+                selectedTokenValues.forEach(value=>this.tokenFreq[value] --)
                 playerTokens.forEach((token)=>this.moveToken(token));
             } else if (mustMatch !== 0 && sum !== mustMatch){
                 // If on cycle 2 and doesn't match highest bet, bet again
