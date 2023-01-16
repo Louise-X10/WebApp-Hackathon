@@ -39,6 +39,7 @@
                     <li>Game starts when ANY ONE player clicks 'Start button'. </li>
                     <li>Anyone can click `Reset` to start a brand new game, but all players will start fresh, all previous tokens won and lost will all be rest. </li>
                     <li>After each complete game, players MUST click the collect/clear token button before clicking the next game button. </li>
+                    <li>NOTE: Ties between more than 2 players will break the game. </li>
                 </ul>
             </div>
             <div class="button">
@@ -46,7 +47,7 @@
             </div>
         </div>
         
-        <h3> All Players that have logged into this page: </h3>
+        <h3> All Players that have logged into this page (player order from left to right): </h3>
         <p id = 'logplayers'></p>
 
         <pre id="evalMsg"> Waiting for username. </pre>
@@ -226,6 +227,7 @@
             })
 
             socket.on('flip common cards',()=>{
+                console.log('flipping common cards')
                 let endGame = player.flipCommonCards();
                 
             })
@@ -236,6 +238,7 @@
                 evalMsg += "\nYou won! Congradulations!";
                 evalMsg += "\n Click corresponding buttons to collect tokens and then start a new game!"
                 player.msg.textContent = evalMsg;
+                console.log('receive alert')
                 window.alert(evalMsg);
                 console.log('alert message closed');
                 console.log('display and collect');
@@ -261,6 +264,7 @@
                 // Display message
                 evalMsg += "\n Click corresponding buttons to clear common tokens and start a new game!"
                 player.msg.textContent = evalMsg;
+                console.log('receive alert')
                 window.alert(evalMsg);
                 console.log('alert message closed');
                 console.log('display and clear');

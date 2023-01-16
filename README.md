@@ -19,13 +19,13 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - BUG: reveal last card before alert message for other players
-  - NEW: Break ties with more than 2 players
+  - Highlight current player in message area  
+  - Update rotated player order in message area after new game
 - Additional features:
   - Exchange tokens: big to small, small to big
-  - Update rotated player order in message area after new game
-  - Highlight current player in message area
   - Display winner's hand?
+  - Break ties with more than 2 players
+  - BUG: reveal last card before alert message for other players (check if resolved)
 - What happens if player disconnects
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
   - Pause game if someone disconnects, save game session info, reload game once reconnect
