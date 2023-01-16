@@ -350,22 +350,28 @@ class Game {
     // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        let card1 = deck.deal();
-        let card2 = deck.deal();
-        let card3 = deck.deal();
-        let card4 = deck.deal();
-        let card5 = deck.deal();
+        let card1 = ['hearts', 9]// deck.deal();
+        let card2 = ['clubs', 6]// deck.deal();
+        let card3 = ['hearts', 7]// deck.deal();
+        let card4 = ['hearts', 'queen'] // deck.deal();
+        let card5 = ['diamonds', 4]// deck.deal();
         this.commonCards = [card1, card2, card3, card4, card5];
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
+        let temp = 0
         for (let player of this.players){
-            let playercard1 = deck.deal();
-            let playercard2 = deck.deal();
+            let playercard1 = ['spades', 'king']// deck.deal();
+            let playercard2 = ['spades', 2] //deck.deal();
+            if (temp ===1){
+                playercard1 = ['spades', 5];
+                playercard2 = ['diamonds', 2];
+            }
             let socketid = player.socketid;
             player.commonCards = this.commonCards;
             player.playerCards = [playercard1, playercard2];
             io.to(socketid).emit('deal player cards', [playercard1, playercard2]);
+            temp ++;
         }
         console.log('player cards generated');
         console.log('test deck', deck.deal());

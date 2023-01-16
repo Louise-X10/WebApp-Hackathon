@@ -23,6 +23,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
   - BUG: reveal last card before alert message for other players
   - NEW: Break ties with more than 2 players
 - Additional features:
+  - Change to record card suit and number only, convert to value only when displaying card images
   - Exchange tokens: big to small, small to big
   - Update rotated player order in message area after new game
   - Highlight current player in message area
