@@ -5,7 +5,6 @@ body {
 header {
     background-color: rgb(219, 126, 157);
     padding: 10px;
-    position: relative;
 }
 
 header pre {
@@ -26,6 +25,24 @@ button {
     padding: 5px;
 }
 
+div.start {
+    display:flex;
+}
+
+div.instruction{
+    flex: auto;
+    border: 1px solid black;
+}
+
+div.button {
+    flex: auto;
+    position: relative;
+    border: 1px solid black;
+    text-align: center; /* position button at center */
+    justify-content: center;
+    
+}
+
 button.start {
     padding: 20px;
     font-size: 16px;
@@ -33,9 +50,6 @@ button.start {
     background-color: rgb(255, 170, 0); 
     border-color: black;
     border-radius: 50%; /* make button round */
-    right: 230px;
-    top: 450px; /* default font size 1em = 13px, 35em = 455px */
-    position: absolute;
 }
 
 button.start.reset {
