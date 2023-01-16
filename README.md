@@ -19,15 +19,14 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Display winner's hand?
   - BUG: evaluate tie
-  - BUG: cards not changed in next game
-  - BUG: in next game, player keeps playing after bet? Reset fold status
   - BUG: reveal last card before alert message for other players
-  - Exchange tokens: big to small, small to big
-  - Highlight current player in message area
-  - Update rotated player order in message area after new game
   - NEW: Break ties with more than 2 players
+- Additional features:
+  - Exchange tokens: big to small, small to big
+  - Update rotated player order in message area after new game
+  - Highlight current player in message area
+  - Display winner's hand?
 - What happens if player disconnects
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
   - Pause game if someone disconnects, save game session info, reload game once reconnect

@@ -98,11 +98,11 @@ io.on('connection', socket =>{
     socket.once('made fold', ()=>{
         // set folded status to true
         console.log('receive made fold');
+        io.game.players[io.game.CurrentPlayer].folded = true;
+        io.game.foldedCount ++;
         console.log(io.game.players);
         console.log(io.game.CurrentPlayer);
         console.log('folded player', io.game.players[io.game.CurrentPlayer]);
-        io.game.players[io.game.CurrentPlayer].folded = true;
-        io.game.foldedCount ++;
         // proceed to next player
         io.game.CurrentPlayer ++;
         console.log('fold, current player is updated to ', io.game.CurrentPlayer, 'fold count', io.game.foldedCount);
@@ -113,7 +113,7 @@ io.on('connection', socket =>{
     // After all users clicked ready for next game, setup next game
     socket.on('ready for next game',()=>{
         socket.ready = true;
-        console.log(allSockets.map(socket => socket.ready));
+        console.log('users ready for next game', allSockets.map(socket => socket.ready));
         let allReady = allSockets.filter(socket => socket.ready === true).length === allSockets.length;
         console.log('one more user ready', allReady)
         if (allReady){
@@ -325,7 +325,7 @@ class Game {
         // clear all cards
         this.commonCards = [];
         this.players.forEach(player=>{
-            player.cards = [];
+            player.playerCards = [];
             player.folded = false;
         })
         // reset game status
@@ -377,7 +377,7 @@ class Game {
         // Write handNames of each player (only for debug purpose)
         let evalMsg = '';
         for(const player of this.players){
-            this.evaluateHand(player, this.commonCards.concat(player.cards)); 
+            this.evaluateHand(player, this.commonCards.concat(player.playerCards)); 
             evalMsg += `Player ${player.username}: ${player.handName}; `
         }
         console.log('eval msg after evaluate hand', evalMsg);
