@@ -280,26 +280,25 @@ class Player {
 }
 
 class Card {
-    constructor(suit, value) {
+    constructor(suit, number) {
         this.suit = suit;
-        this.value = value;
-        this.number = value;
-        this.location = cardPath + suit + '_' + value + '.svg';
-        this.container = null;
-
-        switch(this.number){
-            case "king":
-                this.number = 13;
+        this.number = number;
+        this.value = number;
+        switch(this.value){
+            case 11:
+                this.value = "king";
                 break;
-            case "queen": 
-                this.number = 12;
+            case 12: 
+                this.value = "queen";
                 break;
-            case "jack":
-                this.number = 11;
+            case 13:
+                this.value = "jack";
                 break;
-            case "ace":
-                this.number = 14; // or 1
+            case 14:
+                this.value = "ace"; 
         }
+        this.location = cardPath + suit + '_' + this.value + '.svg';
+        this.container = null;
     }
 
     // Create card container and display on given table

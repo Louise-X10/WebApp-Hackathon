@@ -273,11 +273,10 @@ class Deck {
     reset() {
         this.deck = [];
         const suits = ['clubs', 'diamonds','hearts', 'spades'];
-        const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
         const numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         for (let suit of suits) {
-            for (let [index, value] of values.entries()) {
-                this.deck.push([suit, value, numbers[index]]);
+            for (let number of numbers) {
+                this.deck.push([suit,number]);
             }
         }
     }

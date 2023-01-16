@@ -55,13 +55,13 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
     - Flip own cards and select own tokens whenever they want
     - Make bet and animate token movement to common table
     - Collect tokens and animate token movement to player table (not done)
-    - Store card objects: suit, value (e.g. jack, queen), number (e.g. 11, 12)
+    - Store card objects: suit, number (e.g. 11, 12), value (e.g. jack, queen)
     - Has player as a global variable
   - Server's ability:
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
-    - Store card as array [suit, value, number]
+    - Store card as array [suit, number]
     - Save list of loggedplayers, list of sockets
 - Two-player:
   - Take turns acting in one round
