@@ -88,9 +88,27 @@ class Player {
         this.highCards = [];
     }
 
+    resetPlayer(){
+        this.folded = false;
+        this.playerCards = []; // [card1, card2]
+        this.commonCards = []; // [card1, ..., card5]
+
+        this.money = 0; // total value of tokens this player owns
+        this.tokens = {}; // token frequency dictionary {value : count}
+        this.betValue = 0; // current bet value in one round
+
+        this.handCards = []; // in ascending order after evaluate
+        this.handName = '';
+        this.handRank = null;
+        this.rankCards = [];
+        this.highCards = [];
+        
+        this.setTokens();
+    }
     // Set tokens to totalvalue
     setTokens(totalValue=260) { // 4*50 + 4*10 + 4*5 = 260
         this.clearTokens();
+        console.log('set token', totalValue);
         while (this.money < totalValue && this.money < 200){
             this.addToken(50);
         }
@@ -124,6 +142,7 @@ class Player {
     // Create and Place token of given value into player table, Update token frequency dict
     // Setup token select listener
     addToken(value){
+        console.log('add token', value);
         let token = this.createToken(value);
         this.tokenTable.appendChild(token);
         this.money += value;

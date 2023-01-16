@@ -21,6 +21,7 @@
             <li>Once all rounds are done, a pop-up window will display the winner. This message will also be shown in the message area of the webpage. </li>
             <li>Then, winners can collect tokens and non-winners can clear the tokens by pressing the corresponding buttons.</li>
             <li>A new game will be initiated once all players have clicked the 'Next Game' button. </li>
+            <li>WARNING: Game starts when ANY ONE player clicks 'Start button'. </li>
             <li>WARNING: Anyone can click `Reset` to start a brand new game, but all players will start fresh, all previous tokens won and lost will all be rest. </li>
         </ul>
         <h3>Simplified poker rules:</h3>
@@ -144,6 +145,11 @@
                 // setup start listener
                 console.log('adding start listener')
                 player.startBtn.addEventListener('click', startAction, {once: true})
+                // reset player tokens
+                player.clearCommonTokens();
+                //player.resetStatus();
+                player.resetPlayer();
+                //player.setTokens();
             })
 
             socket.on('deal common cards', (commonCards)=>{
