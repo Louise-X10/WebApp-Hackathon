@@ -98,7 +98,6 @@
                 player.startBtn.addEventListener('click', ()=>{
                     console.log('pressing start button')
                     socket.emit('ready to start')
-                    player.startBtn = document.querySelector('button.start');
                 }, {once: true})
                 // Signal player is ready to server
                 socket.emit('player ready', player); // pushing player only pushes properties e.g. username
@@ -114,7 +113,8 @@
 
             socket.on('start game', ()=>{
                 // clear start listener
-                // player.startBtn = document.querySelector('button.start');
+                console.log('clearing start listener')
+                player.startBtn = player.startBtn.cloneNode();
                 // setup reset button
                 player.startBtn.textContent = 'Reset';
                 player.startBtn.classList.add('reset');
@@ -127,14 +127,16 @@
 
             socket.on('reset game requested', ()=>{
                 // clear start listener
-                player.startBtn = document.querySelector('button.start');
-                // setup reset button
-                player.startBtn.textContent = 'Reset';
-                player.startBtn.classList.add('reset');
+                console.log('clearing start listener')
+                player.startBtn = player.startBtn.cloneNode();
+                // setup start button
+                player.startBtn.textContent = 'Start';
+                player.startBtn.classList.remove('reset');
                 //! Alert players a reset has been requested
-                // setup reset listener
+                // setup start listener
                 player.startBtn.addEventListener('click', ()=>{
-                    socket.emit('reset game');
+                    console.log('pressing start button')
+                    socket.emit('ready to start')
                 }, {once: true})
             })
 

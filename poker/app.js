@@ -61,7 +61,7 @@ io.on('connection', socket =>{
 
     socket.on('ready to start', ()=>{
         io.game.setGame(loggedPlayers);
-        io.emit('start game'); // clear player start button and setup reset button
+        io.emit('start game'); // clear start listeners and setup reset button for all players
         ee.emit('start round'); // start game
 
     })
@@ -69,7 +69,7 @@ io.on('connection', socket =>{
     socket.on('reset game',()=>{
         console.log('reset game requested')
         io.game.setGame(loggedPlayers);
-        io.emit('reset game requested'); // clear player start button and setup reset button
+        io.emit('reset game requested'); // alert all players about reset, clear start listeners and setup reset button
         ee.emit('start round'); // start game
     })
 
