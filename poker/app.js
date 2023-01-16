@@ -68,7 +68,7 @@ io.on('connection', socket =>{
 
     socket.on('reset game',()=>{
         console.log('reset game requested')
-        io.game.setGame(loggedPlayers);
+        io.game.setGame(loggedPlayers); // set new Game
         io.emit('reset game requested'); // alert all players about reset, clear start listeners and setup reset button
         ee.emit('start round'); // start game
     })
