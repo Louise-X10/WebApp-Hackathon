@@ -276,7 +276,7 @@ class Deck {
         const numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         for (let suit of suits) {
             for (let number of numbers) {
-                this.deck.push([suit,number]);
+                this.deck.push({suit: suit,number: number});
             }
         }
     }
@@ -349,22 +349,22 @@ class Game {
     // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        let card1 = ['hearts', 9]// deck.deal();
-        let card2 = ['clubs', 6]// deck.deal();
-        let card3 = ['hearts', 7]// deck.deal();
-        let card4 = ['hearts', 'queen'] // deck.deal();
-        let card5 = ['diamonds', 4]// deck.deal();
+        let card1 = {suit: 'hearts',number: 9}// deck.deal();
+        let card2 = {suit:'clubs',number: 6}// deck.deal();
+        let card3 = {suit:'hearts',number: 7}// deck.deal();
+        let card4 = {suit:'hearts',number: 12} // deck.deal();
+        let card5 = {suit:'diamonds',number: 4}// deck.deal();
         this.commonCards = [card1, card2, card3, card4, card5];
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
         let temp = 0
         for (let player of this.players){
-            let playercard1 = ['spades', 'king']// deck.deal();
-            let playercard2 = ['spades', 2] //deck.deal();
+            let playercard1 = {suit:'spades',number: 13}// deck.deal();
+            let playercard2 = {suit:'spades',number: 2} //deck.deal();
             if (temp ===1){
-                playercard1 = ['spades', 5];
-                playercard2 = ['diamonds', 2];
+                playercard1 = {suit:'spades',number: 5};
+                playercard2 = {suit:'diamonds',number: 2};
             }
             let socketid = player.socketid;
             player.commonCards = this.commonCards;
@@ -412,10 +412,10 @@ class Game {
     evaluateHand(player, cardsGiven){
         console.log('running evaluate hand', cardsGiven)
         var cards = cardsGiven.map(x=>x); // make copy of given cards
-        cards.sort((card1, card2)=> card1[2] - card2[2]); // sort [suit, value] in ascending number order
+        cards.sort((card1, card2)=> card1[1] - card2[1]); // sort [suit, value] in ascending number order
 
         let suits = cards.map(c => c[0]);
-        let numbers = cards.map(c => c[2]);
+        let numbers = cards.map(c => c[1]);
         
         let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
         let numberFreqValues = Object.values(numberFreq);
@@ -523,7 +523,7 @@ class Game {
             return [];
         }
 
-        let numbersCloneDuplicates = cards.map(c => c[2]); // clone numbers array
+        let numbersCloneDuplicates = cards.map(c => c[1]); // clone numbers array
         let numbersNoDuplicate = new Set(numbersCloneDuplicates);
         let numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
 
@@ -619,11 +619,11 @@ class Game {
         while(player1Cards.length>0){
             let player1card = player1Cards.pop();
             let player2card = player2Cards.pop();
-            if (player1card[2] === player2card[2]){
+            if (player1card[1] === player2card[1]){
                 continue
-            } else if (player1card[2] > player2card[2]){
+            } else if (player1card[1] > player2card[1]){
                 return [winners[0]];
-            } else if (player1card[2] < player2card[2]){
+            } else if (player1card[1] < player2card[1]){
                 return [winners[1]];
             }
         }

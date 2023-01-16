@@ -61,7 +61,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
-    - Store card as array [suit, number]
+    - Store game player cards as object {suit, number}
     - Save list of loggedplayers, list of sockets
 - Two-player:
   - Take turns acting in one round
