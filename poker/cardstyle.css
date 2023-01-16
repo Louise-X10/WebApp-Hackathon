@@ -64,10 +64,15 @@ button.start.reset {
     width: 100%;
     height: fit-content;
     display: flex; /*so that different sections layout in row*/
+    border: 3px solid transparent;
 }
 
-.area.playing{
-    border: 1px solid rgb(101, 174, 101);
+.area.action {
+    text-align: center;
+}
+
+.area.player.playing{
+    border: 3px solid rgb(101, 174, 101);
 }
 
 .table {
@@ -81,10 +86,6 @@ button.start.reset {
 
 .table.tokens {
     flex: 1;
-}
-
-.area.action {
-    text-align: center;
 }
 
 /* Card Container */
