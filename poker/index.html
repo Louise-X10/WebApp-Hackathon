@@ -14,23 +14,32 @@
         <h3>Instructions: </h3>
         <ul>
             <li>Player's cards can be flipped by clicking any time during the game.</li>
-            <li>Each game consists of 4 rounds, where round 0 has no cards flipped, round 1 flips first three cards, round 2 flips fourth card, and round 3 flips last card. </li>
-            <li>In each round, players take turns making a bet. The common cards are automatically revealed once a round is finished. </li>
+            <li>Each game consists of 4 rounds. In each round, players take turns making a bet. The common cards are automatically revealed once a round is finished. </li>
+            <ul>
+                <li>Round 0: no cards flipped</li>
+                <li>Round 1: flip first three cards</li>
+                <li>Round 2: flip fourth card</li>
+                <li>Round 3: flip last card</li>
+            </ul>
             <li>In each player's turn, the players can bet tokens by selecting tokens and pressing the 'Make Bet!' button. The player can also choose to fold and quit this game. </li>
-            <li>Throughout the game, there will be a message area on the webpage displaying the current state of the game and reminders for what to do. The text will be shown in bright colors for contrast. </li>
+            <li>Throughout the game, there will be a message area (in bright colors) at the bottom left displaying the current state of the game and reminders for what to do. </li>
             <li>Once all rounds are done, a pop-up window will display the winner. This message will also be shown in the message area of the webpage. </li>
-            <li>Then, winners can collect tokens and non-winners can clear the tokens by pressing the corresponding buttons.</li>
-            <li>A new game will be initiated once all players have clicked the 'Next Game' button. </li>
-            <li>WARNING: Game starts when ANY ONE player clicks 'Start button'. </li>
-            <li>WARNING: Anyone can click `Reset` to start a brand new game, but all players will start fresh, all previous tokens won and lost will all be rest. </li>
+            <li>Then winners can collect tokens and non-winners can clear the tokens by pressing the corresponding buttons.</li>
+            <li>A new game will be initiated once ALL players have clicked the 'Next Game' button. </li>
         </ul>
-        <h3>Simplified poker rules:</h3>
+        <h3>Simplified poker rules for each round:</h3>
         <ul>
-            <li>For each turn, there are maximum two cycles. During the first cycle through all the players, raises (i.e. bet more than previous players) are allowed. In the second cycle (if needed), only matches (i.e. in a single round, all players' total bet value matches the highest total bet value) are allowed.</li>
-            <li>Play order is determined by the order users entered their username. Play order will be rotated in new games.</li>
+            <li>For each round, there are maximum two cycles. During the first cycle through all the players, raises (i.e. bet more than previous players) are allowed. In the second cycle (if needed), only matches (i.e. in a single round, all players' total bet value matches the highest total bet value) are allowed.</li>
+            <li>Play order is determined by the order users entered their username. Play order will be rotated when a new game starts.</li>
         </ul>
-        <h3> All Players: </h3>
+        <h3>How to start playing: </h3>
+        <ul>
+            <li>Game starts when ANY ONE player clicks 'Start button'. </li>
+            <li>Anyone can click `Reset` to start a brand new game, but all players will start fresh, all previous tokens won and lost will all be rest. </li>
+        </ul>
+        <h3> All Players that have logged into this page: </h3>
         <p id = 'logplayers'></p>
+        
         <pre id="evalMsg"> Waiting for username. </pre>
         <button class="start"> Start!</button>
     </header>
