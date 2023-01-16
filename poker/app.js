@@ -82,11 +82,11 @@ io.on('connection', socket =>{
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
-        // update bet.value, money, tokens for this player
+        // update bet.value, money, token frequency for this player
         let serverPlayer = io.game.players[io.game.CurrentPlayer];
         serverPlayer.money = player.money;
         serverPlayer.betValue = player.betValue;
-        serverPlayer.tokens = player.tokens;
+        serverPlayer.tokenFreq = player.tokenFreq;
         // console.log('current player is now ', io.game.players[io.game.CurrentPlayer]);
 
         // then proceed to next player
