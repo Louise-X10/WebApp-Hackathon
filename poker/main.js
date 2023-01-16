@@ -74,11 +74,12 @@ class Player {
         this.commonCards.forEach(card=>card.removeCard()); // remove card display from its table
     }
 
-    // Reset player status (except money etc)
+    // Reset player status (except money, tokens)
     resetStatus(){
         this.folded = false;
         this.playerCards = [];
         this.commonCards = [];
+
         this.betValue = 0; 
 
         this.handCards = [];
@@ -88,6 +89,7 @@ class Player {
         this.highCards = [];
     }
 
+    // reset player entirely
     resetPlayer(){
         this.folded = false;
         this.playerCards = []; // [card1, card2]
@@ -105,10 +107,10 @@ class Player {
         
         this.setTokens();
     }
+    
     // Set tokens to totalvalue
     setTokens(totalValue=260) { // 4*50 + 4*10 + 4*5 = 260
         this.clearTokens();
-        console.log('set token', totalValue);
         while (this.money < totalValue && this.money < 200){
             this.addToken(50);
         }
@@ -142,7 +144,6 @@ class Player {
     // Create and Place token of given value into player table, Update token frequency dict
     // Setup token select listener
     addToken(value){
-        console.log('add token', value);
         let token = this.createToken(value);
         this.tokenTable.appendChild(token);
         this.money += value;

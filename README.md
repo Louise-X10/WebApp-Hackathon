@@ -44,9 +44,9 @@ http://hackathon.gloopen.com:3000/
     - Username: displayed at top of page
     - Log users: display all players currently still in game on page
     - Start game: game starts once any player presses start
+    - Reset game: game restarts once any player presses restart
 - Woking on
   - Exchange tokens
-  - Integrate start and restart game button
   - Reposition start button
   - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
   - NEW: Break ties with more than 2 players

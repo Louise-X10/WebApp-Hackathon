@@ -147,9 +147,7 @@
                 player.startBtn.addEventListener('click', startAction, {once: true})
                 // reset player tokens
                 player.clearCommonTokens();
-                //player.resetStatus();
                 player.resetPlayer();
-                //player.setTokens();
             })
 
             socket.on('deal common cards', (commonCards)=>{
