@@ -258,6 +258,7 @@ ee.on('next game', ()=>{
     io.game.resetGame();
     console.log('next game is', io.game);
     io.game.setupCards();
+
     ee.emit('start round');
 })
 
@@ -325,6 +326,7 @@ class Game {
         this.commonCards = [];
         this.players.forEach(player=>{
             player.cards = [];
+            player.folded = false;
         })
         // reset game status
         this.winners = null;
