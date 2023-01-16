@@ -73,7 +73,7 @@
     </div>
 
     <div class="area action" id="common">
-        <button class="collect">Collect tokens</button>
+        <button class="collect">Collect / Clear tokens</button>
         <button class="next">Next Game</button>
     </div>
 
@@ -262,11 +262,9 @@
                 console.log('display and clear');
 
                 // Set up clear tokens listener
-                player.collectBtn.textContent = 'Clear Tokens';
                 player.collectBtn.addEventListener('click', ()=>{
                     console.log('clearing tokens')
                     player.clearCommonTokens();
-                    player.collectBtn.textContent = 'Collect Tokens';
                     // Set up next game listener
                     player.nextBtn.addEventListener('click', ()=>{
                         player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
