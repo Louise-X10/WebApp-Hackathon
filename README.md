@@ -21,7 +21,8 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 - Woking on
   - Display winner's hand?
   - BUG: evaluate tie
-  - BUG: winner clear tokens?
+  - BUG: cards not changed in next game
+  - BUG: in next game, player keeps playing after bet? Reset fold status
   - BUG: reveal last card before alert message for other players
   - Exchange tokens: big to small, small to big
   - Highlight current player in message area
