@@ -363,7 +363,8 @@ class Game {
             let playercard1 = deck.deal();
             let playercard2 = deck.deal();
             let socketid = player.socketid;
-            player.cards = [playercard1, playercard2];
+            player.commonCards = this.commonCards;
+            player.playerCards = [playercard1, playercard2];
             io.to(socketid).emit('deal player cards', [playercard1, playercard2]);
         }
         console.log('player cards generated');
