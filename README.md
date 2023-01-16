@@ -46,8 +46,9 @@ http://hackathon.gloopen.com:3000/
     - Start game: game starts once any player presses start
     - Reset game: game restarts once any player presses restart, alert users about reset
 - Woking on
-  - Exchange tokens
-  - BUG: incorrect evaluation of two "None" ranks (rankCards should be empty, highCards should be full)
+  - Exchange tokens: big to small, small to big
+  - Highlight current player in message area
+  - Update rotated player order in message area after new game
   - NEW: Break ties with more than 2 players
 - What happens if player disconnects
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
@@ -58,13 +59,13 @@ http://hackathon.gloopen.com:3000/
     - Flip own cards and select own tokens whenever they want
     - Make bet and animate token movement to common table
     - Collect tokens and animate token movement to player table (not done)
-    - Store card objects
+    - Store card objects: suit, value (e.g. jack, queen), number (e.g. 11, 12)
     - Has player as a global variable
   - Server's ability:
     - Deal cards to all players and common table
     - Decide whose turn to play (i.e. next button)
     - Update common table status to all players
-    - Store card as array [suit, value]
+    - Store card as array [suit, value, number]
     - Save list of loggedplayers, list of sockets
 - To be completed
   - Multirounds: big bind, small bind (not done)

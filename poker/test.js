@@ -187,3 +187,6 @@ game.player2card2 = new Card("hearts", 3)
 [this.player1card2.suit,this.player1card2.number]  = ["hearts", 6]
 [this.player2card1.suit,this.player2card1.number]  = ["diamonds", 6]
 [this.player2card2.suit,this.player2card2.number]  = ["hearts", 3]
+
+//Debug server evaluateHand
+let cardsGiven = player.commonCards.concat(player.playerCards).map(player=>[player.suit, player.number])

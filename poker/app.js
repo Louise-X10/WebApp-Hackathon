@@ -202,9 +202,9 @@ ee.on('start turn', ()=>{
 })
 
 ee.on('next round',()=>{
-    console.log('flip cards', 'next round', io.game.round ++)
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
+    console.log('flip cards', 'next round', io.game.round)
     ee.emit('start round');
 })
 
@@ -230,7 +230,7 @@ ee.on('end game',()=>{
         if (io.game.winners.length === 1){
             var winnerTokenValues = commonTokenValues;
         } else {
-            var winnerTokenValues = io.game.splitTokens(commonTokenValues, winners.length);
+            var winnerTokenValues = io.game.splitTokens(commonTokenValues, io.game.winners.length);
         }
     }
 
@@ -273,9 +273,10 @@ class Deck {
         this.deck = [];
         const suits = ['clubs', 'diamonds','hearts', 'spades'];
         const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king', 'ace'];
+        const numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         for (let suit of suits) {
-            for (let value of values) {
-                this.deck.push([suit, value]);
+            for (let [index, value] of values.entries()) {
+                this.deck.push([suit, value, numbers[index]]);
             }
         }
     }
@@ -347,23 +348,24 @@ class Game {
     // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        let card1 = ["hearts", 2] //deck.deal();
-        let card2 = ["spades", 4] //deck.deal();
-        let card3 = ["spades", 7]//deck.deal();
-        let card4 = ["hearts", 8]//deck.deal();
-        let card5 = ["spades", 3]//deck.deal();
+        let card1 = ["hearts", 2, 2] //deck.deal();
+        let card2 = ["spades", 4, 4] //deck.deal();
+        let card3 = ["spades", 7, 7]//deck.deal();
+        let card4 = ["hearts", 8, 8]//deck.deal();
+        let card5 = ["spades", 3, 3]//deck.deal();
         this.commonCards = [card1, card2, card3, card4, card5];
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
         for (let player of this.players){
-            let playercard1 = ["hearts", "ace"]//deck.deal();
-            let playercard2 = ["clubs", 5]//deck.deal();
+            let playercard1 = ["hearts", "ace", 14]//deck.deal();
+            let playercard2 = ["clubs", 5, 5]//deck.deal();
             let socketid = player.socketid;
             player.cards = [playercard1, playercard2];
             io.to(socketid).emit('deal player cards', [playercard1, playercard2]);
         }
         console.log('player cards generated');
+        console.log('test deck', deck.deal());
     }
 
 
@@ -400,12 +402,12 @@ class Game {
     // rankCards (portion of handcards that make up rank)
     // highCards (portion of handcards that doesn't contribute to rank)
     evaluateHand(player, cardsGiven){
-        console.log('running evaluate hand')
+        console.log('running evaluate hand', cardsGiven)
         var cards = cardsGiven.map(x=>x); // make copy of given cards
-        cards.sort((card1, card2)=> card1[1] - card2[1]); // sort [suit, value] in ascending number order
+        cards.sort((card1, card2)=> card1[2] - card2[2]); // sort [suit, value] in ascending number order
 
         let suits = cards.map(c => c[0]);
-        let numbers = cards.map(c => c[1]);
+        let numbers = cards.map(c => c[2]);
         
         let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
         let numberFreqValues = Object.values(numberFreq);
@@ -423,6 +425,7 @@ class Game {
             var straightFlushCards = this.returnStraight(flushCards);
         }
         let straightCards = this.returnStraight(cards);
+        console.log('straight cards', straightCards);
         let isStraightFlush = straightFlushCards.length > 0;
         let isStraight = straightCards.length > 0;
 
@@ -513,7 +516,7 @@ class Game {
             return [];
         }
 
-        let numbersCloneDuplicates = cards.map(c => c[1]); // clone numbers array
+        let numbersCloneDuplicates = cards.map(c => c[2]); // clone numbers array
         let numbersNoDuplicate = new Set(numbersCloneDuplicates);
         let numbersClone = Array.from(numbersNoDuplicate.values()); // with no duplicates
 
@@ -540,6 +543,7 @@ class Game {
         }
 
         let straightNumbers = numbersClone.slice(startIndex,endIndex);
+        console.log('straight numbers', straightNumbers);
         // If longer than 5 straight, remove the smaller numbers
         while (straightNumbers.length > 5){
             straightNumbers.shift();
@@ -593,7 +597,7 @@ class Game {
     // Helper for evaluateWinner, return array of winners
     //! Currently only works with two tied winners
     evaluateHighCards(winners, evalRank){
-        console.log('running evaluate high cards', winners, evalRank)
+        console.log('running evaluate high cards', winners, 'evalRank', evalRank)
         // already sorted in ascending order
         if (evalRank){
             var player1Cards = winners[0].rankCards.map(x=>x);
@@ -603,16 +607,16 @@ class Game {
             var player2Cards = winners[1].highCards.map(x=>x);
         }
         
-        console.log(player1Cards, 'and', player2Cards)
+        console.log('evaluating cards: ', player1Cards, 'and', player2Cards)
         // Compare list of cards by number until list exhausts
         while(player1Cards.length>0){
             let player1card = player1Cards.pop();
             let player2card = player2Cards.pop();
-            if (player1card[1] === player2card[1]){
+            if (player1card[2] === player2card[2]){
                 continue
-            } else if (player1card[1] > player2card[1]){
+            } else if (player1card[2] > player2card[2]){
                 return [winners[0]];
-            } else if (player1card[1] < player2card[1]){
+            } else if (player1card[2] < player2card[2]){
                 return [winners[1]];
             }
         }
@@ -625,17 +629,21 @@ class Game {
     splitTokens(tokenValues, pile){
         let sum = tokenValues.reduce((sumValue, tokenValue)=> sumValue+tokenValue,0)
         // round to nearest multiple of pile
-        let subSum = Math.floor(sum / pile) - Math.floor(sum / pile)% pile; // for pile = 2 players, ceiling doesn't matter
+        let subTargetSum = Math.floor(sum / pile) - Math.floor(sum / pile)% pile; // for pile = 2 players, ceiling doesn't matter
+        let subCurrentSum = 0;
 
         let subTokenValues = [];
-        while (subSum - Math.sum(subTokenValues) >= 50){
+        while (subTargetSum - subCurrentSum >= 50){
             subTokenValues.push(50);
+            subCurrentSum += 50;
         }
-        while (subSum - Math.sum(subTokenValues) >= 10){
+        while (subTargetSum - subCurrentSum >= 10){
             subTokenValues.push(10);
+            subCurrentSum += 10;
         }
-        while (subSum - Math.sum(subTokenValues) >= 5){
+        while (subTargetSum - subCurrentSum >= 5){
             subTokenValues.push(5);
+            subCurrentSum += 5;
         }
 
         return subTokenValues;
