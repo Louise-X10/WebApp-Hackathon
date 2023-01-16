@@ -245,7 +245,7 @@
                     collectTokenValues.forEach(value=>{
                         player.money += value; // update player money
                         player.addToken(value); // add token to table
-                        player.tokens[value]? player.tokens[value] ++ : player.tokens[value] = 1; // update token frequency
+                        player.tokenFreq[value]? player.tokenFreq[value] ++ : player.tokenFreq[value] = 1; // update token frequency
                     });
                     player.clearCommonTokens();
                     // Set up next game listener
