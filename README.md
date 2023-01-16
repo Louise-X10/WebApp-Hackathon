@@ -14,7 +14,8 @@ Calculator with 4 input fields: primary amount, interest rate, time cycle, final
 
 ## Online two-player Poker (Playable)
 A non-playable view of the poker game webpage is accessible at `https://louise-x10.github.io/22-23-Winter-Hackathon/poker/`. 
-A playable version of the poker game is accessible at `http://hackathon.gloopen.com:3000/` after admin code is run on the remote server. 
+
+A playable version of the poker game is accessible at `http://hackathon.gloopen.com:3000/`.
 
 ### Todo list
 - Woking on
