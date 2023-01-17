@@ -413,8 +413,8 @@ class Game {
         let suits = cards.map(c => c.suit);
         let numbers = cards.map(c => c.number);
         
-        let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
-        let numberFreqValues = Object.values(numberFreq);
+        let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {})  // object
+        let numberFreqValues = Object.values(numberFreq); // array
 
         let suitFreq = suits.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
         let suitFreqValues = Object.values(suitFreq);
@@ -463,6 +463,10 @@ class Game {
             var handBool = numbers.map((num) => numberFreq[num]===3);
             player.handName = "Three of a kind";
             player.handRank = 6;
+            // If two three-of-a-kind, pick larger one
+            if (numberFreqValues.indexOf(3) !== numberFreqValues.lastIndexOf(3)){
+
+            }
         } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
             var handBool = numbers.map((num) => numberFreq[num]===2);
             player.handName = "Two pairs";
@@ -475,8 +479,6 @@ class Game {
             // if no hand at all, select highest valued cards, i.e. remove two lowest
             cards.shift();
             cards.shift();
-/*             player.handCards = cards;
-            player.rankCards = []; */
             var handBool = false;
             var handCards = [];
             player.handName = "None";
@@ -487,6 +489,7 @@ class Game {
         if (handBool !== false){
             var handCards = cards.filter((value, index)=>handBool[index]);
         }
+        
         
         if (handCards.length === 5){
             // If hand already consists of 5 cards (e.g. straight, flush)

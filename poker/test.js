@@ -190,3 +190,8 @@ game.player2card2 = new Card("hearts", 3)
 
 //Debug server evaluateHand
 let cardsGiven = player.commonCards.concat(player.playerCards).map(player=>[player.suit, player.number])
+
+// Debug multiple hand cards
+let numbers = [7, 7, 7, 8, 8, 8]
+let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
+let numberFreqValues = Object.values(numberFreq);

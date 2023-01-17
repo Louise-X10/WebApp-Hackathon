@@ -19,16 +19,15 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Differentiate clickable buttons
-  - BUG: Three pairs evaluation
+  - BUG: Three pairs evaluation, Two three-of-a-kind, Full house with two pairs
 - Additional features:
-  - FIX: display total player number, let players reenter if don't match up
   - Highlight current player in message area  
   - Exchange tokens: big to small, small to big
   - Display winner's hand?
-  - Break ties with more than 2 players
+  - BUG: Break ties with more than 2 players (alert if so)
   - BUG: reveal last card before alert message for other players (check if resolved)
 - What happens if player disconnects
+  - Display total player number, notify players to restart if don't match up
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
   - Pause game if someone disconnects, save game session info, reload game once reconnect
   - Notify someone has disconnected, press reset button to reset new game
