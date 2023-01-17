@@ -20,9 +20,22 @@ li {
     font-size: larger;
 }
 
+
+/*Button*/
 button {
-    cursor: pointer; /* change cursor to hand pointer when hovering */
+    margin: 20px 15px 0px 15px;
+    background-color: grey;
     padding: 5px;
+}
+
+button.next{
+    position: relative;
+    left: 20px;
+}
+
+button.clickable {
+    background-color: white;
+    cursor: pointer; /* change cursor to hand pointer when hovering */
 }
 
 div.start {
@@ -119,20 +132,6 @@ button.start.reset {
     position: absolute;
     backface-visibility: hidden;
     
-}
-
-/*Button*/
-button {
-    margin: 20px 15px 0px 15px;
-}
-
-button.next{
-    position: relative;
-    left: 20px;
-}
-
-button.clickable {
-    border: 2px solid blue;
 }
 
 /*Tokens*/
