@@ -193,7 +193,6 @@
                 
                 function betAction(){
                     console.log('bet action called');
-
                     player.foldBtn.removeEventListener('click', foldAction, {once: true})
                     let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
                     //console.log(selectedTokenValues, sum, success)
@@ -283,7 +282,7 @@
             })
 
             // For non-winners
-            socket.on('display and clear',(evalMsg)=>{
+            socket.on('display and clear',(evalMsg, collectTokenValues)=>{
                 // Display message
                 evalMsg += "\n Click corresponding buttons to clear common tokens and start a new game!"
                 player.msg.textContent = evalMsg;

@@ -246,7 +246,7 @@ ee.on('end game',()=>{
             io.to(socketid).timeout(2000).emit('display and collect', evalMsg, winnerTokenValues);
         } else {
             // Send message to non-winners
-            io.to(socketid).timeout(2000).emit('display and clear', evalMsg);
+            io.to(socketid).timeout(2000).emit('display and clear', evalMsg, winnerTokenValues);
         }
     }
     io.game.commonTokenValues = [];
