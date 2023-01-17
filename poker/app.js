@@ -256,7 +256,7 @@ ee.on('end game',()=>{
 ee.on('next game', ()=>{
     console.log('setting up next game');
     io.game.resetGame(); // rotate game players and logged players
-    io.emit('log all players') // let users rotate logged players
+    io.emit('log all players', loggedPlayers) // io.emit('log all players', io.game.players)//  let users rotate logged players
     console.log('next game is', io.game);
     io.game.setupCards();
 

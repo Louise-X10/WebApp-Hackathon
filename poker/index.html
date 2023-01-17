@@ -132,7 +132,7 @@
             })
             
             socket.on('log all players', (players)=>{
-                console.log('logging player')
+                console.log('logging player', players)
                 let log = document.querySelector('#logplayers');
                 log.textContent = ''
                 players.forEach(serverPlayer => {
