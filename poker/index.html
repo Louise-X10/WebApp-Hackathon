@@ -237,7 +237,6 @@
             socket.on('flip common cards',()=>{
                 console.log('flipping common cards')
                 let endGame = player.flipCommonCards();
-                
             })
 
             // For winners
@@ -250,25 +249,37 @@
                 window.alert(evalMsg);
                 console.log('alert message closed');
                 console.log('display and collect');
-                // Set up collect and clear token listener
-                player.collectBtn.classList.toggle('clickable');
-                player.collectBtn.addEventListener('click', ()=>{
-                    console.log('collecting tokens', collectTokenValues)
+                if (collectTokenValues.length !== 0){
+                    // Set up collect and clear token listener
                     player.collectBtn.classList.toggle('clickable');
-                    collectTokenValues.forEach(value=>{
-                        player.money += value; // update player money
-                        player.addToken(value); // add token to table
-                        player.tokenFreq[value]? player.tokenFreq[value] ++ : player.tokenFreq[value] = 1; // update token frequency
-                    });
-                    player.clearCommonTokens();
-                    // Set up next game listener
+                    player.collectBtn.addEventListener('click', ()=>{
+                        console.log('collecting tokens', collectTokenValues)
+                        player.collectBtn.classList.toggle('clickable');
+                        collectTokenValues.forEach(value=>{
+                            player.money += value; // update player money
+                            player.addToken(value); // add token to table
+                            player.tokenFreq[value]? player.tokenFreq[value] ++ : player.tokenFreq[value] = 1; // update token frequency
+                        });
+                        player.clearCommonTokens();
+                        // Set up next game listener
+                        player.nextBtn.classList.toggle('clickable');
+                        player.nextBtn.addEventListener('click', ()=>{
+                            player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
+                            player.nextBtn.classList.toggle('clickable');
+                            socket.emit('ready for next game');
+                        }, {once: true})
+                    }, {once: true});
+                } else {
+                    // If no tokens to collect, directly set up next game listener
                     player.nextBtn.classList.toggle('clickable');
                     player.nextBtn.addEventListener('click', ()=>{
                         player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
                         player.nextBtn.classList.toggle('clickable');
                         socket.emit('ready for next game');
                     }, {once: true})
-                }, {once: true});
+
+                }
+                
             })
 
             // For non-winners
@@ -281,20 +292,31 @@
                 console.log('alert message closed');
                 console.log('display and clear');
 
-                // Set up clear tokens listener
-                player.collectBtn.classList.toggle('clickable');
-                player.collectBtn.addEventListener('click', ()=>{
-                    console.log('clearing tokens')
+                if (collectTokenValues.length !== 0) {
+                    // Set up clear tokens listener
                     player.collectBtn.classList.toggle('clickable');
-                    player.clearCommonTokens();
-                    // Set up next game listener
+                    player.collectBtn.addEventListener('click', ()=>{
+                        console.log('clearing tokens')
+                        player.collectBtn.classList.toggle('clickable');
+                        player.clearCommonTokens();
+                        // Set up next game listener
+                        player.nextBtn.classList.toggle('clickable');
+                        player.nextBtn.addEventListener('click', ()=>{
+                            player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
+                            player.nextBtn.classList.toggle('clickable');
+                            socket.emit('ready for next game');
+                        }, {once: true})
+                    }, {once: true});
+                } else {
+                    // If no tokens to clear, directly set up next game listener
                     player.nextBtn.classList.toggle('clickable');
                     player.nextBtn.addEventListener('click', ()=>{
                         player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
                         player.nextBtn.classList.toggle('clickable');
                         socket.emit('ready for next game');
                     }, {once: true})
-                }, {once: true});
+                }
+                
             })
 
             socket.on('print', (msg)=>console.log(msg));

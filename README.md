@@ -20,7 +20,6 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 ### Todo list
 - Woking on
   - Differentiate clickable buttons
-  - Can directly click next game if no common tokens
   - BUG: Three pairs evaluation
 - Additional features:
   - FIX: display total player number, let players reenter if don't match up
