@@ -19,12 +19,12 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Highlight current player in message area  
-  - Update rotated player order in message area after new game (done)
-  - BUG: Three pairs evaluation
-- Additional features:
   - Differentiate clickable buttons
   - Can directly click next game if no common tokens
+  - BUG: Three pairs evaluation
+- Additional features:
+  - FIX: display total player number, let players reenter if don't match up
+  - Highlight current player in message area  
   - Exchange tokens: big to small, small to big
   - Display winner's hand?
   - Break ties with more than 2 players

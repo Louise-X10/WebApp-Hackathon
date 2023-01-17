@@ -193,12 +193,15 @@
                 
                 function betAction(){
                     console.log('bet action called');
+
                     player.foldBtn.removeEventListener('click', foldAction, {once: true})
                     let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
                     //console.log(selectedTokenValues, sum, success)
                     console.log("success", success);
                     if (success){
                         playerArea.classList.toggle('playing');
+                        player.betBtn.classList.toggle('clickable');
+                        player.foldBtn.classList.toggle('clickable');
                         console.log('emit bet to server')
                         socket.emit('made bet', selectedTokenValues, sum, player);
                     } else {
@@ -211,12 +214,16 @@
                     player.betBtn.removeEventListener('click', betAction, {once: true});
                     player.makeFold();
                     playerArea.classList.toggle('playing');
+                    player.betBtn.classList.toggle('clickable');
+                    player.foldBtn.classList.toggle('clickable');
                     console.log('emit fold to server')
                     socket.emit('made fold');
                     console.log('fold action end')
                 }
 
                 // setup bet button listeners
+                player.betBtn.classList.toggle('clickable');
+                player.foldBtn.classList.toggle('clickable');
                 player.betBtn.addEventListener('click', betAction, {once: true});
                 player.foldBtn.addEventListener('click', foldAction, {once: true});
             })
@@ -244,8 +251,10 @@
                 console.log('alert message closed');
                 console.log('display and collect');
                 // Set up collect and clear token listener
+                player.collectBtn.classList.toggle('clickable');
                 player.collectBtn.addEventListener('click', ()=>{
                     console.log('collecting tokens', collectTokenValues)
+                    player.collectBtn.classList.toggle('clickable');
                     collectTokenValues.forEach(value=>{
                         player.money += value; // update player money
                         player.addToken(value); // add token to table
@@ -253,8 +262,10 @@
                     });
                     player.clearCommonTokens();
                     // Set up next game listener
+                    player.nextBtn.classList.toggle('clickable');
                     player.nextBtn.addEventListener('click', ()=>{
-                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
+                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
+                        player.nextBtn.classList.toggle('clickable');
                         socket.emit('ready for next game');
                     }, {once: true})
                 }, {once: true});
@@ -271,12 +282,16 @@
                 console.log('display and clear');
 
                 // Set up clear tokens listener
+                player.collectBtn.classList.toggle('clickable');
                 player.collectBtn.addEventListener('click', ()=>{
                     console.log('clearing tokens')
+                    player.collectBtn.classList.toggle('clickable');
                     player.clearCommonTokens();
                     // Set up next game listener
+                    player.nextBtn.classList.toggle('clickable');
                     player.nextBtn.addEventListener('click', ()=>{
-                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...'
+                        player.msg.textContent = 'Ready for next game, waiting for other players to be ready...';
+                        player.nextBtn.classList.toggle('clickable');
                         socket.emit('ready for next game');
                     }, {once: true})
                 }, {once: true});

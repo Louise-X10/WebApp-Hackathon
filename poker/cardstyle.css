@@ -131,6 +131,10 @@ button.next{
     left: 20px;
 }
 
+button.clickable {
+    border: 2px solid blue;
+}
+
 /*Tokens*/
 .token{
     position: relative;
