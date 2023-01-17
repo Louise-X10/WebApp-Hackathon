@@ -20,7 +20,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 ### Todo list
 - Woking on
   - Highlight current player in message area  
-  - Update rotated player order in message area after new game
+  - Update rotated player order in message area after new game (done)
   - BUG: Three pairs evaluation
 - Additional features:
   - Differentiate clickable buttons

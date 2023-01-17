@@ -256,6 +256,7 @@ ee.on('end game',()=>{
 ee.on('next game', ()=>{
     console.log('setting up next game');
     io.game.resetGame(); // rotate game players and logged players
+    io.emit('log all players') // let users rotate logged players
     console.log('next game is', io.game);
     io.game.setupCards();
 
@@ -337,6 +338,7 @@ class Game {
         let firstPlayer = this.players.shift();
         this.players.push(firstPlayer);
         this.CurrentPlayer = 0;
+        console.log('updated logged players is ', loggedPlayers);
     }
 
     setPlayers(players){
