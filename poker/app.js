@@ -460,13 +460,16 @@ class Game {
             player.handName = "Straight";
             player.handRank = 5;
         } else if (numberFreqValues.includes(3)){
-            var handBool = numbers.map((num) => numberFreq[num]===3);
-            player.handName = "Three of a kind";
-            player.handRank = 6;
             // If two three-of-a-kind, pick larger one
             if (numberFreqValues.indexOf(3) !== numberFreqValues.lastIndexOf(3)){
-
+                let numberFreqKeys = Object.keys(numberFreq).map(Number);
+                let largerKey = Math.max.apply(null, numberFreqKeys);
+                var handBool = numbers.map(num=>num==largerKey);
+            } else {
+                var handBool = numbers.map((num) => numberFreq[num]===3);
             }
+            player.handName = "Three of a kind";
+            player.handRank = 6;
         } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
             var handBool = numbers.map((num) => numberFreq[num]===2);
             player.handName = "Two pairs";
