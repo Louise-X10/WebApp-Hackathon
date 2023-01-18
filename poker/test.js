@@ -193,5 +193,6 @@ let cardsGiven = player.commonCards.concat(player.playerCards).map(player=>[play
 
 // Debug multiple hand cards
 let numbers = [7, 7, 7, 8, 8, 8]
+numbers = [7, 7, 8, 8, 9, 9]
 let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
 let numberFreqValues = Object.values(numberFreq);

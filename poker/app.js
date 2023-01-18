@@ -471,7 +471,19 @@ class Game {
             player.handName = "Three of a kind";
             player.handRank = 6;
         } else if (numberFreqValues.includes(2) && numberFreqValues.indexOf(2) !== numberFreqValues.lastIndexOf(2)) {
-            var handBool = numbers.map((num) => numberFreq[num]===2);
+            // array of keys that have frequency 2
+            let numberPairKeys = Object.entries(numberFreq).filter(([k, v])=>v===2).map(([k,v]) => Number(k));
+            if (numberPairKeys.length > 2){
+                // if have 3 pairs, pick two larger pairs
+                let smallestKey = Math.min.apply(null, numberPairKeys);
+                numberPairKeys = numberPairKeys.filter(key => key!= smallestKey);
+                var handBool = numbers.map((num)=>numberPairKeys.includes(num));
+
+            } else {
+                // if only 2 pairs
+                var handBool = numbers.map((num) => numberFreq[num]===2);
+            }
+            
             player.handName = "Two pairs";
             player.handRank = 7;
         } else if (numberFreqValues.includes(2)){
