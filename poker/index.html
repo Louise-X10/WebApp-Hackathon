@@ -92,6 +92,14 @@
         <button class="fold">Fold</button>
         <button class="bet">Make A Bet!</button>
     </div>
+
+    <div class="area exchange">
+        <p>Exchange for: </p>
+        <p>50 tokens <input type="number" name="exchange" id="fifty"></p>
+        <p>10 tokens <input type="number" name="exchange" id="ten"></p>
+        <p>5 tokens  <input type="number" name="exchange" id="five"></p>
+        <button class="exchange">Exchange Tokens</button>
+    </div>
     
   </body>
 
@@ -194,6 +202,8 @@
                 function betAction(){
                     console.log('bet action called');
                     player.foldBtn.removeEventListener('click', foldAction, {once: true})
+                    player.exchBtn.removeEventListener('click', exchangeAction);
+
                     let [selectedTokenValues, sum, success] = player.makeBet(game, isFirstPlayer);
                     //console.log(selectedTokenValues, sum, success)
                     console.log("success", success);
@@ -211,6 +221,8 @@
                 function foldAction(){
                     console.log('fold action called')
                     player.betBtn.removeEventListener('click', betAction, {once: true});
+                    player.exchBtn.removeEventListener('click', exchangeAction);
+
                     player.makeFold();
                     playerArea.classList.toggle('playing');
                     player.betBtn.classList.toggle('clickable');
@@ -220,11 +232,19 @@
                     console.log('fold action end')
                 }
 
+                function exchangeAction(){
+                    console.log('exchange action called');
+                    player.makeExchange();
+
+                }
+
                 // setup bet button listeners
                 player.betBtn.classList.toggle('clickable');
                 player.foldBtn.classList.toggle('clickable');
+                player.exchBtn.classList.toggle('clickable');
                 player.betBtn.addEventListener('click', betAction, {once: true});
                 player.foldBtn.addEventListener('click', foldAction, {once: true});
+                player.exchBtn.addEventListener('click', exchangeAction);
             })
 
             socket.on('receive bet', (selectedTokenValues)=>{

@@ -88,6 +88,14 @@ button.start.reset {
     border: 3px solid rgb(101, 174, 101);
 }
 
+.area.exchange {
+    text-align: center;
+}
+
+input.exchange {
+    display: inline-block;
+}
+
 .table {
     position: relative;
     padding: 10px;

@@ -19,6 +19,7 @@ class Player {
 
         this.betBtn = document.querySelector('.action button.bet');
         this.foldBtn = document.querySelector('.action button.fold');
+        this.exchBtn = document.querySelector('.action button.exchange');
         this.collectBtn = document.querySelector('.action button.collect');
         this.nextBtn = document.querySelector('.action button.next');
         this.startBtn = document.querySelector('button.start');
@@ -160,6 +161,14 @@ class Player {
         }
     }
 
+    // remove token from player table, update token freq
+    removeToken(token){
+        this.tokenFreq = {};
+        this.tokenTable.removeChild(token);
+        let tokenVal = this.getTokenValue(token);
+        this.tokenFreq[tokenVal]--;
+    }
+
     // clear all tokens on common table
     clearCommonTokens(){
         let tokens = this.commonTokenTable.querySelectorAll(`img`);
@@ -207,6 +216,27 @@ class Player {
             token.style.transform = '';}, 1000);
     }
 
+    makeExchange(){
+        let playerTokens = this.tokenTable.querySelectorAll('.token.selected');
+        playerTokens = Array.from(playerTokens);
+        let selectedTokenValues = playerTokens.map(token => this.getTokenValue(token));
+        let sum = selectedTokenValues.reduce((sumValue, value)=> sumValue+value,0);
+
+        let fifty = Number(document.querySelector('input#fifty').value);
+        let ten = Number(document.querySelector('input#ten').value);
+        let five = Number(document.querySelector('input#five').value);
+
+        if ((fifty*50 + ten*10 + five*5)!==sum){
+            alert("Requested token values don't add up to selected tokens!");
+            return;
+        } else {
+            playerTokens.forEach((token)=>this.removeToken(token)); // remove selected tokens
+            Array(fifty).fill.map(()=>this.addToken(50)); // add 50 tokens for fifty many times
+            Array(ten).fill.map(()=>this.addToken(10)); 
+            Array(five).fill.map(()=>this.addToken(5)); 
+            return;
+        }
+    }
     // Make bet with selected tokens
     // If successful, remove selected tokens, update player bet value (correctly for each round), money, tokens (freq)
     // If unsuccessul, unselected all tokens, make bet again
