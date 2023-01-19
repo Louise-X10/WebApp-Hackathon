@@ -196,3 +196,12 @@ let numbers = [7, 7, 7, 8, 8, 8]
 numbers = [7, 7, 8, 8, 9, 9]
 let numberFreq = numbers.reduce((acc, curr) => (acc[curr] ? acc[curr]++ : acc[curr] = 1, acc), {}) 
 let numberFreqValues = Object.values(numberFreq);
+// test three pairs
+/* {suit: 'hearts', number: 4} //
+{suit: 'diamonds', number: 4}  //
+{suit: 'diamonds', number: 14} //
+{suit: 'spades', number: 14} //
+{suit: 'spades', number: 3} //
+
+{suit: 'clubs', number: 12}  //
+{suit: 'clubs', number: 3}  // */

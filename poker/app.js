@@ -78,7 +78,7 @@ io.on('connection', socket =>{
         io.game.commonTokenValues = io.game.commonTokenValues.concat(selectedTokenValues);
         // update highest bet value
         io.game.highestBet = Math.max(io.game.highestBet, sum)
-        console.log('user made a bet', sum, 'highest bet now', io.game.highestBet);
+        console.log('user made a bet', sum, 'highest bet now', io.game.highestBet, 'common token val now', io.game.commonTokenValues);
         // add tokens to common table, emit to all other players
         socket.broadcast.emit('receive bet', selectedTokenValues);
 
@@ -230,7 +230,9 @@ ee.on('end game',()=>{
         if (io.game.winners.length === 1){
             var winnerTokenValues = commonTokenValues;
         } else {
+            console.log('toknes before split', commonTokenValues);
             var winnerTokenValues = io.game.splitTokens(commonTokenValues, io.game.winners.length);
+            console.log('toknes afer split', winnerTokenValues, io.game.winners.length);
         }
     }
 
@@ -325,8 +327,17 @@ class Game {
         // clear all cards
         this.commonCards = [];
         this.players.forEach(player=>{
-            player.playerCards = [];
+            
             player.folded = false;
+            player.playerCards = [];
+            player.commonCards = [];
+
+            player.betValue = 0;
+            player.handCards = [];
+            player.handRank = '';
+            player.handRank = null;
+            player.rankCards = [];
+            player.highCards = [];
         })
         // reset game status
         this.winners = null;
@@ -351,18 +362,18 @@ class Game {
     // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        let card1 = deck.deal();
-        let card2 = deck.deal();
-        let card3 = deck.deal();
-        let card4 = deck.deal();
-        let card5 = deck.deal();
+        let card1 = {suit: 'hearts', number: 4} //deck.deal();
+        let card2 = {suit: 'diamonds', number: 4}  //deck.deal();
+        let card3 = {suit: 'diamonds', number: 14} //deck.deal();
+        let card4 = {suit: 'spades', number: 14} //deck.deal();
+        let card5 = {suit: 'spades', number: 3} //deck.deal();
         this.commonCards = [card1, card2, card3, card4, card5];
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
         for (let player of this.players){
-            let playercard1 = deck.deal();
-            let playercard2 = deck.deal();
+            let playercard1 = {suit: 'clubs', number: 12}  //deck.deal();
+            let playercard2 = {suit: 'clubs', number: 3}  //deck.deal();
             let socketid = player.socketid;
             player.commonCards = this.commonCards;
             player.playerCards = [playercard1, playercard2];
@@ -624,7 +635,7 @@ class Game {
     // Helper for evaluateWinner, return array of winners
     //! Currently only works with two tied winners
     evaluateHighCards(winners, evalRank){
-        console.log('running evaluate high cards', winners, 'evalRank', evalRank)
+        console.log('running evaluate high cards', 'evalRank', evalRank)
         // already sorted in ascending order
         if (evalRank){
             var player1Cards = winners[0].rankCards.map(x=>x);
@@ -655,10 +666,12 @@ class Game {
     // Return array of token values for each pile
     splitTokens(tokenValues, pile){
         let sum = tokenValues.reduce((sumValue, tokenValue)=> sumValue+tokenValue,0)
-        // round to nearest multiple of pile
-        let subTargetSum = Math.floor(sum / pile) - Math.floor(sum / pile)% pile; // for pile = 2 players, ceiling doesn't matter
+        // round sum to nearest multiple of pile
+        sum = sum - sum%pile;
+        let subTargetSum = Math.floor(sum / pile); // for pile = 2 players, floor doesn't matter
         let subCurrentSum = 0;
 
+        console.log('splitting tokens of sum ', sum, ' with target sum ', subTargetSum)
         let subTokenValues = [];
         while (subTargetSum - subCurrentSum >= 50){
             subTokenValues.push(50);
