@@ -17,11 +17,11 @@ class Player {
         this.commonTokenTable = document.querySelector('.common .table.tokens');
         this.msg = document.querySelector('#evalMsg');
 
-        this.betBtn = document.querySelector('.action button.bet');
-        this.foldBtn = document.querySelector('.action button.fold');
-        this.exchBtn = document.querySelector('.action button.exchange');
-        this.collectBtn = document.querySelector('.action button.collect');
-        this.nextBtn = document.querySelector('.action button.next');
+        this.betBtn = document.querySelector('button.bet');
+        this.foldBtn = document.querySelector('button.fold');
+        this.exchBtn = document.querySelector('button.exchange');
+        this.collectBtn = document.querySelector('button.collect');
+        this.nextBtn = document.querySelector('button.next');
         this.startBtn = document.querySelector('button.start');
         
         this.folded = false;
@@ -39,7 +39,7 @@ class Player {
         this.highCards = [];
         
         this.setTokens();
-
+        
         // Get all defined class methods
         const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
 
