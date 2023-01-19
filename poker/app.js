@@ -140,7 +140,7 @@ ee.on('start round', ()=>{
 })
 
 ee.on('start turn', ()=>{
-    console.log('new turn initiated')
+    console.log('new player turn initiated')
 
     if (io.game.foldedCount === io.game.playerCount-1){
         console.log('all else folded, end game early')
@@ -172,12 +172,11 @@ ee.on('start turn', ()=>{
     // Act accoridngly
     if (io.game.CurrentPlayer === null){
         // If this round is done, start next round
-        console.log('proceed to next round')
         ee.emit('next round');
         return;
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
-        console.log('current io.game cycle and currentplayer', io.game.cycle, io.game.CurrentPlayer);
+        console.log('current io.game cycle ', io.game.cycle,' and currentplayer ', io.game.CurrentPlayer);
         //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
@@ -188,7 +187,6 @@ ee.on('start turn', ()=>{
             // If not folded, but at cycle 2 and already at highest bet, proceed to next player
             console.log('skip player in cycle 2')
             io.game.CurrentPlayer += 1;
-            console.log('proceed to next turn')
             ee.emit('start turn');
         } else {
             // If not folded, take action
@@ -204,7 +202,7 @@ ee.on('start turn', ()=>{
 ee.on('next round',()=>{
     io.emit('flip common cards'); // decide which cards to flip on client side
     io.game.round ++; // increment round
-    console.log('flip cards', 'next round', io.game.round)
+    console.log('flip cards, next round', io.game.round)
     ee.emit('start round');
 })
 
@@ -362,18 +360,18 @@ class Game {
     // generate player cards for each player
     setupCards(){
         const deck = new Deck();
-        let card1 = {suit: 'hearts', number: 4} //deck.deal();
-        let card2 = {suit: 'diamonds', number: 4}  //deck.deal();
-        let card3 = {suit: 'diamonds', number: 14} //deck.deal();
-        let card4 = {suit: 'spades', number: 14} //deck.deal();
-        let card5 = {suit: 'spades', number: 3} //deck.deal();
+        let card1 = deck.deal();
+        let card2 = deck.deal();
+        let card3 = deck.deal();
+        let card4 = deck.deal();
+        let card5 = deck.deal();
         this.commonCards = [card1, card2, card3, card4, card5];
         console.log('common cards generated');
         io.emit('deal common cards', this.commonCards);
 
         for (let player of this.players){
-            let playercard1 = {suit: 'clubs', number: 12}  //deck.deal();
-            let playercard2 = {suit: 'clubs', number: 3}  //deck.deal();
+            let playercard1 = deck.deal();
+            let playercard2 = deck.deal();
             let socketid = player.socketid;
             player.commonCards = this.commonCards;
             player.playerCards = [playercard1, playercard2];

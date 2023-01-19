@@ -19,7 +19,6 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - BUG: Three pairs evaluation (done), Two three-of-a-kind (done), Full house with two pairs (done)
   - Exchange tokens: big to small, small to big
 - Additional features:
   - Highlight current player in message area  
