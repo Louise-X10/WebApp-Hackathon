@@ -1,9 +1,16 @@
+/* General webpage display */
 body {
     background-color: darkgreen;
 }
 
 header {
     background-color: rgb(219, 126, 157);
+    padding: 10px;
+    position: relative;
+}
+
+footer {
+    background-color: rgb(169, 67, 233);
     padding: 10px;
     position: relative;
 }
@@ -17,6 +24,7 @@ h3 {
     margin: 0px;
     padding: 0px;
 }
+
 li {
     font-size: larger;
 }

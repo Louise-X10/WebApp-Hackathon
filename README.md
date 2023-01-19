@@ -19,7 +19,6 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Move play backgroun to upper right corner (done)
   - Move additional instructions to bottom
 - Additional features:
   - Highlight current player in message area
