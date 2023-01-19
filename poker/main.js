@@ -145,6 +145,7 @@ class Player {
     // Create and Place token of given value into player table, Update token frequency dict
     // Setup token select listener
     addToken(value){
+        console.log('add token', value);
         let token = this.createToken(value);
         this.tokenTable.appendChild(token);
         this.money += value;
@@ -231,9 +232,10 @@ class Player {
             return;
         } else {
             playerTokens.forEach((token)=>this.removeToken(token)); // remove selected tokens
-            Array(fifty).fill.map(()=>this.addToken(50)); // add 50 tokens for fifty many times
-            Array(ten).fill.map(()=>this.addToken(10)); 
-            Array(five).fill.map(()=>this.addToken(5)); 
+            console.log(fifty, ten, five);
+            Array.from(Array(fifty),()=>this.addToken(50)); // add 50 tokens for fifty many times
+            Array.from(Array(ten),()=>this.addToken(10)); 
+            Array.from(Array(five),()=>this.addToken(5));
             return;
         }
     }
