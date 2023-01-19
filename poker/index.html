@@ -18,39 +18,32 @@
         <label for="bgm">Play background music</label> 
 
         <h2 id="username"> Refresh page until pop-up window asking for username appears! </h2>
-        <h3>Game Instructions: </h3>
-        <ul>
-            <li>Player's cards can be flipped by clicking any time during the game.</li>
-            <li>Each game consists of 4 rounds. In each round, players take turns making a bet. The common cards are automatically revealed once a round is finished. </li>
-            <ul>
-                <li>Round 0: no cards flipped</li>
-                <li>Round 1: flip first three cards</li>
-                <li>Round 2: flip fourth card</li>
-                <li>Round 3: flip last card</li>
-            </ul>
-            <li>In each player's turn, the players can bet tokens by selecting tokens and pressing the 'Make Bet!' button. The player can also choose to fold and quit this game. A light green border around your table will appear to signify it's your turn. </li>
-            <li>Throughout the game, there will be a message area (in bright colors) at the bottom left displaying the current state of the game and reminders for what to do. </li>
-            <li>Once all rounds are done, a pop-up window will display the winner. This message will also be shown in the message area of the webpage. </li>
-            <li>Then winners can collect tokens and non-winners can clear the tokens by pressing the corresponding buttons.</li>
-            <li>A new game will be initiated once ALL players have clicked the 'Next Game' button. </li>
-        </ul>
-        <h3>Simplified poker rules for each round:</h3>
-        <ul>
-            <li>For each round, there are maximum two cycles. During the first cycle through all the players, raises (i.e. bet more than previous players) are allowed. In the second cycle (if needed), only matches (i.e. in a single round, all players' total bet value matches the highest total bet value) are allowed.</li>
-            <li>Play order is determined by the order users entered their username. Play order will be rotated when a new game starts.</li>
-        </ul>
+
+        
         <div class="start">
             <div class="instruction">
-                <h3>How to start playing: </h3>
+                <h3>Quick instructions to start playing: </h3>
                 <ul>
-                    <li>Game starts when ANY ONE player clicks 'Start button'. </li>
+                    <li>Wait until all user have logged in with their username to start game. Game starts once ANY player clicks 'Start button'. </li>
+                    <li>Players take turns betting in each round, then common cards are revealed. A light green border around your table will appear to indicate it's your turn. </li>
+                    <li>In each round, there can be two cycles. </li>
+                    <ul>
+                        <li><b> During the first cycle, raises (i.e. bet more than previous players) are allowed.</b> </li>
+                        <li><b> In the second cycle (if raises were made), only matches (i.e. in a single round, all players' total bet value matches the highest total bet value) are allowed.</b></li>
+                    </ul>
+                    <li>The next game will be initiated once ALL players have clicked the 'Next Game' button.  </li>
+                </ul>
+                <h3>Additional notes: </h3>
+                <ul>
+                    <li>Player's cards can be flipped by clicking any time during the game.</li>
+                    <li>Play order is determined by the order users entered their username. Play order will be rotated when a new game starts. </li>
                     <li>Anyone can click `Reset` to start a brand new game, but all players will start fresh, all previous tokens won and lost will all be rest. </li>
                     <li>After each complete game, players MUST click the collect/clear token button before clicking the next game button. </li>
                     <li>NOTE: Ties between more than 2 players will break the game. </li>
                 </ul>
             </div>
             <div class="button">
-                <button class="start"> Start!</button>
+                <button class="start" title="Start game once all players logged in"> Start!</button>
             </div>
         </div>
         
@@ -81,8 +74,8 @@
     </div>
 
     <div class="area action" id="common">
-        <button class="collect">Collect / Clear tokens</button>
-        <button class="next">Next Game</button>
+        <button class="collect" title="Winners collect tokens, non-winners clear tokens">Collect / Clear tokens</button>
+        <button class="next" title="Initiate new game">Next Game</button>
     </div>
 
     <div class="area player" id="player">
@@ -96,8 +89,8 @@
     </div>
 
     <div class="area action" id="player">
-        <button class="fold">Fold</button>
-        <button class="bet">Make A Bet!</button>
+        <button class="fold" title="Fold from current game">Fold</button>
+        <button class="bet" title="Select tokens and make bet">Make A Bet!</button>
     </div>
 
     <div class="area exchange">
@@ -105,7 +98,7 @@
         <p>50 tokens <input type="number" name="exchange" id="fifty"></p>
         <p>10 tokens <input type="number" name="exchange" id="ten"></p>
         <p>5 tokens  <input type="number" name="exchange" id="five"></p>
-        <button class="exchange">Exchange Tokens</button>
+        <button class="exchange" title="Select tokens to exchange for requested amount">Exchange Tokens</button>
     </div>
     
   </body>
@@ -188,6 +181,7 @@
                 //player.startBtn = player.startBtn.cloneNode();
                 // setup reset button
                 player.startBtn.textContent = 'Reset';
+                //! Modify hover message
                 player.startBtn.classList.add('reset');
                 // setup reset listener
                 console.log('adding reset listener')
