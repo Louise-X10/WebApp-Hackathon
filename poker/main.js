@@ -223,19 +223,24 @@ class Player {
         let selectedTokenValues = playerTokens.map(token => this.getTokenValue(token));
         let sum = selectedTokenValues.reduce((sumValue, value)=> sumValue+value,0);
 
-        let fifty = Number(document.querySelector('input#fifty').value);
-        let ten = Number(document.querySelector('input#ten').value);
-        let five = Number(document.querySelector('input#five').value);
+        let fiftyInput = document.querySelector('input#fifty');
+        let tenInput = document.querySelector('input#ten');
+        let fiveInput = document.querySelector('input#five');
+        let fifty = Number(fiftyInput.value);
+        let ten = Number(tenInput.value);
+        let five = Number(fiveInput.value);
 
         if ((fifty*50 + ten*10 + five*5)!==sum){
             alert("Requested token values don't add up to selected tokens!");
             return;
         } else {
             playerTokens.forEach((token)=>this.removeToken(token)); // remove selected tokens
-            console.log(fifty, ten, five);
             Array.from(Array(fifty),()=>this.addToken(50)); // add 50 tokens for fifty many times
             Array.from(Array(ten),()=>this.addToken(10)); 
             Array.from(Array(five),()=>this.addToken(5));
+            fiftyInput.value='';
+            tenInput.value='';
+            fiveInput.value='';
             return;
         }
     }

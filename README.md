@@ -19,7 +19,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Exchange tokens: big to small, small to big
+  - Exchange tokens: big to small, small to big (done)
 - Additional features:
   - Highlight current player in message area  
   - Display winner's hand?
