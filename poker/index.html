@@ -14,9 +14,11 @@
 
     <header>
         <h1>Multi-player Poker Card Game</h1>
-        <input type="checkbox" name="" id="bgm">
-        <label for="bgm">Play background music</label> 
-
+        <div class="bgm">
+            <input type="checkbox" name="" id="bgm">
+            <label for="bgm">Play background music</label> 
+        </div>
+        
         <h2 id="username"> Refresh page until pop-up window asking for username appears! </h2>
 
         
@@ -47,7 +49,7 @@
             </div>
         </div>
         
-        <h3> All Players that have logged into this page (player order from left to right): </h3>
+        <h3> Players that have logged in (play order from left to right): </h3>
         <p id = 'logplayers'></p>
 
         <pre id="evalMsg"> Waiting for username. </pre>

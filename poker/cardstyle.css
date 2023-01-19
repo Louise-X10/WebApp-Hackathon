@@ -5,6 +5,7 @@ body {
 header {
     background-color: rgb(219, 126, 157);
     padding: 10px;
+    position: relative;
 }
 
 header pre {
@@ -20,6 +21,12 @@ li {
     font-size: larger;
 }
 
+/* BGM */
+div.bgm {
+    position: absolute;
+    top: 0%;
+    right: 0%;
+}
 
 /*Button*/
 button {
