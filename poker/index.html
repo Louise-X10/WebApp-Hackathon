@@ -8,6 +8,10 @@
   </head>
   
   <body>
+    <audio src="Casino Jazz.mp3" type="audio/mpeg" autoplay muted loop>
+        <p>Background music not supported</p>
+    </audio>
+
     <header>
         <h1>Multi-player Poker Card Game</h1>
         <h2 id="username"> Refresh page until pop-up window asking for username appears! </h2>
@@ -127,6 +131,14 @@
                 player.makeExchange();
             });
             player.exchBtn.classList.toggle('clickable');
+
+            // Play background music 
+            document.querySelector('body').addEventListener('click', ()=>{
+                let music = document.querySelector('audio');
+                music.play();
+                music.muted = false;
+            })
+            
 
             socket.on('connect', ()=>console.log('user connected'))
 

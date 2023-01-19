@@ -19,7 +19,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Exchange tokens: big to small, small to big (done)
+  - Add background music
 - Additional features:
   - Highlight current player in message area  
   - Display winner's hand?
@@ -30,6 +30,7 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
   - Pause game if someone disconnects, save game session info, reload game once reconnect
   - Notify someone has disconnected, press reset button to reset new game
+  - New player not allowed to join midgame?
 - To be completed
   - Multirounds: big bind, small bind (not done)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
