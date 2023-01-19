@@ -14,8 +14,11 @@
 
     <header>
         <h1>Multi-player Poker Card Game</h1>
+        <input type="checkbox" name="" id="bgm">
+        <label for="bgm">Play background music</label> 
+
         <h2 id="username"> Refresh page until pop-up window asking for username appears! </h2>
-        <h3>Instructions: </h3>
+        <h3>Game Instructions: </h3>
         <ul>
             <li>Player's cards can be flipped by clicking any time during the game.</li>
             <li>Each game consists of 4 rounds. In each round, players take turns making a bet. The common cards are automatically revealed once a round is finished. </li>
@@ -132,12 +135,23 @@
             });
             player.exchBtn.classList.toggle('clickable');
 
-            // Play background music 
-            document.querySelector('body').addEventListener('click', ()=>{
+            // Play background music when checked
+            let musicSelect = document.querySelector('input#bgm');   
+            musicSelect.addEventListener('change',()=>{
+                let music = document.querySelector('audio');
+                if (musicSelect.checked){
+                    music.play();
+                    music.muted = false;
+                } else {
+                    music.pause();
+                    music.muted = true;
+                }
+            })
+/*             document.querySelector('body').addEventListener('click', ()=>{
                 let music = document.querySelector('audio');
                 music.play();
                 music.muted = false;
-            })
+            }) */
             
 
             socket.on('connect', ()=>console.log('user connected'))
