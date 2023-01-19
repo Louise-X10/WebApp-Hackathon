@@ -211,6 +211,7 @@
                         playerArea.classList.toggle('playing');
                         player.betBtn.classList.toggle('clickable');
                         player.foldBtn.classList.toggle('clickable');
+                        player.exchBtn.classList.toggle('clickable');
                         console.log('emit bet to server')
                         socket.emit('made bet', selectedTokenValues, sum, player);
                     } else {
@@ -227,6 +228,8 @@
                     playerArea.classList.toggle('playing');
                     player.betBtn.classList.toggle('clickable');
                     player.foldBtn.classList.toggle('clickable');
+                    player.exchBtn.classList.toggle('clickable');
+
                     console.log('emit fold to server')
                     socket.emit('made fold');
                     console.log('fold action end')
