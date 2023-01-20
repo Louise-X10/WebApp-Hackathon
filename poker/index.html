@@ -226,8 +226,13 @@
             })
 
             socket.on('play', (game, isFirstPlayer)=>{
+                if (game.cycle===1){
+                    player.betValue = 0; // reset player bet value on new round
+                }
                 console.log('start playing')
-                player.msg.textContent = 'You are playing now!';
+                player.msg.textContent = 'You are playing now! ';
+                player.msg.textContent += `The previous player bet ${game.highestBet}. `;
+                player.msg.textContent += `You have already bet ${player.betValue}. `;
                 player.msg.textContent += `\nRound: ${game.round}`;
                 player.msg.textContent += `\nHighest bet value: ${game.highestBet}`;
                 let playerArea = document.querySelector('div.area.player');

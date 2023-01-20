@@ -19,15 +19,14 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - FIXED BUG: next game resets socket.ready = false
-  - Change page colors: lighter green background?
-  - Once player has no tokens, lose game. 
-- Additional features:
   - Highlight current player in message area
   - Display last player bet
-  - All players loop on same bgm
   - Display winner's hand?
+- Additional features:
+  - Change page colors: lighter green background?
+  - All players loop on same bgm
   - Big bind, small bind
+  - Once player has no tokens, lose game. 
   - BUG: Break ties with more than 2 players (alert if so)
   - BUG: reveal last card before alert message for other players (check if resolved)
 - What happens if player disconnects
