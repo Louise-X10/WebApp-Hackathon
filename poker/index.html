@@ -72,6 +72,9 @@
     </div>
 
     <div class="area player" id="player">
+        <div class="msg">
+            <p><b>YOUR TURN</b> </p> 
+        </div>
         <div class="table cards">
             <h2>Player's cards: </h2>
         </div>
@@ -219,8 +222,9 @@
             })
 
             socket.on('not all in', ()=>{
-                alert('Someone must have accidentally disconnected and/or reconnected! \nPlease press Reset to start a bran new game.');
+                alert('Someone must have accidentally disconnected and/or reconnected! \nRestart process by running "npm start" on terminal and start a brand new game.');
             })
+
             socket.on('watch', (game, serverPlayer)=>{
                 console.log('watching')
                 player.msg.textContent = `Player ${serverPlayer.username} is playing now!`;

@@ -107,6 +107,14 @@ button.start.reset {
     border: 3px solid rgb(101, 174, 101);
 }
 
+div.msg {
+    color: rgb(101, 174, 101);
+    /* Position text at center */
+    position: absolute; /* Bring text our of flex-flow */
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
 .area.exchange {
     text-align: center;
 }
