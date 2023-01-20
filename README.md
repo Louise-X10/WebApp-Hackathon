@@ -20,7 +20,6 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 ### Todo list
 - Woking on
   - Highlight current player in message area
-  - Display 'YOUR TURN' during players Turn
   - Display winner's hand?
 - Additional features:
   - Change page colors: lighter green background?
