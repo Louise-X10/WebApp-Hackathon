@@ -105,7 +105,7 @@ io.on('connection', socket =>{
         console.log('folded player', io.game.players[io.game.CurrentPlayer]);
         // proceed to next player
         io.game.CurrentPlayer ++;
-        console.log('fold, current player is updated to ', io.game.players[io.game.CurrentPlayer].username, 'fold count', io.game.foldedCount);
+        console.log('fold count', io.game.foldedCount);
         ee.emit('start turn');
         console.log('remove fold listener');
     })

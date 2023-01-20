@@ -19,8 +19,8 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Display total player number, notify players to restart if don't match up
   - Highlight current player in message area
+  - Display 'YOUR TURN' during players Turn
   - Display winner's hand?
 - Additional features:
   - Change page colors: lighter green background?
@@ -30,10 +30,9 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
   - BUG: Break ties with more than 2 players (alert if so)
   - BUG: reveal last card before alert message for other players (check if resolved)
 - What happens if player disconnects
-  
+  - Notify players to reset if total logged players and total sockets don't match up (done) (not a problem in remote server)
   - During game, player that disconnects and reconnects with same name should be able to rejoin game with same socket?
   - Pause game if someone disconnects, save game session info, reload game once reconnect
-  - Notify someone has disconnected, press reset button to reset new game
   - New player not allowed to join midgame?
 - To be completed
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
