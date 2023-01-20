@@ -19,10 +19,11 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
 
 ### Todo list
 - Woking on
-  - Move additional instructions to bottom
+  - Change page colors
 - Additional features:
   - Highlight current player in message area
   - Display winner's hand?
+  - Big bind, small bind
   - BUG: Break ties with more than 2 players (alert if so)
   - BUG: reveal last card before alert message for other players (check if resolved)
 - What happens if player disconnects
@@ -32,7 +33,6 @@ A non-playable view of the poker game webpage is accessible at `https://louise-x
   - Notify someone has disconnected, press reset button to reset new game
   - New player not allowed to join midgame?
 - To be completed
-  - Multirounds: big bind, small bind (not done)
   - Refine multiple token movement (animate different target positions), adjust delay (not essential)
   - Reorganize token after collection (not essential)
   

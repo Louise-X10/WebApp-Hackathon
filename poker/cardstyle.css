@@ -1,18 +1,21 @@
 /* General webpage display */
 body {
     background-color: darkgreen;
+    color: white;
 }
 
 header {
     background-color: rgb(219, 126, 157);
     padding: 10px;
     position: relative;
+    color: black;
 }
 
 footer {
     background-color: rgb(169, 67, 233);
     padding: 10px;
     position: relative;
+    color: black;
 }
 
 header pre {
