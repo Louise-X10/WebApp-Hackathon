@@ -146,6 +146,7 @@ ee.on('start round', ()=>{
 ee.on('start turn', ()=>{
     //console.log('new player turn initiated')
 
+    // End game early if everybody else folded
     if (io.game.foldedCount === io.game.playerCount-1){
         console.log('all else folded, end game early')
         io.game.round = 3;
@@ -154,11 +155,11 @@ ee.on('start turn', ()=>{
     }
 
     var isFirstPlayer = false;
-    // Decide whether we have reached edge cases, i.e. all players player, or should proceed to next round
+    // Decide whether we have reached edge cases, i.e. all players played, or should proceed to next round
     if (io.game.CurrentPlayer === 0){
         isFirstPlayer = true;
     } else if (io.game.CurrentPlayer === io.game.playerCount){
-        // All players have played, i.e. current player incremented over by 1
+        // All players have played, i.e. current player = total incremented over by 1
         console.log('all players have played')
         let allMatch = io.game.players.map(player=>player.betValue).filter(value => value === io.game.highestBet).length === io.game.playerCount;
         if (io.game.cycle ===1 && !allMatch){
@@ -193,11 +194,18 @@ ee.on('start turn', ()=>{
             io.game.CurrentPlayer += 1;
             ee.emit('start turn');
         } else {
-            // If not folded, take action
-            console.log('current player acts')
-            let socketid = player.socketid;
-            io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
-            io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game, player) // other players watch
+            // check if all connected sockets are in game
+            let allIn = allSockets.length === loggedPlayers.length;
+            if (!allIn){
+                console.log('not all players are in game')
+                io.emit('not all in');
+            } else {
+                // If not folded, take action
+                console.log('current player acts')
+                let socketid = player.socketid;
+                io.to(socketid).emit('play', io.game, isFirstPlayer); // one player plays
+                io.sockets.sockets.get(socketid).broadcast.emit('watch', io.game, player) // other players watch
+            }
         }
     }
     

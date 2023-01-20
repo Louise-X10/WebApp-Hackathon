@@ -218,6 +218,9 @@
                 player.setPlayerCards(playerCards);
             })
 
+            socket.on('not all in', ()=>{
+                alert('Someone must have accidentally disconnected and/or reconnected! \nPlease press Reset to start a bran new game.');
+            })
             socket.on('watch', (game, serverPlayer)=>{
                 console.log('watching')
                 player.msg.textContent = `Player ${serverPlayer.username} is playing now!`;
@@ -232,7 +235,7 @@
                 console.log('start playing')
                 player.msg.textContent = 'You are playing now! ';
                 player.msg.textContent += `The previous player bet ${game.highestBet}. `;
-                player.msg.textContent += `You have already bet ${player.betValue}. `;
+                player.msg.textContent += `You already bet ${player.betValue} in current round. `;
                 player.msg.textContent += `\nRound: ${game.round}`;
                 player.msg.textContent += `\nHighest bet value: ${game.highestBet}`;
                 let playerArea = document.querySelector('div.area.player');
