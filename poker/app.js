@@ -31,12 +31,12 @@ io.on('connection', socket =>{
     // Keep track of all connected servers, used for checking if received response from all servers
     socket.ready = false;
     allSockets.push(socket);
-    console.log(allSockets.map(socket => socket.ready));
+    console.log('players ready status: ', allSockets.map(socket => socket.ready));
 
     socket.on('disconnect', function() {
         console.log('new user disconnected');
         allSockets = allSockets.filter(listedSocket => listedSocket!==socket); // remove socket from list
-        console.log(allSockets.map(socket => socket.ready));
+        console.log('players ready status: ', allSockets.map(socket => socket.ready));
         if (socket.player!==undefined) {
             loggedPlayers = loggedPlayers.filter(player => player!= socket.player); // remove socket player from list of logged players
             io.emit('log all players', loggedPlayers); // update log whenever some player disconnects
@@ -51,7 +51,7 @@ io.on('connection', socket =>{
     io.game = new Game();
 
     socket.on('player ready', (player) => {
-        console.log('receive player ready');
+        console.log('receive player ready', player.username);
         player.socketid = socket.id;
         socket.player = player;
         loggedPlayers.push(player);
@@ -105,7 +105,7 @@ io.on('connection', socket =>{
         console.log('folded player', io.game.players[io.game.CurrentPlayer]);
         // proceed to next player
         io.game.CurrentPlayer ++;
-        console.log('fold, current player is updated to ', io.game.CurrentPlayer, 'fold count', io.game.foldedCount);
+        console.log('fold, current player is updated to ', io.game.players[io.game.CurrentPlayer].username, 'fold count', io.game.foldedCount);
         ee.emit('start turn');
         console.log('remove fold listener');
     })
@@ -115,9 +115,13 @@ io.on('connection', socket =>{
         socket.ready = true;
         console.log('users ready for next game', allSockets.map(socket => socket.ready));
         let allReady = allSockets.filter(socket => socket.ready === true).length === allSockets.length;
-        console.log('one more user ready', allReady)
+        console.log('one more user ready, all users ready', allReady)
         if (allReady){
             console.log('calling next game');
+            // Change all ready to false
+            //console.log('all sockets ready', allSockets[0].ready, allSockets[1].ready);
+            allSockets.forEach(socket=>socket.ready=false);
+            //console.log('all sockets not ready', allSockets[0].ready, allSockets[1].ready);
             ee.emit('next game');
         }
     })
@@ -140,7 +144,7 @@ ee.on('start round', ()=>{
 })
 
 ee.on('start turn', ()=>{
-    console.log('new player turn initiated')
+    //console.log('new player turn initiated')
 
     if (io.game.foldedCount === io.game.playerCount-1){
         console.log('all else folded, end game early')
@@ -176,7 +180,7 @@ ee.on('start turn', ()=>{
         return;
     } else {
         let player = io.game.players[io.game.CurrentPlayer];
-        console.log('current io.game cycle ', io.game.cycle,' and currentplayer ', io.game.CurrentPlayer);
+        console.log('current io.game cycle ', io.game.cycle,' and currentplayer ', io.game.players[io.game.CurrentPlayer].username);
         //console.log('current player is', player);
         if (player.folded){
             // If folded, proceed to next player
@@ -257,7 +261,7 @@ ee.on('next game', ()=>{
     console.log('setting up next game');
     io.game.resetGame(); // rotate game players and logged players
     io.emit('log all players', loggedPlayers) // io.emit('log all players', io.game.players)//  let users rotate logged players
-    console.log('next game is', io.game);
+    //console.log('next game is', io.game);
     io.game.setupCards();
 
     ee.emit('start round');
@@ -347,7 +351,7 @@ class Game {
         let firstPlayer = this.players.shift();
         this.players.push(firstPlayer);
         this.CurrentPlayer = 0;
-        console.log('updated logged players is ', loggedPlayers);
+        //console.log('updated logged players is ', loggedPlayers);
     }
 
     setPlayers(players){
@@ -378,7 +382,7 @@ class Game {
             io.to(socketid).emit('deal player cards', [playercard1, playercard2]);
         }
         console.log('player cards generated');
-        console.log('test deck', deck.deal());
+        //console.log('look at game', io.game);
     }
 
 
